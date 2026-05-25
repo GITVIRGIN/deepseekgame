@@ -21,7 +21,7 @@ export const factionMasteryInfo = {
   幽冥: { label: "幽冥", bonus: "派系卡牌伤害增加", masteryBonus: (m) => `+${m} 伤害` },
   昆仑: { label: "昆仑", bonus: "开局额外抽牌", masteryBonus: (m) => `抽 ${m} 张` },
   山海: { label: "山海", bonus: "格挡效果增强", masteryBonus: (m) => `+${m} 格挡` },
-  洪荒: { label: "洪荒", bonus: "神品牌费用降低", masteryBonus: (m) => `-${m} 费(最低1)` },
+  洪荒: { label: "洪荒", bonus: "神品牌费用降低", masteryBonus: (m) => `-${min(m,2)} 费(᷄Lv3+首张免费)` },
   龙宫: { label: "龙宫", bonus: "开局金币增加", masteryBonus: (m) => `+${m*10} 金` },
   妖: { label: "妖", bonus: "首击伤害增加", masteryBonus: (m) => `+${m*3} 首击` },
 };
