@@ -147,6 +147,7 @@ export function startPlayerTurn(state) {
   decayPlayerBlock(combat);
   combat.flags.thunderSealUsed = false;
   combat.flags.discardedThisTurn = false;
+  combat.flags.honghuangFreeUsed = false;
 
   tickDamageStatus(state, playerAsFighter(run), "bleed");
   if (state.phase !== "combat") return state;
@@ -642,7 +643,13 @@ function applySpikesReflect(state) {
 
 function getFactionLegendaryDiscount(state, card) {
   if (card?.rarity !== "legendary") return 0;
-  return state.meta?.factionMastery?.["洪荒"] ?? 0;
+  const lv = state.meta?.factionMastery?.["洪荒"] ?? 0;
+  // Lv1-2: -1 cost, Lv3+: -2 cost (capped), Lv3+ first legendary free
+  if (lv >= 3 && !state.run?.combat?.flags.honghuangFreeUsed) {
+    state.run.combat.flags.honghuangFreeUsed = true;
+    return card.cost; // fully free
+  }
+  return Math.min(lv, 2);
 }
 
 function applyFactionStartBonuses(state) {
