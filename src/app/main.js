@@ -690,6 +690,8 @@ function renderEffectBadges(definition) {
     if (effect.type === "amplifyDebuffs") labels.push(`状态 +${effect.value}`);
     if (effect.type === "recoverDiscard") labels.push(`回收 ${effect.value}`);
     if (effect.type === "loseHp") labels.push(`失血 ${effect.value}`);
+    if (effect.type === "leechBleed") labels.push(`吸血 ${Math.round(effect.value * 100)}%流血`);
+    if (effect.type === "execute") labels.push(`斩杀 ≤${Math.round((effect.threshold ?? 0.25) * 100)}%`);
   }
 
   return el("div", "effect-badges", labels.slice(0, 3).map((label) => el("span", "", label)));
@@ -773,6 +775,9 @@ function impactLabels(statuses, owner) {
     }
     if (status.id === "bleed") {
       result.push({ status, kind: "impact-debuff", label: `流血压制 ${status.stacks}` });
+    }
+    if (status.id === "fury") {
+      result.push({ status, kind: "impact-buff", label: `物理伤害 +${status.stacks * 3}` });
     }
   }
   return result;
@@ -873,6 +878,7 @@ function detailForStatus(status) {
     burn: [`当前数值 ${stacks} 表示：回合结算时受到 ${stacks} 点伤害。`, "造成伤害后会消退一半，至少减少 1 层，不会一直滚到无解。"],
     poison: [`当前数值 ${stacks} 表示：回合结算时受到 ${stacks} 点伤害，然后减少 1 层。`, "它会直接压低血条，适合拖回合滚雪球。"],
     bleed: [`当前数值 ${stacks} 表示：回合间会先扣格挡再造成伤害；被攻击时也会额外爆开。`, "它现在既能压格挡，也能在你攻击时打出爆发，但每次结算会减少层数。"],
+    fury: [`当前数值 ${stacks} 表示：物理卡牌每次造成伤害时额外 +${stacks * 3}。`, "回合末减少 1 层，战斗结束后清空。战意激荡可一次性获得 4 层杀意。", "物理流派的核心成长状态，搭配多段攻击（连环刃、破军三式）收益最高。"],
   };
 
   return {

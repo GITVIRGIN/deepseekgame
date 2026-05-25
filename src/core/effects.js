@@ -51,9 +51,38 @@ export function applyEffect(state, effect, targetUid) {
 
   const targets = resolveTargets(run, effect.target, targetUid);
 
+  if (effect.type === "leechBleed") {
+    let totalBleed = 0;
+    const names = [];
+    for (const target of targets) {
+      totalBleed += statusStacks(target, "bleed");
+      names.push(target.name);
+    }
+    const heal = Math.floor(totalBleed * (effect.value ?? 0.3));
+    if (heal > 0) {
+      const player = playerFighter(run);
+      player.hp = Math.min(player.maxHp, player.hp + heal);
+      syncPlayerFighter(run, player);
+      combatLog(state, `从 ${names.join("、")} 的流血中汲取 ${heal} 点生命。`);
+    }
+    return finishCombatIfWon(state);
+  }
+
   for (const target of targets) {
     if (effect.type === "damage") {
-      applyCardDamage(state, target, effect.value ?? 0, effect.cardCost ?? 1);
+      applyCardDamage(state, target, effect.value ?? 0, effect.cardCost ?? 1, effect.cardStyle);
+    }
+
+    if (effect.type === "execute") {
+      const threshold = effect.threshold ?? 0.25;
+      if (target.hp > 0 && target.hp <= target.maxHp * threshold) {
+        target.block = 0;
+        target.hp = 0;
+        combatLog(state, `${target.name} 血线见底——斩魂索命，直接斩杀！`);
+      } else {
+        applyCardDamage(state, target, effect.value ?? 25, effect.cardCost ?? 1, effect.cardStyle);
+        combatLog(state, `${target.name} 未入斩杀线，转为普通一击。`);
+      }
     }
 
     if (effect.type === "block") {
@@ -91,15 +120,16 @@ export function applyEffect(state, effect, targetUid) {
   return finishCombatIfWon(state);
 }
 
-export function applyCardDamage(state, target, baseDamage, cardCost = 1) {
+export function applyCardDamage(state, target, baseDamage, cardCost = 1, cardStyle = null) {
   const run = state.run;
   const combat = run?.combat;
   if (!run || !combat || target.hp <= 0) return;
 
   const spirit = statusStacks(playerFighter(run), "spirit");
   const curse = statusStacks(target, "curse");
+  const fury = cardStyle === "physical" ? statusStacks(playerFighter(run), "fury") : 0;
   const spiritBonus = Math.min(spirit, Math.max(1, cardCost) * SPIRIT_BONUS_PER_COST);
-  let damage = baseDamage + spiritBonus + curse;
+  let damage = baseDamage + spiritBonus + curse + fury * 3;
 
   if (run.relics.includes("thunderSeal") && !combat.flags.thunderSealUsed) {
     damage += 4;
@@ -185,7 +215,7 @@ export function tickDamageStatus(state, fighter, statusId) {
 export function applyCardEffects(state, cardInstance, targetUid) {
   const card = cards[cardInstance.cardId];
   for (const effect of card.effects) {
-    applyEffect(state, { ...effect, sourceUid: cardInstance.uid, cardCost: card.cost }, targetUid);
+    applyEffect(state, { ...effect, sourceUid: cardInstance.uid, cardCost: card.cost, cardStyle: card.style }, targetUid);
     if (state.phase !== "combat") {
       break;
     }

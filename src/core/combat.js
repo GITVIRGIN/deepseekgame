@@ -15,7 +15,7 @@ import {
 } from "./status.js";
 import { MAX_FLOOR, TIER_SIZE } from "./types.js";
 
-const ROUND_DECAY_STATUSES = ["curse", "spirit", "ward", "stasis"];
+const ROUND_DECAY_STATUSES = ["curse", "spirit", "ward", "stasis", "fury"];
 const ROUND_DECAY_CONSUMABLE_DEBUFFS = ["chaos"];
 
 export function startCombat(state) {
@@ -515,6 +515,7 @@ function runPowerPressure(run) {
 
 function clearEndOfCombatStatuses(run) {
   clearStatus(run, "spirit");
+  clearStatus(run, "fury");
 }
 
 function rollEnemyIntent(run, enemyId) {
