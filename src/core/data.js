@@ -35,7 +35,7 @@ export const statusInfo = {
   stun: { label: "眩晕", text: "跳过本回合所有行动，然后减少 1 层。" },
   fatigue: { label: "疲劳", text: "每额外抽牌/回收1张累加1层，回合末扣除 层数/3 生命。战斗结束后清空。" },
   imprison: { label: "禁锢", text: "敌人无法攻击或施法，只能格挡或跳过。每次触发后减少 1 层。" },
-  brittle: { label: "脆化", text: "受到的伤害×2.0。持续到战斗结束。" },
+  brittle: { label: "脆化", text: "受到的伤害×1.5。持续到战斗结束。" },
 };
 
 export const cards = {
@@ -778,11 +778,11 @@ export const cards = {
     name: "拾遗诀",
     rarity: "common",
     cost: 0,
-    text: "从弃牌堆选择 1 张牌加入手牌。",
+    text: "从弃牌堆选择 1 张非控制牌加入手牌。",
     mythTags: ["人间"],
     style: "control",
     grade: 1,
-    effects: [{ type: "recoverDiscard", value: 1 }],
+    effects: [{ type: "recoverDiscard", value: 1, excludeStyle: "control" }],
   },
   returnTalisman: {
     id: "returnTalisman",
