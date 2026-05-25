@@ -14,6 +14,19 @@ export const styleInfo = {
   guard: { label: "龟壳", text: "叠甲反震，站得住就有输出。成型概率偏低，连败后更易出现。" },
 };
 
+
+export const factionMasteryInfo = {
+  天庭: { label: "天庭", bonus: "开局获得灵气", masteryBonus: (m) => `+${m} 灵气` },
+  人间: { label: "人间", bonus: "最大生命增加", masteryBonus: (m) => `+${m*3} 生命` },
+  幽冥: { label: "幽冥", bonus: "派系卡牌伤害增加", masteryBonus: (m) => `+${m} 伤害` },
+  昆仑: { label: "昆仑", bonus: "开局额外抽牌", masteryBonus: (m) => `抽 ${m} 张` },
+  山海: { label: "山海", bonus: "格挡效果增强", masteryBonus: (m) => `+${m} 格挡` },
+  洪荒: { label: "洪荒", bonus: "神品牌费用降低", masteryBonus: (m) => `-${m} 费(最低1)` },
+  龙宫: { label: "龙宫", bonus: "开局金币增加", masteryBonus: (m) => `+${m*10} 金` },
+  妖: { label: "妖", bonus: "首击伤害增加", masteryBonus: (m) => `+${m*3} 首击` },
+};
+
+export const MAX_FACTION_MASTERY = 5;
 export const gradeInfo = {
   1: "初阶",
   2: "中阶",

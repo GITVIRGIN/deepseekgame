@@ -92,7 +92,8 @@ export function applyEffect(state, effect, targetUid) {
     }
 
     if (effect.type === "block") {
-      target.block += effect.value ?? 0;
+      const blockBonus = getFactionBlockBonus(state);
+      target.block += (effect.value ?? 0) + blockBonus;
       combatLog(state, `获得 ${effect.value} 点格挡。`);
     }
 
@@ -156,12 +157,19 @@ export function applyCardDamage(state, target, baseDamage, cardCost = 1, cardSty
   const fury = cardStyle === "physical" ? statusStacks(playerFighter(run), "fury") : 0;
   const spiritBonus = Math.min(spirit, Math.max(1, cardCost) * SPIRIT_BONUS_PER_COST);
   const brittle = statusStacks(target, "brittle") > 0 ? 1.5 : 1;
-  let damage = Math.floor((baseDamage + spiritBonus + curse + fury * 3) * brittle);
+  const factionDmg = getFactionDamageBonus(state, cardStyle);
+  let damage = Math.floor((baseDamage + spiritBonus + curse + fury * 3 + factionDmg) * brittle);
 
   if (run.relics.includes("thunderSeal") && !combat.flags.thunderSealUsed) {
     damage += 4;
     combat.flags.thunderSealUsed = true;
     combatLog(state, `${relics.thunderSeal.name} 追加 4 点雷伤。`);
+  }
+  const yaoFirst = getFactionFirstHitBonus(state);
+  if (yaoFirst > 0 && !combat.flags.yaoFirstUsed) {
+    damage += yaoFirst;
+    combat.flags.yaoFirstUsed = true;
+    combatLog(state, `妖力涌动，首击追加 ${yaoFirst} 点伤害。`);
   }
 
   damage = applyBlock(target, damage);
@@ -391,4 +399,23 @@ function finishDefeat(state, message) {
   state.message = message;
   state.meta.soul += Math.max(3, run.floor * 2);
   state.meta.lossStreak = (state.meta.lossStreak ?? 0) + 1;
+}
+
+function getFactionDamageBonus(state, cardStyle) {
+  const mastery = state.meta?.factionMastery ?? {};
+  // 幽冥: bonus for bleed/poison cards
+  if (cardStyle === "bleed" || cardStyle === "poison") {
+    return mastery["幽冥"] ?? 0;
+  }
+  return 0;
+}
+
+function getFactionBlockBonus(state) {
+  const mastery = state.meta?.factionMastery ?? {};
+  return mastery["山海"] ?? 0;
+}
+
+function getFactionFirstHitBonus(state) {
+  const mastery = state.meta?.factionMastery ?? {};
+  return (mastery["妖"] ?? 0) * 3;
 }
