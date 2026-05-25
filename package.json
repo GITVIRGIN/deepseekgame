@@ -1,0 +1,9 @@
+{
+  "name": "xuanlu",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "serve": "node scripts/serve.mjs 5173",
+    "build:release": "node scripts/build-release.mjs"
+  }
+}
