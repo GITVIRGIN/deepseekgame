@@ -4,7 +4,7 @@ import { createRunGoal, migrateRunGoal } from "./goals.js";
 import { ensureShopTiers, prepareRouteChoice } from "./nodes.js";
 import { migrateMeta } from "./progression.js";
 
-const SAVE_KEY = "xuanlu-game-state";
+const SAVE_KEY = "xuanlu-deepseek-game-state";
 
 export function loadGame() {
   try {
