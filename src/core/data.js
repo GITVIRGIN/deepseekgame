@@ -616,13 +616,13 @@ export const cards = {
     name: "困仙阵",
     rarity: "rare",
     cost: 1,
-    text: "对所有敌人施加 1 层禁锢，获得 6 点格挡。",
+    text: "对所有敌人施加 1 层禁锢，获得 10 点格挡。",
     mythTags: ["天庭"],
     style: "control",
     grade: 2,
     effects: [
       { type: "status", target: "allEnemies", status: "imprison", stacks: 1 },
-      { type: "block", target: "self", value: 6 },
+      { type: "block", target: "self", value: 10 },
     ],
   },
   heartLock: {
@@ -731,13 +731,13 @@ export const cards = {
     name: "雷击术",
     rarity: "common",
     cost: 1,
-    text: "造成 5 点伤害，施加 1 层雷印。",
+    text: "造成 3 点伤害，施加 2 层雷印（叠层快，伤害低）。",
     mythTags: ["天庭"],
     style: "spell",
     grade: 1,
     effects: [
-      { type: "damage", target: "enemy", value: 5 },
-      { type: "status", target: "enemy", status: "thunderMark", stacks: 1 },
+      { type: "damage", target: "enemy", value: 3 },
+      { type: "status", target: "enemy", status: "thunderMark", stacks: 2 },
     ],
   },
   chainLightning: {
