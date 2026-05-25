@@ -12,6 +12,7 @@ export function createInitialState() {
       soul: 0,
       totalRuns: 0,
       wins: 0,
+      lossStreak: 0,
       talents: {},
     },
     message: "山门未启。",
@@ -79,6 +80,7 @@ export function startRun(state) {
   applyMetaProgression(next.run, next.meta);
   markSpecialGoalBaseline(next.run);
   next.run.deck = startingDeck.map((cardId) => makeCard(next.run, cardId));
+  next.run.lossStreak = next.meta.lossStreak ?? 0;
   next.meta.totalRuns += 1;
   next.message = "你携一卷残箓入山。";
 

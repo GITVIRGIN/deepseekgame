@@ -15,7 +15,7 @@ import {
 } from "./status.js";
 import { MAX_FLOOR, TIER_SIZE } from "./types.js";
 
-const ROUND_DECAY_STATUSES = ["curse", "spirit", "ward", "stasis", "fury"];
+const ROUND_DECAY_STATUSES = ["curse", "spirit", "ward", "stasis", "fury", "spikes"];
 const ROUND_DECAY_CONSUMABLE_DEBUFFS = ["chaos"];
 
 export function startCombat(state) {
@@ -147,6 +147,9 @@ export function startPlayerTurn(state) {
   tickDamageStatus(state, playerAsFighter(run), "burn");
   if (state.phase !== "combat") return state;
   tickDamageStatus(state, playerAsFighter(run), "poison");
+  if (state.phase !== "combat") return state;
+
+  applySpikesReflect(state);
   if (state.phase !== "combat") return state;
 
   if (run.relics.includes("jadeRuyi")) {
@@ -516,6 +519,7 @@ function runPowerPressure(run) {
 function clearEndOfCombatStatuses(run) {
   clearStatus(run, "spirit");
   clearStatus(run, "fury");
+  clearStatus(run, "spikes");
 }
 
 function rollEnemyIntent(run, enemyId) {
@@ -536,4 +540,26 @@ function playerAsFighter(run) {
     block: run.combat?.block ?? 0,
     statuses: run.statuses,
   };
+}
+
+function applySpikesReflect(state) {
+  const run = state.run;
+  const combat = run?.combat;
+  if (!run || !combat) return;
+
+  const spikes = statusStacks(playerAsFighter(run), "spikes");
+  if (spikes <= 0) return;
+
+  const block = combat.block ?? 0;
+  const damage = Math.min(block, spikes * 2);
+  if (damage <= 0) return;
+
+  const alive = combat.enemies.filter((e) => e.hp > 0);
+  if (alive.length === 0) return;
+
+  const target = alive[Math.floor((run.seed * 92821 + combat.turn * 68917) % alive.length)];
+  const blocked = Math.min(target.block, damage);
+  target.block -= blocked;
+  target.hp = Math.max(0, target.hp - (damage - blocked));
+  combat.log.push(`荆棘反震！${target.name} 受到 ${damage - blocked} 点反射伤害（格挡${block}，荆棘${spikes}）。`);
 }

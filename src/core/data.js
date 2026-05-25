@@ -11,6 +11,7 @@ export const styleInfo = {
   bleed: { label: "流血", text: "叠流血后用攻击引爆，适合打 Boss。" },
   poison: { label: "中毒", text: "叠毒瘴拖回合，敌人自己掉血。" },
   control: { label: "控制", text: "离间敌人，让敌人互相攻击。" },
+  guard: { label: "龟壳", text: "叠甲反震，站得住就有输出。成型概率偏低，连败后更易出现。" },
 };
 
 export const gradeInfo = {
@@ -29,6 +30,7 @@ export const statusInfo = {
   stasis: { label: "凝滞", text: "流血、毒瘴、离间将要减少层数时，先消耗凝滞并保留原状态。" },
   ward: { label: "护体", text: "抵消即将受到的伤害。" },
   fury: { label: "杀意", text: "物理卡牌造成的伤害增加，每层 +3。回合末减少 1 层，战斗结束后清空。" },
+  spikes: { label: "荆棘", text: "回合结束时，根据格挡值反射伤害（最多 层数×2）。战斗结束后清空。" },
 };
 
 export const cards = {
@@ -48,6 +50,8 @@ export const cards = {
     cost: 1,
     text: "获得 6 点格挡。",
     mythTags: ["人间"],
+    style: "guard",
+    grade: 1,
     effects: [{ type: "block", target: "self", value: 6 }],
   },
   yellowCharm: {
@@ -123,6 +127,8 @@ export const cards = {
     cost: 1,
     text: "获得 10 点格挡和 2 层护体。",
     mythTags: ["龙宫"],
+    style: "guard",
+    grade: 2,
     effects: [
       { type: "block", target: "self", value: 10 },
       { type: "status", target: "self", status: "ward", stacks: 2 },
@@ -135,9 +141,69 @@ export const cards = {
     cost: 1,
     text: "获得 8 点格挡，施加 3 层诅咒。",
     mythTags: ["天庭"],
+    style: "guard",
+    grade: 2,
     effects: [
       { type: "block", target: "self", value: 8 },
       { type: "status", target: "enemy", status: "curse", stacks: 3 },
+    ],
+  },
+  thornMail: {
+    id: "thornMail",
+    name: "荆棘甲",
+    rarity: "common",
+    cost: 1,
+    text: "获得 5 点格挡和 2 层荆棘。",
+    mythTags: ["山海"],
+    style: "guard",
+    grade: 1,
+    effects: [
+      { type: "block", target: "self", value: 5 },
+      { type: "status", target: "self", status: "spikes", stacks: 2 },
+    ],
+  },
+  reflectArt: {
+    id: "reflectArt",
+    name: "反震诀",
+    rarity: "rare",
+    cost: 1,
+    text: "获得 8 点格挡和 3 层荆棘。",
+    mythTags: ["昆仑"],
+    style: "guard",
+    grade: 2,
+    effects: [
+      { type: "block", target: "self", value: 8 },
+      { type: "status", target: "self", status: "spikes", stacks: 3 },
+    ],
+  },
+  turtleCrush: {
+    id: "turtleCrush",
+    name: "龟甲镇岳",
+    rarity: "epic",
+    cost: 2,
+    text: "获得 15 点格挡和 4 层荆棘。反射当前所有格挡对敌人造成伤害。",
+    mythTags: ["山海"],
+    style: "guard",
+    grade: 3,
+    effects: [
+      { type: "block", target: "self", value: 15 },
+      { type: "status", target: "self", status: "spikes", stacks: 4 },
+      { type: "spikeBurst", target: "allEnemies", value: 1 },
+    ],
+  },
+  immovableVajra: {
+    id: "immovableVajra",
+    name: "不动明王身",
+    rarity: "legendary",
+    cost: 3,
+    text: "获得 25 点格挡和 6 层荆棘。格挡值翻倍。",
+    mythTags: ["洪荒"],
+    style: "guard",
+    grade: 3,
+    effects: [
+      { type: "block", target: "self", value: 25 },
+      { type: "status", target: "self", status: "spikes", stacks: 6 },
+      { type: "doubleBlock", target: "self", value: 1 },
     ],
   },
   underworldPen: {
