@@ -32,8 +32,12 @@ export function applyEffect(state, effect, targetUid) {
   if (!run || !combat) return state;
 
   if (effect.type === "draw") {
-    const drawn = drawCards(state, effect.value ?? 0);
+    const requested = effect.value ?? 0;
+    const crit = Math.random() < 0.1 ? 2 : 1;
+    const drawn = drawCards(state, requested * crit);
+    if (crit > 1) combatLog(state, "暴击！");
     combatLog(state, `抽 ${drawn} 张牌。`);
+    if (drawn > 0) addStatus(playerFighter(run), "fatigue", drawn);
     return finishCombatIfWon(state);
   }
 
@@ -45,7 +49,9 @@ export function applyEffect(state, effect, targetUid) {
   }
 
   if (effect.type === "recoverDiscard") {
-    startDiscardPick(state, effect.value ?? 1, effect.sourceUid);
+    const count = effect.value ?? 1;
+    startDiscardPick(state, count, effect.sourceUid);
+    addStatus(playerFighter(run), "fatigue", count);
     return finishCombatIfWon(state);
   }
 

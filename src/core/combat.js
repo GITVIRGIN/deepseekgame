@@ -149,6 +149,9 @@ export function startPlayerTurn(state) {
   tickDamageStatus(state, playerAsFighter(run), "poison");
   if (state.phase !== "combat") return state;
 
+  applyFatigueDamage(state);
+  if (state.phase !== "combat") return state;
+
   applySpikesReflect(state);
   if (state.phase !== "combat") return state;
 
@@ -566,6 +569,7 @@ function clearEndOfCombatStatuses(run) {
   clearStatus(run, "spirit");
   clearStatus(run, "fury");
   clearStatus(run, "spikes");
+  clearStatus(run, "fatigue");
 }
 
 function rollEnemyIntent(run, enemyId) {
@@ -576,6 +580,25 @@ function rollEnemyIntent(run, enemyId) {
 function nextEnemyUid(run) {
   run.nextUid += 1;
   return `enemy_${run.nextUid}`;
+}
+
+function applyFatigueDamage(state) {
+  const run = state.run;
+  if (!run?.combat) return;
+  const fatigue = statusStacks(playerAsFighter(run), "fatigue");
+  if (fatigue <= 0) return;
+  const dmg = Math.floor(fatigue / 3);
+  if (dmg <= 0) return;
+  const player = playerAsFighter(run);
+  player.hp = Math.max(0, player.hp - dmg);
+  run.hp = player.hp;
+  run.combat.log.push(`疲劳累积 ${fatigue} 层，受到 ${dmg} 点反噬伤害。`);
+  if (run.hp <= 0) {
+    run.finished = true;
+    state.phase = "gameOver";
+    state.message = "疲劳过度，行旅止步。";
+    state.meta.soul += Math.max(3, (run.floor ?? 1) * 2);
+  }
 }
 
 function playerAsFighter(run) {

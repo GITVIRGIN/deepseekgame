@@ -33,6 +33,7 @@ export const statusInfo = {
   spikes: { label: "荆棘", text: "回合结束时，根据格挡值反射伤害（最多 层数×3）。战斗结束后清空。" },
   thunderMark: { label: "雷印", text: "累积 5 层时触发天劫：造成 40 点真实伤害并眩晕一回合。" },
   stun: { label: "眩晕", text: "跳过本回合所有行动，然后减少 1 层。" },
+  fatigue: { label: "疲劳", text: "每额外抽牌/回收1张累加1层，回合末扣除 层数/3 生命。战斗结束后清空。" },
   imprison: { label: "禁锢", text: "敌人无法攻击或施法，只能格挡或跳过。每次触发后减少 1 层。" },
   brittle: { label: "脆化", text: "受到的伤害×2.0。持续到战斗结束。" },
 };
