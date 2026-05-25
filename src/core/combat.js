@@ -491,7 +491,13 @@ export function previewEnemyIntent(run, enemy) {
 }
 
 function enemyRawAttackDamage(run, enemy, intent) {
-  return (intent.value ?? 0) + enemyAttackBonus(run, enemy);
+  const raw = (intent.value ?? 0) + enemyAttackBonus(run, enemy);
+  const poison = statusStacks(enemy, "poison");
+  if (poison > 0) {
+    const reduction = Math.min(Math.floor(poison * 0.2), Math.floor(raw * 0.6));
+    return Math.max(1, raw - reduction);
+  }
+  return raw;
 }
 
 function enemyAttackBonus(run, enemy) {
