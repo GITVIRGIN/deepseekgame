@@ -355,10 +355,10 @@ function resolveEnemyIntent(state, enemy) {
 
   // 天劫：雷印≥5 → 造成30真伤 + 眩晕
   if (statusStacks(enemy, "thunderMark") >= 5) {
-    enemy.hp = Math.max(0, enemy.hp - 30);
+    enemy.hp = Math.max(0, enemy.hp - 40);
     addStatus(enemy, "stun", 1);
     clearStatus(enemy, "thunderMark");
-    combat.log.push(`${enemy.name} 天劫降临！雷印引爆造成 30 点伤害并眩晕！`);
+    combat.log.push(`${enemy.name} 天劫降临！雷印引爆造成 40 点伤害并眩晕！`);
     if (enemy.hp <= 0) return;
   }
 
@@ -597,7 +597,7 @@ function applySpikesReflect(state) {
   if (spikes <= 0) return;
 
   const block = combat.block ?? 0;
-  const damage = Math.min(block, spikes * 2);
+  const damage = Math.min(block, spikes * 3);
   if (damage <= 0) return;
 
   const alive = combat.enemies.filter((e) => e.hp > 0);
