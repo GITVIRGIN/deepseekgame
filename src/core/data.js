@@ -23,7 +23,7 @@ export const gradeInfo = {
 export const statusInfo = {
   burn: { label: "灼烧", text: "回合间受到伤害，结算后消退一半。" },
   bleed: { label: "流血", text: "回合间和受到攻击时都会额外受伤，伤害先扣格挡，然后减少 1 层。" },
-  poison: { label: "毒瘴", text: "回合间受到伤害，然后减少 1 层。" },
+  poison: { label: "毒瘴", text: "回合间受到伤害，并虚弱敌人攻击（每层 -0.2 攻击，最多减 60%）。结算后减少 1 层。" },
   curse: { label: "诅咒", text: "受到的卡牌伤害增加。" },
   spirit: { label: "灵气", text: "提高卡牌伤害，最多 12 层；低费牌只能承载部分灵气，战斗结束后清空。" },
   chaos: { label: "离间", text: "敌人行动前触发：攻击会优先打同伴，非攻击或没有同伴则空过，然后减少 1 层。" },
@@ -365,7 +365,7 @@ export const cards = {
     mythTags: ["幽冥"],
     style: "physical",
     grade: 3,
-    effects: [{ type: "execute", target: "enemy", threshold: 0.25, value: 25 }],
+    effects: [{ type: "execute", target: "enemy", threshold: 0.2, value: 25 }],
   },
   thunderCharm: {
     id: "thunderCharm",
@@ -459,7 +459,7 @@ export const cards = {
     name: "血河倒卷",
     rarity: "epic",
     cost: 2,
-    text: "失去 4 点生命。造成 12 点伤害，施加 10 层流血和 3 层诅咒，汲取其流血回复生命（×0.35）。",
+    text: "失去 4 点生命。造成 12 点伤害，施加 10 层流血和 3 层诅咒，汲取其流血回复生命（×0.2）。",
     mythTags: ["幽冥"],
     style: "bleed",
     grade: 3,
@@ -468,7 +468,7 @@ export const cards = {
       { type: "damage", target: "enemy", value: 12 },
       { type: "status", target: "enemy", status: "bleed", stacks: 10 },
       { type: "status", target: "enemy", status: "curse", stacks: 3 },
-      { type: "leechBleed", target: "enemy", value: 0.35 },
+      { type: "leechBleed", target: "enemy", value: 0.2 },
     ],
   },
   asuraBlood: {
@@ -627,7 +627,7 @@ export const cards = {
     name: "凝血成碑",
     rarity: "epic",
     cost: 2,
-    text: "失去 3 点生命。施加 3 层凝滞，流血 +8，汲取其流血回复生命（×0.25）。",
+    text: "失去 3 点生命。施加 3 层凝滞，流血 +8，汲取其流血回复生命（×0.2）。",
     mythTags: ["幽冥"],
     style: "bleed",
     grade: 3,
@@ -635,7 +635,7 @@ export const cards = {
       { type: "loseHp", target: "self", value: 3 },
       { type: "status", target: "enemy", status: "stasis", stacks: 3 },
       { type: "amplifyDebuffs", target: "enemy", statuses: ["bleed"], value: 8 },
-      { type: "leechBleed", target: "enemy", value: 0.25 },
+      { type: "leechBleed", target: "enemy", value: 0.2 },
     ],
   },
   venomIncense: {

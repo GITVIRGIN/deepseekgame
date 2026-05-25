@@ -691,7 +691,7 @@ function renderEffectBadges(definition) {
     if (effect.type === "recoverDiscard") labels.push(`回收 ${effect.value}`);
     if (effect.type === "loseHp") labels.push(`失血 ${effect.value}`);
     if (effect.type === "leechBleed") labels.push(`吸血 ${Math.round(effect.value * 100)}%流血`);
-    if (effect.type === "execute") labels.push(`斩杀 ≤${Math.round((effect.threshold ?? 0.25) * 100)}%`);
+    if (effect.type === "execute") labels.push(`斩杀 ≤${Math.round((effect.threshold ?? 0.2) * 100)}%`);
     if (effect.type === "spikeBurst") labels.push("格挡反射");
     if (effect.type === "doubleBlock") labels.push("格挡翻倍");
   }
@@ -773,7 +773,8 @@ function impactLabels(statuses, owner) {
       result.push({ status, kind: "impact-debuff", label: `回合掉血 ${status.stacks}` });
     }
     if (status.id === "poison") {
-      result.push({ status, kind: "impact-debuff", label: `回合掉血 ${status.stacks}` });
+      const atkDown = Math.floor(status.stacks * 0.2);
+      result.push({ status, kind: "impact-debuff", label: `回合掉血${status.stacks} 攻击-${atkDown}` });
     }
     if (status.id === "bleed") {
       result.push({ status, kind: "impact-debuff", label: `流血压制 ${status.stacks}` });
@@ -881,7 +882,7 @@ function detailForStatus(status) {
     stasis: [`当前数值 ${stacks} 表示：流血、毒瘴、离间将要减少层数时，先消耗凝滞。`, "它会让核心 debuff 不掉层，适合把流血、中毒、控制不断堆高。"],
     curse: [`当前数值 ${stacks} 表示：受到卡牌伤害时额外 +${stacks}。`, "如果在敌人身上，它会让敌人血条掉得更快；如果在你身上，敌人攻击会更痛。"],
     burn: [`当前数值 ${stacks} 表示：回合结算时受到 ${stacks} 点伤害。`, "造成伤害后会消退一半，至少减少 1 层，不会一直滚到无解。"],
-    poison: [`当前数值 ${stacks} 表示：回合结算时受到 ${stacks} 点伤害，然后减少 1 层。`, "它会直接压低血条，适合拖回合滚雪球。"],
+    poison: [`当前数值 ${stacks} 表示：回合结算时受到 ${stacks} 点伤害并削弱敌人攻击 ${Math.floor(stacks*0.2)} 点。`, "它会同时压低敌人血条和伤害，拖回合越久敌人越无力。", "虚弱上限为敌人攻击的 60%，不会完全归零。"],
     bleed: [`当前数值 ${stacks} 表示：回合间会先扣格挡再造成伤害；被攻击时也会额外爆开。`, "它现在既能压格挡，也能在你攻击时打出爆发，但每次结算会减少层数。"],
     fury: [`当前数值 ${stacks} 表示：物理卡牌每次造成伤害时额外 +${stacks * 3}。`, "回合末减少 1 层，战斗结束后清空。战意激荡可一次性获得 4 层杀意。", "物理流派的核心成长状态，搭配多段攻击（连环刃、破军三式）收益最高。"],
   };
