@@ -149,7 +149,8 @@ export function applyCardDamage(state, target, baseDamage, cardCost = 1, cardSty
   const curse = statusStacks(target, "curse");
   const fury = cardStyle === "physical" ? statusStacks(playerFighter(run), "fury") : 0;
   const spiritBonus = Math.min(spirit, Math.max(1, cardCost) * SPIRIT_BONUS_PER_COST);
-  let damage = baseDamage + spiritBonus + curse + fury * 3;
+  const brittle = statusStacks(target, "brittle") > 0 ? 1.5 : 1;
+  let damage = Math.floor((baseDamage + spiritBonus + curse + fury * 3) * brittle);
 
   if (run.relics.includes("thunderSeal") && !combat.flags.thunderSealUsed) {
     damage += 4;
