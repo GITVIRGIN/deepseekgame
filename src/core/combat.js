@@ -38,6 +38,7 @@ export function startCombat(state) {
   };
 
   state.phase = "combat";
+  applyFactionStartBonuses(state);
   startPlayerTurn(state);
 
   if (run.relics.includes("chaosFragment")) {
@@ -73,7 +74,7 @@ export function playCard(state, cardUid, targetUid) {
   if (!cardInstance) return state;
 
   const card = cards[cardInstance.cardId];
-  const cost = card?.cost ?? 0;
+  const cost = Math.max(1, (card?.cost ?? 0) - getFactionLegendaryDiscount(state, card));
 
   if (card?.id === "meditate" && run.energy >= run.maxEnergy) {
     combat.log.push("能量已满，调息未生效。");
@@ -89,6 +90,11 @@ export function playCard(state, cardUid, targetUid) {
   combat.hand.splice(cardIndex, 1);
   combat.discardPile.push(cardInstance);
   combat.log.push(`你打出 ${card.name}。`);
+  // 派系亲和追踪
+  for (const tag of (card.mythTags ?? [])) {
+    run.factionAffinity = run.factionAffinity ?? {};
+    run.factionAffinity[tag] = (run.factionAffinity[tag] ?? 0) + 1;
+  }
   applyCardEffects(state, cardInstance, targetUid);
 
   return state;
@@ -631,4 +637,28 @@ function applySpikesReflect(state) {
   target.block -= blocked;
   target.hp = Math.max(0, target.hp - (damage - blocked));
   combat.log.push(`荆棘反震！${target.name} 受到 ${damage - blocked} 点反射伤害（格挡${block}，荆棘${spikes}）。`);
+}
+
+
+function getFactionLegendaryDiscount(state, card) {
+  if (card?.rarity !== "legendary") return 0;
+  return state.meta?.factionMastery?.["洪荒"] ?? 0;
+}
+
+function applyFactionStartBonuses(state) {
+  const run = state.run;
+  const mastery = state.meta?.factionMastery ?? {};
+  const player = playerAsFighter(run);
+  // 天庭: start with spirit
+  const tianting = mastery["天庭"] ?? 0;
+  if (tianting > 0) {
+    addStatus(player, "spirit", tianting);
+    run.combat.log.push(`天庭庇佑，开局获得灵气 ${tianting}。`);
+  }
+  // 昆仑: extra draw
+  const kunlun = mastery["昆仑"] ?? 0;
+  if (kunlun > 0) {
+    drawCards(state, kunlun);
+    run.combat.log.push(`昆仑吐纳，额外抽 ${kunlun} 张。`);
+  }
 }

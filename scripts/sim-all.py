@@ -1,4 +1,4 @@
-import random; random.seed(42); RUNS=200
+import random; random.seed(42); RUNS=1000
 
 def fight_phys(ehp,php,mt=6):
     fury=0;e=ehp;p=php;b=0

@@ -91,6 +91,7 @@ export function completeRunVictory(state, completedBy, message) {
 
   state.meta.wins += 1;
   state.meta.lossStreak = 0;
+  recordFactionMastery(state);
   state.meta.soul += completedBy === "special" ? 22 : 30;
   return state;
 }
@@ -127,4 +128,18 @@ function specialGoalRoll(seed) {
   value = Math.imul(value, 0x846ca68b) >>> 0;
   value = (value ^ (value >>> 16)) >>> 0;
   return value % 100;
+}
+
+function recordFactionMastery(state) {
+  const run = state.run;
+  if (!run?.factionAffinity) return;
+  const mastery = state.meta.factionMastery ?? {};
+  let best = null;
+  for (const [faction, score] of Object.entries(run.factionAffinity)) {
+    if (!best || score > best.score) best = { faction, score };
+  }
+  if (best && best.score > 0) {
+    mastery[best.faction] = Math.min(5, (mastery[best.faction] ?? 0) + 1);
+  }
+  state.meta.factionMastery = mastery;
 }
