@@ -796,6 +796,12 @@ function impactLabels(statuses, owner) {
     if (status.id === "spikes") {
       result.push({ status, kind: "impact-buff", label: `荆棘反射 ${status.stacks}` });
     }
+    if (status.id === "thunderMark") {
+      result.push({ status, kind: "impact-debuff", label: `雷印 ${status.stacks}/5` });
+    }
+    if (status.id === "stun") {
+      result.push({ status, kind: "impact-debuff", label: "眩晕" });
+    }
   }
   return result;
 }
@@ -896,6 +902,8 @@ function detailForStatus(status) {
     burn: [`当前数值 ${stacks} 表示：回合结算时受到 ${stacks} 点伤害。`, "造成伤害后会消退一半，至少减少 1 层，不会一直滚到无解。"],
     poison: [`当前数值 ${stacks} 表示：回合结算时受到 ${stacks} 点伤害并削弱敌人攻击 ${Math.floor(stacks*0.2)} 点。`, "它会同时压低敌人血条和伤害，拖回合越久敌人越无力。", "虚弱上限为敌人攻击的 60%，不会完全归零。"],
     bleed: [`当前数值 ${stacks} 表示：回合间会先扣格挡再造成伤害；被攻击时也会额外爆开。`, "它现在既能压格挡，也能在你攻击时打出爆发，但每次结算会减少层数。"],
+    thunderMark: [`当前数值 ${stacks} 表示：累积到 5 层时触发天劫，造成 30 点真实伤害并眩晕敌人一回合。`, "雷符、雷击术、连环闪电、五雷正法、天雷引均可叠加雷印。"],
+    stun: [`眩晕状态：敌人跳过本回合所有行动。`, "由天劫触发，是雷法的核心控制手段。"],
     fury: [`当前数值 ${stacks} 表示：物理卡牌每次造成伤害时额外 +${stacks * 3}。`, "回合末减少 1 层，战斗结束后清空。战意激荡可一次性获得 4 层杀意。", "物理流派的核心成长状态，搭配多段攻击（连环刃、破军三式）收益最高。"],
   };
 
