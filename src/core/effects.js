@@ -50,7 +50,7 @@ export function applyEffect(state, effect, targetUid) {
 
   if (effect.type === "recoverDiscard") {
     const count = effect.value ?? 1;
-    startDiscardPick(state, count, effect.sourceUid);
+    startDiscardPick(state, count, effect.sourceUid, effect.excludeStyle);
     addStatus(playerFighter(run), "fatigue", count);
     return finishCombatIfWon(state);
   }
@@ -155,7 +155,7 @@ export function applyCardDamage(state, target, baseDamage, cardCost = 1, cardSty
   const curse = statusStacks(target, "curse");
   const fury = cardStyle === "physical" ? statusStacks(playerFighter(run), "fury") : 0;
   const spiritBonus = Math.min(spirit, Math.max(1, cardCost) * SPIRIT_BONUS_PER_COST);
-  const brittle = statusStacks(target, "brittle") > 0 ? 2.0 : 1;
+  const brittle = statusStacks(target, "brittle") > 0 ? 1.5 : 1;
   let damage = Math.floor((baseDamage + spiritBonus + curse + fury * 3) * brittle);
 
   if (run.relics.includes("thunderSeal") && !combat.flags.thunderSealUsed) {
@@ -258,6 +258,15 @@ export function pickDiscardCard(state, cardUid) {
   const index = combat.discardPile.findIndex((card) => card.uid === cardUid && card.uid !== choice.sourceUid);
   if (index < 0) return state;
 
+  // 二次校验：如果限制了流派，不允许回收该流派卡牌
+  if (choice.excludeStyle) {
+    const cardDef = cards[combat.discardPile[index].cardId];
+    if (cardDef?.style === choice.excludeStyle) {
+      combat.log.push("拾遗诀无法回收控制牌。");
+      return state;
+    }
+  }
+
   const [card] = combat.discardPile.splice(index, 1);
   combat.hand.push(card);
   combat.log.push(`从弃牌堆取回 ${cards[card.cardId].name}。`);
@@ -279,7 +288,7 @@ export function cancelDiscardPick(state) {
   return state;
 }
 
-function startDiscardPick(state, count, sourceUid) {
+function startDiscardPick(state, count, sourceUid, excludeStyle = null) {
   const run = state.run;
   const combat = run?.combat;
   if (!run || !combat) return;
@@ -288,11 +297,12 @@ function startDiscardPick(state, count, sourceUid) {
     type: "discardPick",
     count,
     sourceUid,
+    excludeStyle,
     title: `从弃牌堆选择 ${count} 张牌加入手牌`,
   };
 
   if (recoverableDiscardCards(combat, choice).length === 0) {
-    combat.log.push("弃牌堆没有可回收的牌。");
+    combat.log.push(excludeStyle ? "弃牌堆没有可回收的非控制牌。" : "弃牌堆没有可回收的牌。");
     return;
   }
 
@@ -301,7 +311,14 @@ function startDiscardPick(state, count, sourceUid) {
 }
 
 function recoverableDiscardCards(combat, choice) {
-  return combat.discardPile.filter((card) => card.uid !== choice.sourceUid);
+  let list = combat.discardPile.filter((ci) => ci.uid !== choice.sourceUid);
+  if (choice.excludeStyle) {
+    list = list.filter((ci) => {
+      const def = cards[ci.cardId];
+      return def?.style !== choice.excludeStyle;
+    });
+  }
+  return list;
 }
 
 function resolveTargets(run, targetType, targetUid) {
