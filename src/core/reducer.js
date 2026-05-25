@@ -15,8 +15,15 @@ export function reduceGame(state, action) {
   }
 
   if (action.type === "abandonRun") {
-    next.message = "你折断残箓，重新入山。";
-    return startRun(next);
+    const run = next.run;
+    if (run && !run.finished) {
+      run.finished = true;
+      next.meta.soul += Math.max(3, (run.floor ?? 1) * 2);
+      next.meta.lossStreak = (next.meta.lossStreak ?? 0) + 1;
+    }
+    next.phase = "gameOver";
+    next.message = "你折断残箓，转身下山。";
+    return next;
   }
 
   if (action.type === "playCard") {

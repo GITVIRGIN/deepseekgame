@@ -78,6 +78,10 @@ function buildNodeChoices(run) {
   if (finalFloor) {
     const finalChoices = [];
 
+    // 强制初始化终局标记
+    run.finalSideCompleted = run.finalSideCompleted ?? false;
+    run.finalShopVisited = run.finalShopVisited ?? false;
+
     if (!run.finalSideCompleted) {
       finalChoices.push({
         id: "side_final",
