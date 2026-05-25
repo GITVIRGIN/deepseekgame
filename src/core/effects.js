@@ -112,6 +112,26 @@ export function applyEffect(state, effect, targetUid) {
       }
     }
 
+    if (effect.type === "spikeBurst") {
+      const spikes = statusStacks(playerFighter(run), "spikes");
+      const block = run.combat?.block ?? 0;
+      const raw = Math.min(block, spikes * 3);
+      if (raw > 0) {
+        const blocked = Math.min(target.block, raw);
+        target.block -= blocked;
+        target.hp = Math.max(0, target.hp - (raw - blocked));
+        combatLog(state, `荆棘爆发！${target.name} 受到 ${raw - blocked} 点格挡反射伤害。`);
+      }
+    }
+
+    if (effect.type === "doubleBlock") {
+      if (run.combat) {
+        const before = run.combat.block;
+        run.combat.block *= 2;
+        combatLog(state, `格挡翻倍：${before} → ${run.combat.block}。`);
+      }
+    }
+
     if (target.uid === "player") {
       syncPlayerFighter(run, target);
     }
@@ -346,4 +366,5 @@ function finishDefeat(state, message) {
   state.phase = "gameOver";
   state.message = message;
   state.meta.soul += Math.max(3, run.floor * 2);
+  state.meta.lossStreak = (state.meta.lossStreak ?? 0) + 1;
 }

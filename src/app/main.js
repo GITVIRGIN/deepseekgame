@@ -692,6 +692,8 @@ function renderEffectBadges(definition) {
     if (effect.type === "loseHp") labels.push(`失血 ${effect.value}`);
     if (effect.type === "leechBleed") labels.push(`吸血 ${Math.round(effect.value * 100)}%流血`);
     if (effect.type === "execute") labels.push(`斩杀 ≤${Math.round((effect.threshold ?? 0.25) * 100)}%`);
+    if (effect.type === "spikeBurst") labels.push("格挡反射");
+    if (effect.type === "doubleBlock") labels.push("格挡翻倍");
   }
 
   return el("div", "effect-badges", labels.slice(0, 3).map((label) => el("span", "", label)));
@@ -778,6 +780,9 @@ function impactLabels(statuses, owner) {
     }
     if (status.id === "fury") {
       result.push({ status, kind: "impact-buff", label: `物理伤害 +${status.stacks * 3}` });
+    }
+    if (status.id === "spikes") {
+      result.push({ status, kind: "impact-buff", label: `荆棘反射 ${status.stacks}` });
     }
   }
   return result;

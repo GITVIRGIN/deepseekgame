@@ -181,7 +181,11 @@ function focusedCardsForTier(run, tier, premium, forceCurrentStyle) {
 }
 
 function rewardWeight(run, card) {
-  return rarityInfo[card.rarity].weight * archetypeRewardWeight(run, card);
+  let weight = rarityInfo[card.rarity].weight * archetypeRewardWeight(run, card);
+  if (card.style === "guard" && (run.lossStreak ?? 0) >= 3) {
+    weight *= 3;
+  }
+  return weight;
 }
 
 function rollRelicReward(run) {
