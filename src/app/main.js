@@ -800,6 +800,10 @@ function impactLabels(statuses, owner) {
     if (status.id === "stun") {
       result.push({ status, kind: "impact-debuff", label: "眩晕" });
     }
+    if (status.id === "fatigue") {
+      const dmg = Math.floor(status.stacks / 3);
+      result.push({ status, kind: "impact-debuff", label: `疲劳${status.stacks} 扣血${dmg}` });
+    }
   }
   return result;
 }
