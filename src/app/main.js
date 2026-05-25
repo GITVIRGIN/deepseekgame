@@ -708,9 +708,20 @@ function renderIntentButton(enemy) {
 
 function intentButtonText(enemy) {
   const chaos = statusValue(enemy, "chaos");
+  const imprison = statusValue(enemy, "imprison");
+
+  // 魂飞魄散提示
+  if (chaos + imprison >= 5) {
+    return "魂飞魄散";
+  }
+
   if (chaos > 0) {
     const hasAlly = state.run?.combat?.enemies.some((item) => item.uid !== enemy.uid && item.hp > 0);
     return enemy.intent.type === "attack" && hasAlly ? "离间转火" : "离间空过";
+  }
+
+  if (imprison > 0) {
+    return enemy.intent.type === "block" ? "禁锢(可格挡)" : "禁锢压制";
   }
 
   const preview = previewEnemyIntent(state.run, enemy);
@@ -765,6 +776,9 @@ function impactLabels(statuses, owner) {
     }
     if (status.id === "stasis") {
       result.push({ status, kind: "impact-debuff", label: `保留状态 ${status.stacks} 次` });
+    }
+    if (status.id === "imprison") {
+      result.push({ status, kind: "impact-debuff", label: `禁锢 ${status.stacks} 次` });
     }
     if (status.id === "curse") {
       result.push({ status, kind: "impact-debuff", label: `${owner === "enemy" ? "承伤" : "受伤"} +${status.stacks}` });
@@ -879,7 +893,8 @@ function detailForStatus(status) {
     spirit: [`当前数值 ${stacks} 表示：你用卡牌造成伤害时，会按卡牌费用获得部分伤害加成。`, "低费牌只能承载部分灵气，高费牌更容易吃满收益；战斗结束后清空。"],
     ward: [`当前数值 ${stacks} 表示：下次受到伤害前，先抵消 ${stacks} 点。`, "它会优先保护血条，作用类似一层可消耗的小格挡。"],
     chaos: [`当前数值 ${stacks} 表示：敌人接下来 ${stacks} 次行动会被离间干扰。`, "如果本次是攻击且有同伴，会转而攻击同伴；否则会直接空过，不会攻击、格挡或施加状态。"],
-    stasis: [`当前数值 ${stacks} 表示：流血、毒瘴、离间将要减少层数时，先消耗凝滞。`, "它会让核心 debuff 不掉层，适合把流血、中毒、控制不断堆高。"],
+    imprison: [`当前数值 ${stacks} 表示：敌人接下来 ${stacks} 次无法攻击或施法。`, "它比离间弱——敌人仍可格挡或跳过，但绝不会伤害你。", "离间+禁锢 ≥3 层时触发魂飞魄散，直接斩杀。"],
+    stasis: [`当前数值 ${stacks} 表示：流血、毒瘴、离间、禁锢将要减少层数时，先消耗凝滞。`, "它会让核心 debuff 不掉层，适合把流血、中毒、控制不断堆高。"],
     curse: [`当前数值 ${stacks} 表示：受到卡牌伤害时额外 +${stacks}。`, "如果在敌人身上，它会让敌人血条掉得更快；如果在你身上，敌人攻击会更痛。"],
     burn: [`当前数值 ${stacks} 表示：回合结算时受到 ${stacks} 点伤害。`, "造成伤害后会消退一半，至少减少 1 层，不会一直滚到无解。"],
     poison: [`当前数值 ${stacks} 表示：回合结算时受到 ${stacks} 点伤害并削弱敌人攻击 ${Math.floor(stacks*0.2)} 点。`, "它会同时压低敌人血条和伤害，拖回合越久敌人越无力。", "虚弱上限为敌人攻击的 60%，不会完全归零。"],

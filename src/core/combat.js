@@ -16,7 +16,7 @@ import {
 import { MAX_FLOOR, TIER_SIZE } from "./types.js";
 
 const ROUND_DECAY_STATUSES = ["curse", "spirit", "ward", "stasis", "fury", "spikes"];
-const ROUND_DECAY_CONSUMABLE_DEBUFFS = ["chaos"];
+const ROUND_DECAY_CONSUMABLE_DEBUFFS = ["chaos", "imprison"];
 
 export function startCombat(state) {
   const run = state.run;
@@ -345,7 +345,17 @@ function resolveEnemyIntent(state, enemy) {
 
   const intent = enemy.intent;
 
-  if (statusStacks(enemy, "chaos") > 0) {
+  // 魂飞魄散：离间+禁锢≥3 → 直接斩杀
+  const chaosStacks = statusStacks(enemy, "chaos");
+  const imprisonStacks = statusStacks(enemy, "imprison");
+  if (chaosStacks + imprisonStacks >= 3) {
+    enemy.hp = 0;
+    enemy.block = 0;
+    combat.log.push(`${enemy.name} 神魂俱碎——离间与禁锢摧垮了意志！`);
+    return;
+  }
+
+  if (chaosStacks > 0) {
     if (intent.type === "attack") {
       if (tryChaosAttack(state, enemy, enemyRawAttackDamage(run, enemy, intent))) {
         return;
@@ -354,6 +364,17 @@ function resolveEnemyIntent(state, enemy) {
 
     skipEnemyByChaos(combat, enemy);
     return;
+  }
+
+  // 禁锢：无法攻击或施法，但可以格挡或跳过
+  if (imprisonStacks > 0) {
+    if (intent.type === "attack" || intent.type === "status") {
+      skipEnemyByImprison(combat, enemy);
+      return;
+    }
+    // block intent: proceed normally, but still consume imprison
+    reduceConsumableDebuff(enemy, "imprison", 1);
+    combat.log.push(`${enemy.name} 被禁锢压制，但仍可格挡。`);
   }
 
   if (intent.type === "attack") {
@@ -403,6 +424,11 @@ function tryChaosAttack(state, enemy, rawDamage) {
 function skipEnemyByChaos(combat, enemy) {
   const reduced = reduceConsumableDebuff(enemy, "chaos", 1);
   combat.log.push(`${enemy.name} 受到离间影响，空过了这一回合${reduced ? "。" : "，凝滞保留了离间。"}`);
+}
+
+function skipEnemyByImprison(combat, enemy) {
+  const reduced = reduceConsumableDebuff(enemy, "imprison", 1);
+  combat.log.push(`${enemy.name} 被禁锢束缚，无法行动${reduced ? "。" : "，凝滞保留了禁锢。"}`);
 }
 
 function createEnemiesForFloor(run) {
