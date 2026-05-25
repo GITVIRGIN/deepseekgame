@@ -16,7 +16,7 @@ import {
 import { MAX_FLOOR, TIER_SIZE } from "./types.js";
 
 const ROUND_DECAY_STATUSES = ["curse", "spirit", "ward", "stasis", "fury", "spikes"];
-const ROUND_DECAY_CONSUMABLE_DEBUFFS = ["chaos", "imprison"];
+const ROUND_DECAY_CONSUMABLE_DEBUFFS = ["chaos", "imprison", "stun"];
 
 export function startCombat(state) {
   const run = state.run;
@@ -350,6 +350,22 @@ function resolveEnemyIntent(state, enemy) {
   if (chaosStacks + imprisonStacks >= 4 && statusStacks(enemy, "brittle") === 0) {
     addStatus(enemy, "brittle", 1);
     combat.log.push(`${enemy.name} 神魂动摇——离间与禁锢摧垮了防御，变得脆弱！`);
+    return;
+  }
+
+  // 天劫：雷印≥5 → 造成30真伤 + 眩晕
+  if (statusStacks(enemy, "thunderMark") >= 5) {
+    enemy.hp = Math.max(0, enemy.hp - 30);
+    addStatus(enemy, "stun", 1);
+    clearStatus(enemy, "thunderMark");
+    combat.log.push(`${enemy.name} 天劫降临！雷印引爆造成 30 点伤害并眩晕！`);
+    if (enemy.hp <= 0) return;
+  }
+
+  // 眩晕：跳过本回合
+  if (statusStacks(enemy, "stun") > 0) {
+    reduceConsumableDebuff(enemy, "stun", 1);
+    combat.log.push(`${enemy.name} 被眩晕，无法行动。`);
     return;
   }
 

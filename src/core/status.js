@@ -73,7 +73,7 @@ export function reduceNaturalConsumableDebuff(fighter, statusId, stacks = 1) {
 }
 
 export function reduceConsumableDebuff(fighter, statusId, stacks = 1) {
-  if (["bleed", "poison", "chaos", "imprison"].includes(statusId) && statusStacks(fighter, "stasis") > 0) {
+  if (["bleed", "poison", "chaos", "imprison", "stun"].includes(statusId) && statusStacks(fighter, "stasis") > 0) {
     reduceStatus(fighter, "stasis", 1);
     return false;
   }
