@@ -345,13 +345,11 @@ function resolveEnemyIntent(state, enemy) {
 
   const intent = enemy.intent;
 
-  // 魂飞魄散：离间+禁锢≥5 → 直接斩杀
   const chaosStacks = statusStacks(enemy, "chaos");
   const imprisonStacks = statusStacks(enemy, "imprison");
-  if (chaosStacks + imprisonStacks >= 5) {
-    enemy.hp = 0;
-    enemy.block = 0;
-    combat.log.push(`${enemy.name} 神魂俱碎——离间与禁锢摧垮了意志！`);
+  if (chaosStacks + imprisonStacks >= 4 && statusStacks(enemy, "brittle") === 0) {
+    addStatus(enemy, "brittle", 1);
+    combat.log.push(`${enemy.name} 神魂动摇——离间与禁锢摧垮了防御，变得脆弱！`);
     return;
   }
 

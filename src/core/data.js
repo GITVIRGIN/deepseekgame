@@ -32,6 +32,7 @@ export const statusInfo = {
   fury: { label: "杀意", text: "物理卡牌造成的伤害增加，每层 +3。回合末减少 1 层，战斗结束后清空。" },
   spikes: { label: "荆棘", text: "回合结束时，根据格挡值反射伤害（最多 层数×2）。战斗结束后清空。" },
   imprison: { label: "禁锢", text: "敌人无法攻击或施法，只能格挡或跳过。每次触发后减少 1 层。" },
+  brittle: { label: "脆化", text: "受到的伤害×1.5。持续到战斗结束。" },
 };
 
 export const cards = {
