@@ -31,6 +31,7 @@ export const statusInfo = {
   ward: { label: "护体", text: "抵消即将受到的伤害。" },
   fury: { label: "杀意", text: "物理卡牌造成的伤害增加，每层 +3。回合末减少 1 层，战斗结束后清空。" },
   spikes: { label: "荆棘", text: "回合结束时，根据格挡值反射伤害（最多 层数×2）。战斗结束后清空。" },
+  imprison: { label: "禁锢", text: "敌人无法攻击或施法，只能格挡或跳过。每次触发后减少 1 层。" },
 };
 
 export const cards = {
@@ -592,6 +593,46 @@ export const cards = {
     effects: [
       { type: "status", target: "allEnemies", status: "chaos", stacks: 2 },
       { type: "status", target: "allEnemies", status: "curse", stacks: 4 },
+    ],
+  },
+  soulBind: {
+    id: "soulBind",
+    name: "缚魂索",
+    rarity: "common",
+    cost: 1,
+    text: "施加 1 层禁锢和 4 点伤害。",
+    mythTags: ["幽冥"],
+    style: "control",
+    grade: 1,
+    effects: [{ type: "damage", target: "enemy", value: 4 }, { type: "status", target: "enemy", status: "imprison", stacks: 1 }],
+  },
+  immortalTrap: {
+    id: "immortalTrap",
+    name: "困仙阵",
+    rarity: "rare",
+    cost: 1,
+    text: "对所有敌人施加 1 层禁锢，获得 6 点格挡。",
+    mythTags: ["天庭"],
+    style: "control",
+    grade: 2,
+    effects: [
+      { type: "status", target: "allEnemies", status: "imprison", stacks: 1 },
+      { type: "block", target: "self", value: 6 },
+    ],
+  },
+  heartLock: {
+    id: "heartLock",
+    name: "锁心咒",
+    rarity: "epic",
+    cost: 2,
+    text: "施加 2 层禁锢和 2 层凝滞，造成 6 点伤害。",
+    mythTags: ["幽冥"],
+    style: "control",
+    grade: 3,
+    effects: [
+      { type: "damage", target: "enemy", value: 6 },
+      { type: "status", target: "enemy", status: "imprison", stacks: 2 },
+      { type: "status", target: "enemy", status: "stasis", stacks: 2 },
     ],
   },
   traceCutter: {
