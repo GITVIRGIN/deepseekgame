@@ -30,11 +30,11 @@ export const statusInfo = {
   stasis: { label: "凝滞", text: "流血、毒瘴、离间将要减少层数时，先消耗凝滞并保留原状态。" },
   ward: { label: "护体", text: "抵消即将受到的伤害。" },
   fury: { label: "杀意", text: "物理卡牌造成的伤害增加，每层 +3。回合末减少 1 层，战斗结束后清空。" },
-  spikes: { label: "荆棘", text: "回合结束时，根据格挡值反射伤害（最多 层数×2）。战斗结束后清空。" },
-  thunderMark: { label: "雷印", text: "累积 5 层时触发天劫：造成 30 点真实伤害并眩晕一回合。" },
+  spikes: { label: "荆棘", text: "回合结束时，根据格挡值反射伤害（最多 层数×3）。战斗结束后清空。" },
+  thunderMark: { label: "雷印", text: "累积 5 层时触发天劫：造成 40 点真实伤害并眩晕一回合。" },
   stun: { label: "眩晕", text: "跳过本回合所有行动，然后减少 1 层。" },
   imprison: { label: "禁锢", text: "敌人无法攻击或施法，只能格挡或跳过。每次触发后减少 1 层。" },
-  brittle: { label: "脆化", text: "受到的伤害×1.5。持续到战斗结束。" },
+  brittle: { label: "脆化", text: "受到的伤害×2.0。持续到战斗结束。" },
 };
 
 export const cards = {
@@ -551,12 +551,12 @@ export const cards = {
     name: "离间符",
     rarity: "common",
     cost: 1,
-    text: "造成 3 点伤害，施加 1 层离间。",
+    text: "造成 5 点伤害，施加 1 层离间。",
     mythTags: ["人间"],
     style: "control",
     grade: 1,
     effects: [
-      { type: "damage", target: "enemy", value: 3 },
+      { type: "damage", target: "enemy", value: 5 },
       { type: "status", target: "enemy", status: "chaos", stacks: 1 },
     ],
   },
@@ -608,7 +608,7 @@ export const cards = {
     name: "缚魂索",
     rarity: "common",
     cost: 1,
-    text: "施加 1 层禁锢和 4 点伤害。",
+    text: "造成 6 点伤害，施加 1 层禁锢。",
     mythTags: ["幽冥"],
     style: "control",
     grade: 1,
