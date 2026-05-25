@@ -710,8 +710,6 @@ function intentButtonText(enemy) {
   const chaos = statusValue(enemy, "chaos");
   const imprison = statusValue(enemy, "imprison");
 
-  }
-
   if (chaos > 0) {
     const hasAlly = state.run?.combat?.enemies.some((item) => item.uid !== enemy.uid && item.hp > 0);
     return enemy.intent.type === "attack" && hasAlly ? "离间转火" : "离间空过";
