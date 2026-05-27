@@ -18,7 +18,7 @@ import {
 import { MAX_FLOOR, TIER_SIZE } from "./types.js";
 import { isBossFloor } from "./nodes.js";
 
-const ROUND_DECAY_STATUSES = ["curse", "spirit", "battleIntent", "ward", "stasis", "brittle"];
+const ROUND_DECAY_STATUSES = ["curse", "spirit", "battleIntent", "ward", "stasis", "brittle", "spikes", "blockShield"];
 const ROUND_DECAY_CONSUMABLE_DEBUFFS = ["chaos"];
 
 export function startCombat(state) {

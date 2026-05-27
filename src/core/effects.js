@@ -212,7 +212,8 @@ export function applyIncomingDamage(state, rawDamage) {
     combatLog(state, `护体抵消 ${blockedByWard} 点伤害。`);
   }
 
-  damage = applyBlock(player, damage);
+  const hasBlockShield = player.statuses?.some(s => s.id === "blockShield" && s.stacks > 0);
+  damage = hasBlockShield ? damage : applyBlock(player, damage);
   player.hp = Math.max(0, player.hp - damage);
   syncPlayerFighter(run, player);
   combatLog(state, `你受到 ${damage} 点伤害。`);
@@ -455,7 +456,14 @@ function applyShellReflect(state, targets, effect) {
   }
 
   const ratio = Math.max(0, effect.ratio ?? 0.5);
-  const rawDamage = Math.floor(block * ratio) + (effect.value ?? 0) + (effect.cardMythBonus ?? 0);
+  const rawDamage = Math.max(1, Math.floor(block * ratio) + (effect.value ?? 0) + (effect.cardMythBonus ?? 0));
+  // Always apply block shield when consumeRatio is 0
+  if (effect.consumeRatio === 0 && block > 0) {
+    const pf = playerFighter(run);
+    addStatus(pf, "blockShield", 2);
+    syncPlayerFighter(run, pf);
+    combatLog(state, "格挡锁定，本回合不消耗。");
+  }
   if (rawDamage <= 0) {
     combatLog(state, "反震力道不足。");
     return;
@@ -478,10 +486,7 @@ function applyShellReflect(state, targets, effect) {
     combat.block -= consumed;
     combatLog(state, `反震消耗 ${consumed} 点格挡。`);
   }
-  if (consumeRatio === 0 && block > 0) {
-    addStatus(playerFighter(run), "blockShield", 1);
-    combatLog(state, "格挡锁定，本回合不消耗。");
-  }
+  
 }
 
 function applyBlock(fighter, rawDamage) {
