@@ -71,6 +71,7 @@ export function generateRewards(state) {
         : index === 0 && tier >= 2
           ? rollProgressCardReward(run, false)
           : rollCardReward(run);
+    console.log("[REWARD CARD]", "slot:", index, "card:", card.name, card.id, "seed:", run.seed);
     rewards.push({
       id: `reward_card_${index}_${card.id}`,
       type: "card",
