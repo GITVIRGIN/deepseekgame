@@ -7,6 +7,7 @@ import { cancelDiscardPick, pickDiscardCard } from "./effects.js";
 import { awardMythMasteryForRunEnd, mythAwardText } from "./myth.js";
 import { purchaseTalent } from "./progression.js";
 import { cloneState, createInitialState, startRun } from "./state.js";
+import { relics } from "./data.js";
 
 export function reduceGame(state, action) {
   const next = cloneState(state);
@@ -17,6 +18,7 @@ export function reduceGame(state, action) {
 
   if (action.type === "martialSelect") {
     next.phase = "martialSelect";
+    grantFirstTimeMartialRelic(next);
     return next;
   }
 
