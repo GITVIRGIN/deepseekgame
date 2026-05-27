@@ -193,6 +193,8 @@ function cardsForTier(tier, premium) {
     if (premium && grade < minGrade) return false;
     return true;
   });
+  // Never return TM cards in regular mode (they filter via rewardWeight=0 but this is safer)
+  return list.filter(card => !card.trueMartial);
 
   return list.length > 0 ? list : Object.values(cards);
 }
