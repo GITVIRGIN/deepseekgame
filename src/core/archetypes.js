@@ -47,7 +47,7 @@ export function archetypeRanking(run) {
 }
 
 export function archetypeRewardWeight(run, card) {
-  if (!card?.style) return 1;
+  if (!card?.style) return 0.45;
 
   migrateArchetypes(run);
   const score = run.archetypeAffinity[card.style] ?? 0;
