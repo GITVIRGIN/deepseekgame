@@ -213,8 +213,13 @@ export function applyIncomingDamage(state, rawDamage) {
   }
 
   const hasBlockShield = player.statuses?.some(s => s.id === "blockShield" && s.stacks > 0);
-  if (hasBlockShield) console.log("[格挡锁定] 生效，格挡", player.block, "免疫伤害", damage);
-  damage = hasBlockShield ? damage : applyBlock(player, damage);
+  if (hasBlockShield) {
+    const absorbed = Math.min(player.block, damage);
+    damage -= absorbed;
+    console.log("[格挡锁定]", "格挡", player.block, "吸收", absorbed, "伤害", damage, "→ HP扣", damage);
+  } else {
+    damage = applyBlock(player, damage);
+  }
   player.hp = Math.max(0, player.hp - damage);
   syncPlayerFighter(run, player);
   combatLog(state, `你受到 ${damage} 点伤害。`);
@@ -462,7 +467,7 @@ function applyShellReflect(state, targets, effect) {
   // Always apply block shield when consumeRatio is 0
   if (effect.consumeRatio === 0 && block > 0) {
     const pf = playerFighter(run);
-    addStatus(pf, "blockShield", 2);
+    addStatus(pf, "blockShield", 1);
     syncPlayerFighter(run, pf);
     combatLog(state, "格挡锁定，本回合不消耗。");
   }
