@@ -145,7 +145,7 @@ function grantShopCard(run, notes) {
     return;
   }
 
-  const pool = Object.values(cards).filter((card) => card.rarity !== "common");
+  const pool = Object.values(cards).filter((card) => card.rarity !== "common" && !card.trueMartial);
   const card = weightedChoice(run, pool, (itemCard) => rarityInfo[itemCard.rarity].weight * archetypeRewardWeight(run, itemCard));
   const cardInstance = {
     uid: `card_shop_${run.nextUid + 1}`,

@@ -179,7 +179,7 @@ function rollPremiumCardReward(run, forceCurrentStyle = false) {
 function rollProgressCardReward(run, preferCurrentStyle = false) {
   const tier = Math.min(3, run.currentNode?.tier ?? tierForFloor(run.floor));
   const focused = focusedCardsForTier(run, tier, false, preferCurrentStyle).filter((card) => card.style && (card.grade ?? 1) === tier);
-  const fallback = Object.values(cards).filter((card) => card.style && (card.grade ?? 1) === tier);
+  const fallback = Object.values(cards).filter((card) => card.style && (card.grade ?? 1) === tier && !card.trueMartial);
   const list = focused.length ? focused : fallback.length ? fallback : cardsForTier(tier, false);
   return weightedChoice(run, list, (card) => rewardWeight(run, card));
 }
@@ -193,10 +193,7 @@ function cardsForTier(tier, premium) {
     if (premium && grade < minGrade) return false;
     return true;
   });
-  // Never return TM cards in regular mode (they filter via rewardWeight=0 but this is safer)
-  return list.filter(card => !card.trueMartial);
-
-  return list.length > 0 ? list : Object.values(cards);
+  return list.length > 0 ? list.filter(card => !card.trueMartial) : Object.values(cards).filter(card => !card.trueMartial);
 }
 
 function focusedCardsForTier(run, tier, premium, forceCurrentStyle) {
