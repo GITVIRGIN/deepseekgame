@@ -1,8 +1,8 @@
 import { gameVersion } from "./version.js";
 
-const CLOUD_CONFIG_KEY = "xuanlu-cloud-config";
-const GIST_DESCRIPTION = "xuanlu-cloud-save";
-const SAVE_FILE = "xuanlu-cloud-save.json";
+const CLOUD_CONFIG_KEY = "xuanlu-ds-cloud-config";
+const GIST_DESCRIPTION = "xuanlu-ds-cloud-save";
+const SAVE_FILE = "xuanlu-ds-cloud-save.json";
 
 export function loadCloudConfig() {
   try {

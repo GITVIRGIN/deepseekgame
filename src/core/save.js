@@ -5,7 +5,7 @@ import { ensureShopTiers, prepareRouteChoice } from "./nodes.js";
 import { migrateMeta } from "./progression.js";
 import { ensureMythStats, snapshotMythMastery } from "./myth.js";
 
-const SAVE_KEY = "xuanlu-game-state";
+const SAVE_KEY = "xuanlu-ds-game-state";
 
 export function loadGame() {
   try {
