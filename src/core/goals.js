@@ -1,4 +1,5 @@
 import { MAX_FLOOR, TARGET_MINUTES } from "./types.js";
+import { relics } from "./data.js";
 import { awardMythMasteryForRunEnd, mythAwardText } from "./myth.js";
 
 const SPECIAL_GOAL_CHANCE = 10;
@@ -110,6 +111,7 @@ export function completeRunVictory(state, completedBy, message) {
   state.meta.soul += completedBy === "special" ? 22 : 30;
   state.meta.lossStreak = 0;
   state.meta.collectedRelics = [...new Set([...(state.meta.collectedRelics ?? []), ...(run.relics ?? [])])];
+  grantTrueMartialRelic(state);
   return state;
 }
 
