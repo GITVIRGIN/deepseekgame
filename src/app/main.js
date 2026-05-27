@@ -65,6 +65,10 @@ function renderShell() {
     shell.append(renderShop());
   }
 
+  if (state.phase === "martialSelect") {
+    shell.append(renderMartialSelect());
+  }
+
   if (state.phase === "gameOver") {
     shell.append(renderGameOver());
   }
@@ -122,11 +126,46 @@ function renderHome() {
         el("h2", "", "携残箓入山"),
         el("p", "", "先做能爽起来的第一版：抽牌、叠状态、拿遗物、一路打到黑山。"),
         button("开始一局", "primary", () => dispatch({ type: "startRun" })),
+        isTrueMartialUnlocked(state.meta) ? button("真武模式", "danger", () => dispatch({ type: "martialSelect" })) : "",
       ]),
       renderCloudPanel(),
       renderProgression(),
     ]),
     renderCodex(),
+  );
+  return view;
+}
+
+
+function isTrueMartialUnlocked(meta) {
+  const mastery = meta.factionMastery || {};
+  const threeAtThree = Object.values(mastery).filter(v => v >= 3).length >= 3;
+  return threeAtThree;
+}
+
+function renderMartialSelect() {
+  const styles = [
+    { id: "physical", name: "物理", desc: "杀意叠伤·斩杀", relic: "破军令" },
+    { id: "spell", name: "法术", desc: "雷印天劫·眩晕", relic: "九天雷劫" },
+    { id: "bleed", name: "流血", desc: "血魔自残·吸血", relic: "修罗心" },
+    { id: "poison", name: "中毒", desc: "毒瘴虚弱·消耗", relic: "万毒真经" },
+    { id: "control", name: "控制", desc: "离间禁锢·脆化", relic: "混沌灵宝" },
+    { id: "guard", name: "龟壳", desc: "叠甲反震·铁壁", relic: "玄龟甲" },
+  ];
+  const view = el("section", "martial-select");
+  view.append(
+    el("h2", "", "真武模式 — 选择流派"),
+    el("p", "muted", "敌人大幅强化，开局获全套卡牌+专属遗物"),
+    el("div", "martial-grid", styles.map(s => {
+      const btn = el("button", "martial-card", [
+        el("strong", "", s.name),
+        el("span", "", s.desc),
+        el("em", "", s.relic),
+      ]);
+      btn.addEventListener("click", () => dispatch({ type: "startTrueMartial", style: s.id }));
+      return btn;
+    })),
+    button("返回", "ghost", () => dispatch({ type: "cancelMartial" })),
   );
   return view;
 }

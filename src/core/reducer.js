@@ -15,6 +15,20 @@ export function reduceGame(state, action) {
     return startRun(next);
   }
 
+  if (action.type === "martialSelect") {
+    next.phase = "martialSelect";
+    return next;
+  }
+
+  if (action.type === "cancelMartial") {
+    next.phase = "home";
+    return next;
+  }
+
+  if (action.type === "startTrueMartial") {
+    return startRun(next, action.style);
+  }
+
   if (action.type === "abandonRun") {
     if (!next.run || next.run.finished) return next;
 

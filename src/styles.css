@@ -1630,3 +1630,13 @@ p {
     width: calc(100vw - 24px);
   }
 }
+
+/* 真武模式选择 */
+.martial-select { padding: 12px; text-align: center; }
+.martial-select h2 { font-size: 1.2em; margin-bottom: 4px; }
+.martial-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 10px 0; }
+.martial-card { padding: 10px 6px; border: 2px solid #444; border-radius: 8px; background: #1a1a2e; color: #ccc; cursor: pointer; text-align: center; font-size: 0.9em; }
+.martial-card strong { display: block; font-size: 1.1em; color: #e8c97a; }
+.martial-card span { display: block; font-size: 0.8em; margin: 2px 0; }
+.martial-card em { display: block; font-size: 0.75em; color: #f0a0a0; }
+.martial-card:hover, .martial-card:active { border-color: #e8c97a; background: #2a2a4e; }
