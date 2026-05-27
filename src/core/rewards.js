@@ -62,6 +62,7 @@ export function generateRewards(state) {
     return rewards;
   }
 
+  console.log("[REWARD DEBUG]", "floor:", run.floor, "tier:", node?.tier ?? tierForFloor(run.floor), "affinity:", JSON.stringify(run.archetypeAffinity), "seed:", run.seed);
   const tier = node?.tier ?? tierForFloor(run.floor);
   for (let index = 0; index < 3; index += 1) {
     const card =
