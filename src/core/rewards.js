@@ -209,7 +209,7 @@ function focusedCardsForTier(run, tier, premium, forceCurrentStyle) {
 }
 
 function rewardWeight(run, card) {
-  if (card.trueMartial && !run.trueMartial) return -999;
+  if (card.trueMartial && !run.trueMartial) return 0;
   if (!card.trueMartial && run.trueMartial) return 0.6;
   if (run.trueMartial && card.style === run.trueMartialStyle && card.cost >= 2) {
     return rarityInfo[card.rarity].weight * 12;
