@@ -41,6 +41,7 @@ export function reduceGame(state, action) {
     next.phase = "gameOver";
     next.meta.soul += soulGain;
     next.meta.lossStreak = (next.meta.lossStreak ?? 0) + 1;
+    next.meta.collectedRelics = [...new Set([...(next.meta.collectedRelics ?? []), ...(next.run.relics ?? [])])];
     next.message = `你主动放弃本局，收拢残魂 +${soulGain}。${mythAward ? ` ${mythAwardText(mythAward)}` : ""}`;
     return next;
   }

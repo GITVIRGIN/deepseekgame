@@ -140,7 +140,10 @@ function renderHome() {
 
 function isTrueMartialUnlocked(meta) {
   const mastery = meta.factionMastery || {};
-  return Object.values(mastery).some(v => v >= 5);
+  const normalRelicIds = Object.values(relics).filter(r => !r.text?.includes("真武专属")).map(r => r.id);
+  const allNormalRelics = normalRelicIds.every(id => (meta.collectedRelics || []).includes(id));
+  const threeAtThree = Object.values(mastery).filter(v => v >= 3).length >= 3;
+  return allNormalRelics && threeAtThree;
 }
 
 function renderMartialSelect() {
