@@ -1321,11 +1321,11 @@ p {
 
   /* 敌人卡片 */
   .combat-layout .enemy-row { grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); gap: 3px; }
-  .combat-layout .enemy { min-height: 54px; gap: 1px; padding: 3px; }
-  .combat-layout .enemy h3 { font-size: 10px; }
-  .combat-layout .enemy .meter { height: 6px; }
-  .combat-layout .enemy .meter em { font-size: 7px; }
-  .combat-layout .enemy button { font-size: 11px; padding: 3px 6px; }
+  .combat-layout .enemy { min-height: 64px; gap: 2px; padding: 4px; }
+  .combat-layout .enemy h3 { font-size: 12px; }
+  .combat-layout .enemy .meter { height: 14px; }
+  .combat-layout .enemy .meter em { font-size: 10px; }
+  .combat-layout .enemy button { font-size: 8px; padding: 1px 3px; }
 
   /* 手牌 3列 */
   .combat-layout .hand { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 3px; }
