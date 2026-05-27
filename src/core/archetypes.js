@@ -85,11 +85,10 @@ export function styleLabel(styleId) {
 function styleBaseRewardWeight(run, styleId, dominant, score, floor) {
   if (styleId === "physical") {
     if (dominant?.style === "physical" && score >= 9) {
-      return floor >= 13 ? 1.22 : floor >= 7 ? 1.16 : 1.08;
+      return floor >= 13 ? 1.1 : floor >= 7 ? 0.9 : 0.6;
     }
-
-    if (score >= 5) return 1.08;
-    return 1;
+    if (score >= 5) return 0.5;
+    return 0.35;
   }
 
   if (styleId === "shell") {
