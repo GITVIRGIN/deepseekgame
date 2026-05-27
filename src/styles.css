@@ -1248,395 +1248,100 @@ p {
 }
 
 @media (max-width: 720px) {
-  .shell {
-    padding: 8px;
-  }
+  /* 全局紧缩 */
+  .shell { padding: 4px; font-size: 13px; }
+  body { font-size: 13px; }
 
-  .topbar,
-  .home {
-    grid-template-columns: 1fr;
-    display: grid;
-  }
+  /* 顶栏 */
+  .topbar { gap: 4px; margin-bottom: 4px; }
+  .brand { gap: 4px; }
+  .brand img { width: 28px; height: 28px; }
+  .brand h1 { font-size: 18px; }
+  .brand p { font-size: 10px; }
+  .topbar-actions { gap: 3px; }
+  .topbar-actions .stat { min-width: 40px; padding: 3px 4px; }
+  .topbar-actions .stat span { font-size: 9px; }
+  .topbar-actions .stat strong { font-size: 12px; }
+  .cloud-shortcut { min-height: 30px; min-width: 60px; font-size: 11px; }
 
-  .topbar {
-    gap: 8px;
-    align-items: start;
-    margin-bottom: 8px;
-  }
+  /* 首页 */
+  .home { gap: 6px; }
+  .intro h2 { font-size: 20px; margin-bottom: 2px; }
+  .intro p { font-size: 12px; margin-bottom: 4px; }
+  .intro button { padding: 8px 16px; font-size: 14px; }
 
-  .brand {
-    gap: 8px;
-  }
-
-  .brand img {
-    width: 40px;
-    height: 40px;
-  }
-
-  .topbar-actions {
-    width: 100%;
-    justify-content: space-between;
-    gap: 6px;
-  }
-
-  .topbar-actions .meta {
-    flex: 1;
-    gap: 5px;
-  }
-
-  .topbar-actions .stat {
-    min-width: 52px;
-    padding: 5px 6px;
-  }
-
-  .topbar-actions .stat span {
-    font-size: 10px;
-  }
-
-  .topbar-actions .stat strong {
-    font-size: 14px;
-  }
-
-  .cloud-shortcut {
-    min-height: 40px;
-    min-width: 92px;
-  }
-
-  .cloud-fields {
-    grid-template-columns: 1fr;
-  }
-
-  .cloud-actions button {
-    flex: 1 1 calc(50% - 6px);
-  }
-
-  .brand h1 {
-    font-size: 24px;
-  }
-
-  .intro h2,
-  .reward-view h2,
-  .game-over h2 {
-    font-size: 26px;
-  }
-
-  .enemy-row,
-  .hand,
-  .reward-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .combat-layout {
-    gap: 8px;
-  }
-
-  .combat-layout .run-panel {
-    gap: 7px;
-    padding: 10px;
-  }
-
-  .combat-layout .run-panel > h2 {
-    font-size: 18px;
-  }
-
+  /* 战斗布局 */
+  .combat-layout { gap: 4px; grid-template-columns: 1fr; }
+  .combat-layout .run-panel { gap: 3px; padding: 6px; }
+  .combat-layout .run-panel > h2 { font-size: 14px; }
   .combat-layout .goal-panel,
   .combat-layout .archetype-panel,
   .combat-layout .vitals,
   .combat-layout .run-panel > h3,
   .combat-layout .run-panel > .muted,
-  .combat-layout .relic-list {
-    display: none;
-  }
-
+  .combat-layout .relic-list,
+  .combat-layout .status-line { display: none; }
   .combat-layout .stat-grid {
-    display: grid;
-    grid-auto-columns: minmax(58px, 1fr);
+    grid-auto-columns: minmax(44px, 1fr);
     grid-auto-flow: column;
-    grid-template-columns: none;
-    gap: 5px;
-    overflow-x: auto;
-    padding-bottom: 2px;
-  }
-
-  .combat-layout .stat {
-    min-width: 58px;
-    padding: 5px 6px;
-  }
-
-  .combat-layout .stat span {
-    font-size: 10px;
-  }
-
-  .combat-layout .stat strong {
-    font-size: 13px;
-  }
-
-  .combat-layout .status-line {
-    min-height: 0;
-    gap: 4px;
-  }
-
-  .combat-layout .status-line > .muted {
-    color: var(--muted);
-    font-size: 11px;
-    font-weight: 800;
-  }
-
-  .combat-layout .run-actions {
-    gap: 6px;
-    padding-top: 0;
-    border-top: 0;
-  }
-
-  .combat-layout .run-actions button {
-    flex: 1;
-    min-height: 28px;
-    font-size: 12px;
-  }
-
-  .combat-layout .battlefield {
-    gap: 8px;
-  }
-
-  .combat-layout .action-banner {
-    gap: 2px;
-    padding: 8px 10px;
-    border-left-width: 4px;
-  }
-
-  .combat-layout .action-banner .muted,
-  .combat-layout .action-banner strong:not(.latest-action) {
-    display: none;
-  }
-
-  .combat-layout .action-banner .latest-action {
-    font-size: 15px;
-    line-height: 1.35;
-  }
-
-  .combat-layout .enemy-row {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(112px, 1fr));
-    gap: 6px;
-  }
-
-  .combat-layout .hand {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 6px;
-    overflow: visible;
-    padding-bottom: 3px;
-  }
-
-  .combat-layout .enemy {
-    min-height: 104px;
-    gap: 4px;
-    padding: 7px;
-  }
-
-  .combat-layout .enemy h3 {
-    font-size: 15px;
-    line-height: 1.1;
-  }
-
-  .combat-layout .enemy-title {
-    gap: 6px;
-  }
-
-  .combat-layout .enemy .intent {
-    min-height: 24px;
-    padding: 2px 6px;
-    font-size: 11px;
-  }
-
-  .combat-layout .meter {
-    height: 16px;
-  }
-
-  .combat-layout .block-meter {
-    height: 11px;
-  }
-
-  .combat-layout .bar-impacts {
-    min-height: 0;
-  }
-
-  .combat-layout .empty-impact {
-    display: none;
-  }
-
-  .combat-layout .enemy > .primary,
-  .combat-layout .enemy > .ghost {
-    min-height: 26px;
-    padding: 3px 6px;
-    font-size: 12px;
-  }
-
-  .combat-layout .status-chip,
-  .combat-layout .empty-status,
-  .combat-layout .impact-chip,
-  .combat-layout .pile-strip span,
-  .combat-layout .pile-button,
-  .combat-layout .style-badges span,
-  .combat-layout .effect-badges span {
-    min-height: 20px;
-    padding: 2px 6px;
-    font-size: 11px;
-  }
-
-  .combat-layout .hand-area {
-    gap: 6px;
-  }
-
-  .combat-layout .hand-head {
-    position: sticky;
-    top: 0;
-    z-index: 4;
-    padding: 6px;
-    border: 1px solid var(--line);
-    border-radius: 8px;
-    background: rgba(255, 250, 240, 0.96);
-    box-shadow: 0 8px 18px rgba(55, 41, 24, 0.12);
-  }
-
-  .combat-layout .hand-head h2 {
-    font-size: 18px;
-  }
-
-  .combat-layout .mobile-player-strip,
-  .discard-pick-panel .mobile-player-strip {
-    display: grid;
-    gap: 4px;
-  }
-
-  .combat-layout .mobile-vitals,
-  .discard-pick-panel .mobile-vitals {
-    flex-wrap: wrap;
-  }
-
-  .combat-layout .mobile-status-line,
-  .discard-pick-panel .mobile-status-line {
-    min-width: 0;
-  }
-
-  .combat-layout .mobile-status-line .status-chips,
-  .discard-pick-panel .mobile-status-line .status-chips {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-  }
-
-  .combat-layout .hand-card-slot {
-    min-width: 0;
-    gap: 2px;
-  }
-
-  .combat-layout .game-card {
-    min-height: 54px;
-    gap: 3px;
-    padding: 6px 7px;
-    grid-template-rows: 1fr auto;
-  }
-
-  .combat-layout .game-card strong {
-    padding-right: 22px;
-    font-size: 17px;
-    line-height: 1.05;
-  }
-
-  .combat-layout .game-card p {
-    display: none;
-  }
-
-  .combat-layout .card-rarity {
-    display: none;
-  }
-
-  .combat-layout .myth-tags {
-    display: none;
-  }
-
-  .combat-layout .style-badges {
-    display: none;
-  }
-
-  .combat-layout .effect-badges {
     gap: 3px;
   }
+  .combat-layout .stat { min-width: 44px; padding: 3px 4px; }
+  .combat-layout .stat span { font-size: 9px; }
+  .combat-layout .stat strong { font-size: 11px; }
+  .combat-layout .run-actions { gap: 3px; padding-top: 0; border: 0; }
+  .combat-layout .run-actions button { flex: 1; min-height: 24px; font-size: 10px; }
 
-  .combat-layout .effect-badges span:nth-child(n+3) {
-    display: none;
-  }
+  /* 敌人卡片 */
+  .combat-layout .enemy-row { grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); gap: 3px; }
+  .combat-layout .enemy { min-height: 70px; gap: 2px; padding: 4px; }
+  .combat-layout .enemy h3 { font-size: 12px; }
+  .combat-layout .enemy .meter { height: 10px; }
+  .combat-layout .enemy .meter em { font-size: 8px; }
+  .combat-layout .enemy button { font-size: 9px; padding: 2px 4px; }
 
-  .combat-layout .card-cost {
-    top: 6px;
-    right: 6px;
-    width: 21px;
-    height: 21px;
-    font-size: 12px;
-  }
+  /* 手牌 3列 */
+  .combat-layout .hand { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 3px; }
+  .combat-layout .hand .game-card { padding: 4px; font-size: 10px; min-height: 60px; }
+  .combat-layout .hand .game-card strong { font-size: 11px; }
 
-  .combat-layout .discard-action {
-    min-height: 24px;
-    padding: 2px 5px;
-    font-size: 12px;
-  }
+  /* 战斗横幅 */
+  .combat-layout .action-banner { padding: 4px 6px; border-left-width: 3px; }
+  .combat-layout .action-banner .latest-action { font-size: 12px; }
 
-  .combat-layout .card-actions {
-    display: block;
-  }
+  /* 隐藏战斗日志 */
+  .combat-layout .log { display: none; }
 
-  .combat-layout .discard-action {
-    min-height: 21px;
-    padding: 1px 4px;
-    font-size: 11px;
-  }
+  /* 路线 */
+  .route-layout { gap: 4px; }
+  .route-grid { gap: 4px; }
+  .route-grid .route-node { padding: 8px; }
+  .route-grid .route-node h3 { font-size: 14px; }
+  .route-grid .route-node p { font-size: 11px; }
 
-  .combat-layout .log {
-    display: none;
-  }
+  /* 奖励 */
+  .reward-view { gap: 6px; padding: 6px; }
+  .reward-grid { gap: 4px; }
+  .reward-grid .game-card { padding: 5px; font-size: 10px; }
 
-  .detail-panel {
-    right: 12px;
-    bottom: 12px;
-    width: calc(100vw - 24px);
-  }
+  /* 商店 */
+  .shop-view { gap: 4px; }
+  .shop-grid { gap: 4px; }
+  .shop-item { padding: 6px; }
 
-  .discard-pick-panel {
-    inset: 12px;
-    max-height: calc(100vh - 24px);
-  }
+  /* 结算 */
+  .game-over { gap: 6px; padding: 8px; }
+  .game-over h2 { font-size: 20px; }
 
-  .discard-pick-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 6px;
-  }
+  /* 云存档/修行 紧凑 */
+  .cloud-panel { gap: 4px; padding: 6px; }
+  .progression-panel { gap: 4px; padding: 6px; }
+  .talent-grid { gap: 4px; }
+  .talent { padding: 5px; }
+  .talent strong { font-size: 12px; }
 
-  .discard-pick-grid .game-card {
-    min-height: 78px;
-    padding: 7px;
-  }
-
-  .discard-pick-grid .game-card p,
-  .discard-pick-grid .style-badges,
-  .discard-pick-grid .myth-tags {
-    display: none;
-  }
-
-  .progression-overlay,
-  .pile-panel,
-  .cloud-overlay {
-    right: 12px;
-    bottom: 12px;
-    width: calc(100vw - 24px);
-  }
+  /* 真武选择 */
+  .martial-grid { gap: 4px; }
+  .martial-card { padding: 6px 4px; }
+  .martial-card strong { font-size: 13px; }
 }
-
-/* 真武模式选择 */
-.martial-select { padding: 12px; text-align: center; }
-.martial-select h2 { font-size: 1.2em; margin-bottom: 4px; }
-.martial-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 10px 0; }
-.martial-card { padding: 10px 6px; border: 2px solid #444; border-radius: 8px; background: #1a1a2e; color: #ccc; cursor: pointer; text-align: center; font-size: 0.9em; }
-.martial-card strong { display: block; font-size: 1.1em; color: #e8c97a; }
-.martial-card span { display: block; font-size: 0.8em; margin: 2px 0; }
-.martial-card em { display: block; font-size: 0.75em; color: #f0a0a0; }
-.martial-card:hover, .martial-card:active { border-color: #e8c97a; background: #2a2a4e; }
