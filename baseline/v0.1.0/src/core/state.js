@@ -3,7 +3,6 @@ import { createArchetypeAffinity } from "./archetypes.js";
 import { createRunGoal, markSpecialGoalBaseline } from "./goals.js";
 import { prepareRouteChoice } from "./nodes.js";
 import { applyMetaProgression, migrateMeta } from "./progression.js";
-import { snapshotMythMastery } from "./myth.js";
 
 export function createInitialState() {
   return {
@@ -13,9 +12,7 @@ export function createInitialState() {
       soul: 0,
       totalRuns: 0,
       wins: 0,
-      lossStreak: 0,
       talents: {},
-      mythMastery: {},
     },
     message: "山门未启。",
   };
@@ -54,9 +51,6 @@ export function startRun(state) {
     nodeChoices: [],
     currentNode: null,
     archetypeAffinity: createArchetypeAffinity(),
-    mythMastery: snapshotMythMastery(next.meta),
-    mythStats: { plays: {}, lastAward: null },
-    lossStreak: next.meta.lossStreak ?? 0,
     completedSideTiers: [],
     finalSideCompleted: false,
     shopTiers: [],

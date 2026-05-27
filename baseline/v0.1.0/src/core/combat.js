@@ -1,15 +1,13 @@
 import { cards, enemies, relics } from "./data.js";
 import { applyCardEffects, applyIncomingDamage, tickDamageStatus } from "./effects.js";
-import { generateRewards, rollRelicReward } from "./rewards.js";
+import { generateRewards } from "./rewards.js";
 import { grantGoldDrop } from "./economy.js";
 import { completeRunVictory } from "./goals.js";
 import { choice, randomInt, shuffle } from "./rng.js";
-import { applyMythCombatStartBonuses, commitEffectiveCardCost, effectiveCardCost, recordMythCardPlay } from "./myth.js";
 import {
   addStatus,
   clearStatus,
   reduceConsumableDebuff,
-  reduceStatus,
   reduceNaturalConsumableDebuff,
   reduceNaturalStatus,
   statusLabel,
@@ -17,7 +15,7 @@ import {
 } from "./status.js";
 import { MAX_FLOOR, TIER_SIZE } from "./types.js";
 
-const ROUND_DECAY_STATUSES = ["curse", "spirit", "battleIntent", "ward", "stasis", "brittle"];
+const ROUND_DECAY_STATUSES = ["curse", "spirit", "ward", "stasis"];
 const ROUND_DECAY_CONSUMABLE_DEBUFFS = ["chaos"];
 
 export function startCombat(state) {
@@ -75,8 +73,7 @@ export function playCard(state, cardUid, targetUid) {
   if (!cardInstance) return state;
 
   const card = cards[cardInstance.cardId];
-  const costInfo = effectiveCardCost(run, card);
-  const cost = costInfo.cost;
+  const cost = card?.cost ?? 0;
 
   if (card?.id === "meditate" && run.energy >= run.maxEnergy) {
     combat.log.push("能量已满，调息未生效。");
@@ -89,16 +86,9 @@ export function playCard(state, cardUid, targetUid) {
   }
 
   run.energy -= cost;
-  commitEffectiveCardCost(run, costInfo);
   combat.hand.splice(cardIndex, 1);
   combat.discardPile.push(cardInstance);
   combat.log.push(`你打出 ${card.name}。`);
-  if (costInfo.firstFree) {
-    combat.log.push("洪荒箓印满级：本场首张洪荒牌免费。");
-  } else if (costInfo.reduced > 0) {
-    combat.log.push(`洪荒箓印满级：费用 -${costInfo.reduced}。`);
-  }
-  recordMythCardPlay(run, card);
   applyCardEffects(state, cardInstance, targetUid);
 
   return state;
@@ -162,10 +152,6 @@ export function startPlayerTurn(state) {
   if (run.relics.includes("jadeRuyi")) {
     addStatus(playerAsFighter(run), "spirit", 1);
     combat.log.push(`${relics.jadeRuyi.name} 生辉，获得 灵气 1。`);
-  }
-
-  if (combat.turn === 1) {
-    applyMythCombatStartBonuses(run);
   }
 
   const handLimit = run.handLimit ?? 5;
@@ -254,10 +240,8 @@ export function finishCombatIfWon(state) {
   const hasAliveEnemy = combat.enemies.some((enemy) => enemy.hp > 0);
   if (hasAliveEnemy) return state;
 
-  if (isFinalBossCombat(run)) {
-    const bossRelic = grantFinalBossRelic(run, combat);
-    const relicMessage = bossRelic ? `终局遗物：${bossRelic.name}。` : "你已集齐所有遗物。";
-    return completeRunVictory(state, "boss", `黑山崩裂，残箓归一。你击败了关底 Boss。${relicMessage}`);
+  if (run.floor >= MAX_FLOOR) {
+    return completeRunVictory(state, "boss", "黑山崩裂，残箓归一。你击败了关底 Boss。");
   }
 
   retainCombatHand(run, combat);
@@ -268,19 +252,6 @@ export function finishCombatIfWon(state) {
   state.phase = "reward";
   state.message = "战斗胜利，择一份机缘。";
   return state;
-}
-
-function isFinalBossCombat(run) {
-  return run.floor >= MAX_FLOOR && run.currentNode?.type === "main";
-}
-
-function grantFinalBossRelic(run, combat) {
-  const relic = rollRelicReward(run);
-  if (!relic) return null;
-
-  run.relics.push(relic.id);
-  combat.log.push(`关底 Boss 掉落遗物：${relic.name}。`);
-  return relic;
 }
 
 function retainCombatHand(run, combat) {
@@ -371,11 +342,6 @@ function resolveEnemyIntent(state, enemy) {
 
   const intent = enemy.intent;
 
-  if (statusStacks(enemy, "stun") > 0) {
-    skipEnemyByStun(combat, enemy);
-    return;
-  }
-
   if (statusStacks(enemy, "chaos") > 0) {
     if (intent.type === "attack") {
       if (tryChaosAttack(state, enemy, enemyRawAttackDamage(run, enemy, intent))) {
@@ -385,21 +351,6 @@ function resolveEnemyIntent(state, enemy) {
 
     skipEnemyByChaos(combat, enemy);
     return;
-  }
-
-  if (statusStacks(enemy, "bind") > 0) {
-    if (intent.type === "attack" || intent.type === "status") {
-      skipEnemyByBind(combat, enemy);
-      return;
-    }
-
-    if (intent.type === "block") {
-      const blockValue = (intent.value ?? 0) + enemyIntentBonus(run);
-      enemy.block += blockValue;
-      reduceStatus(enemy, "bind", 1);
-      combat.log.push(`${enemy.name} 被禁锢压住攻势，但仍获得 ${blockValue} 点格挡。`);
-      return;
-    }
   }
 
   if (intent.type === "attack") {
@@ -433,11 +384,6 @@ function tryChaosAttack(state, enemy, rawDamage) {
   const reduced = reduceConsumableDebuff(enemy, "chaos", 1);
 
   let damage = rawDamage + statusStacks(target, "curse");
-  if (statusStacks(target, "brittle") > 0) {
-    const before = damage;
-    damage = Math.ceil(damage * 1.5);
-    combat.log.push(`${target.name} 脆化承伤，伤害 ${before} -> ${damage}。`);
-  }
   const blocked = Math.min(target.block, damage);
   target.block -= blocked;
   damage -= blocked;
@@ -454,16 +400,6 @@ function tryChaosAttack(state, enemy, rawDamage) {
 function skipEnemyByChaos(combat, enemy) {
   const reduced = reduceConsumableDebuff(enemy, "chaos", 1);
   combat.log.push(`${enemy.name} 受到离间影响，空过了这一回合${reduced ? "。" : "，凝滞保留了离间。"}`);
-}
-
-function skipEnemyByStun(combat, enemy) {
-  reduceStatus(enemy, "stun", 1);
-  combat.log.push(`${enemy.name} 被眩晕压制，空过了这一回合。`);
-}
-
-function skipEnemyByBind(combat, enemy) {
-  reduceStatus(enemy, "bind", 1);
-  combat.log.push(`${enemy.name} 被禁锢封住攻击和术法，空过了这一回合。`);
 }
 
 function createEnemiesForFloor(run) {
@@ -523,17 +459,14 @@ export function previewEnemyIntent(run, enemy) {
   if (intent.type === "attack") {
     const base = intent.value ?? 0;
     const bonus = enemyAttackBonus(run, enemy);
-    const poisonWeakness = poisonAttackReduction(enemy);
     const curse = statusStacks(playerAsFighter(run), "curse");
-    const rawDamage = Math.max(0, base + bonus - poisonWeakness);
     return {
       type: "attack",
       base,
       bonus,
-      poisonWeakness,
       curse,
-      rawDamage,
-      expectedDamage: rawDamage + curse,
+      rawDamage: base + bonus,
+      expectedDamage: base + bonus + curse,
     };
   }
 
@@ -555,13 +488,7 @@ export function previewEnemyIntent(run, enemy) {
 }
 
 function enemyRawAttackDamage(run, enemy, intent) {
-  return Math.max(0, (intent.value ?? 0) + enemyAttackBonus(run, enemy) - poisonAttackReduction(enemy));
-}
-
-function poisonAttackReduction(enemy) {
-  const poison = statusStacks(enemy, "poison");
-  if (poison <= 0) return 0;
-  return Math.min(5, Math.floor(poison / 4));
+  return (intent.value ?? 0) + enemyAttackBonus(run, enemy);
 }
 
 function enemyAttackBonus(run, enemy) {
@@ -588,7 +515,6 @@ function runPowerPressure(run) {
 
 function clearEndOfCombatStatuses(run) {
   clearStatus(run, "spirit");
-  clearStatus(run, "battleIntent");
 }
 
 function rollEnemyIntent(run, enemyId) {

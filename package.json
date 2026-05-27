@@ -4,6 +4,13 @@
   "type": "module",
   "scripts": {
     "serve": "node scripts/serve.mjs 5173",
-    "build:release": "node scripts/build-release.mjs"
+    "build:release": "node scripts/build-release.mjs",
+    "sim:100": "node scripts/simulate-runs.mjs --runs=100",
+    "sim:bleed": "node scripts/simulate-runs.mjs --runs=100 --profile=bleed",
+    "sim:physical": "node scripts/simulate-runs.mjs --runs=100 --profile=physical",
+    "sim:spell": "node scripts/simulate-runs.mjs --runs=100 --profile=spell",
+    "sim:shell": "node scripts/simulate-runs.mjs --runs=100 --profile=shell",
+    "sim:poison": "node scripts/simulate-runs.mjs --runs=100 --profile=poison",
+    "sim:control": "node scripts/simulate-runs.mjs --runs=100 --profile=control"
   }
 }

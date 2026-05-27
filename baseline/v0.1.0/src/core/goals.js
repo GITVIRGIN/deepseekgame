@@ -1,5 +1,6 @@
 import { MAX_FLOOR, TARGET_MINUTES } from "./types.js";
-import { awardMythMasteryForRunEnd, mythAwardText } from "./myth.js";
+import { relics, rarityInfo } from "./data.js";
+import { weightedChoice } from "./rng.js";
 
 const SPECIAL_GOAL_CHANCE = 10;
 
@@ -16,11 +17,10 @@ export function createRunGoal(seed = 0) {
     special: {
       id: "completeXuanlu",
       title: "补全玄箓",
-      text: "在异兆出现的一局内收集 2 枚玄箓残片，可提前完成特殊通关。",
-      requiredFragments: 2,
+      text: "在一局内收集 2 件遗物，可提前完成特殊通关。",
+      requiredRelics: 2,
       chance: SPECIAL_GOAL_CHANCE,
       active: specialActive,
-      fragments: 0,
       startingRelics: [],
     },
     completedBy: null,
@@ -34,23 +34,10 @@ export function migrateRunGoal(run) {
   const hasStartingRelicBaseline = Array.isArray(previousSpecial.startingRelics);
   run.goal.targetMinutes = run.goal.targetMinutes ?? template.targetMinutes;
   run.goal.main = { ...template.main, ...(run.goal.main ?? {}) };
-  run.goal.special = {
-    ...template.special,
-    ...previousSpecial,
-    title: template.special.title,
-    text: template.special.text,
-  };
+  run.goal.special = { ...template.special, ...previousSpecial };
 
   if (typeof run.goal.special.active !== "boolean") {
     run.goal.special.active = template.special.active;
-  }
-
-  if (typeof run.goal.special.requiredFragments !== "number") {
-    run.goal.special.requiredFragments = run.goal.special.requiredRelics ?? template.special.requiredFragments;
-  }
-
-  if (typeof run.goal.special.fragments !== "number") {
-    run.goal.special.fragments = 0;
   }
 
   if (!hasStartingRelicBaseline) {
@@ -68,48 +55,49 @@ export function markSpecialGoalBaseline(run) {
 
 export function goalProgress(run) {
   const goal = migrateRunGoal(run);
-  const requiredFragments = goal.special.requiredFragments ?? 2;
-  const collectedFragments = specialFragmentCount(goal);
+  const requiredRelics = goal.special.requiredRelics ?? 2;
+  const collectedRelics = specialRelicCount(run, goal);
   return {
     floor: `${Math.min(run.floor, MAX_FLOOR)}/${MAX_FLOOR}`,
     targetMinutes: goal.targetMinutes,
-    special: `${collectedFragments}/${requiredFragments}`,
+    special: `${collectedRelics}/${requiredRelics}`,
     specialActive: goal.special.active,
     specialChance: goal.special.chance ?? SPECIAL_GOAL_CHANCE,
-    specialReady: goal.special.active && collectedFragments >= requiredFragments,
+    specialReady: goal.special.active && collectedRelics >= requiredRelics,
   };
-}
-
-export function canOfferSpecialFragment(run) {
-  if (!run || run.finished) return false;
-  const goal = migrateRunGoal(run);
-  const requiredFragments = goal.special.requiredFragments ?? 2;
-  return goal.special.active && specialFragmentCount(goal) < requiredFragments;
-}
-
-export function grantSpecialFragment(run, amount = 1) {
-  const goal = migrateRunGoal(run);
-  const requiredFragments = goal.special.requiredFragments ?? 2;
-  const next = Math.min(requiredFragments, specialFragmentCount(goal) + amount);
-  goal.special.fragments = next;
-  return { fragments: next, required: requiredFragments };
 }
 
 export function completeRunVictory(state, completedBy, message) {
   const run = state.run;
   if (!run || run.finished) return state;
 
-  const mythAward = awardMythMasteryForRunEnd(state, completedBy);
   run.finished = true;
   migrateRunGoal(run);
   run.goal.completedBy = completedBy;
   run.combat = null;
   state.phase = "gameOver";
-  state.message = mythAward ? `${message} ${mythAwardText(mythAward)}` : message;
+
+  if (completedBy === "boss") {
+    const relic = rollVictoryRelic(run);
+    if (relic) {
+      run.relics.push(relic.id);
+      state.message = `${message} 黑山崩塌处，一件遗物缓缓浮现——${relic.name}。`;
+    } else {
+      state.message = message;
+    }
+  } else {
+    state.message = message;
+  }
+
   state.meta.wins += 1;
   state.meta.soul += completedBy === "special" ? 22 : 30;
-  state.meta.lossStreak = 0;
   return state;
+}
+
+function rollVictoryRelic(run) {
+  const available = Object.values(relics).filter((relic) => !run.relics.includes(relic.id));
+  if (available.length === 0) return null;
+  return weightedChoice(run, available, (relic) => rarityInfo[relic.rarity].weight);
 }
 
 export function checkSpecialGoal(state) {
@@ -125,8 +113,9 @@ export function checkSpecialGoal(state) {
   return state;
 }
 
-function specialFragmentCount(goal) {
-  return Math.max(0, Number(goal.special.fragments ?? 0));
+function specialRelicCount(run, goal) {
+  const startingRelics = new Set(goal.special.startingRelics ?? []);
+  return (run.relics ?? []).filter((relicId) => !startingRelics.has(relicId)).length;
 }
 
 function specialGoalRoll(seed) {

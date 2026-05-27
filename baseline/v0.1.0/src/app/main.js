@@ -7,7 +7,6 @@ import { MAX_FLOOR } from "../core/types.js";
 import { gameVersion } from "../core/version.js";
 import { createRunGoal, goalProgress } from "../core/goals.js";
 import { talentCost, talentDefinitions, talentLevel } from "../core/progression.js";
-import { MYTH_FACTIONS, MYTH_MASTERY_MAX, MYTH_MASTERY_PERKS, cardMythBoost, effectiveCardCost, hasMythMasteryPerk } from "../core/myth.js";
 import { clearCloudConfig, connectCloud, downloadCloudSave, loadCloudConfig, saveCloudConfig, uploadCloudSave } from "../core/cloud.js";
 
 const app = document.querySelector("#app");
@@ -20,7 +19,6 @@ let cloudOpen = false;
 let cloudBusy = false;
 let cloudMessage = "";
 let cloudTimer = null;
-let suppressCardClickUntil = 0;
 
 function dispatch(action) {
   state = reduceGame(state, action);
@@ -291,7 +289,6 @@ function renderProgression({ readonly = false } = {}) {
       stat("残魂", state.meta.soul),
     ]),
     el("div", "talent-grid", talents.map((definition) => renderTalent(definition, readonly))),
-    renderMythMastery(),
   ]);
 }
 
@@ -316,33 +313,6 @@ function renderTalent(definition, readonly = false) {
   node.append(...children);
 
   return node;
-}
-
-function renderMythMastery() {
-  return el("section", "myth-mastery-panel", [
-    el("div", "progression-head slim-head", [
-      el("div", "", [
-        el("h2", "", "派系箓印"),
-        el("p", "muted", "深入失败可获得 1 点箓印，通关获得 2 点；优先本局主修派系，溢出会补最低派系。"),
-      ]),
-    ]),
-    el(
-      "div",
-      "talent-grid myth-grid",
-      MYTH_FACTIONS.map((tag) => renderMythMasteryItem(tag)),
-    ),
-  ]);
-}
-
-function renderMythMasteryItem(tag) {
-  const level = state.meta.mythMastery?.[tag] ?? 0;
-  const statusBonus = Math.floor(level / 2);
-  const perk = MYTH_MASTERY_PERKS[tag]?.text ?? "";
-  return el("article", `talent myth-talent ${level >= MYTH_MASTERY_MAX ? "maxed" : ""}`, [
-    el("div", "talent-title", [el("strong", "", `${tag}箓印`), el("span", "", `${level}/${MYTH_MASTERY_MAX}`)]),
-    el("p", "", level > 0 ? `同派系牌：伤害、格挡、治疗 +${level}；状态叠层 +${statusBonus}。${perk}` : `尚未刻入。${perk}`),
-    el("span", "talent-cost", level >= MYTH_MASTERY_MAX ? "满级质变已生效" : level > 0 ? "自动生效" : "通关解锁"),
-  ]);
 }
 
 function renderCloudPanel() {
@@ -411,7 +381,7 @@ function renderRunPanel(run) {
         progressionOpen = true;
         render();
       }),
-      button("放弃并结算", "danger small", () => dispatch({ type: "abandonRun" })),
+      button("放弃并重开", "danger small", () => dispatch({ type: "abandonRun" })),
     ]),
   );
   return panel;
@@ -434,24 +404,6 @@ function renderArchetypePanel(run) {
 
 function currentHandCount(run) {
   return run.combat?.hand.length ?? run.retainedHand?.length ?? 0;
-}
-
-function sortCardInstancesByFunction(cardInstances) {
-  return [...cardInstances].sort((left, right) => compareCardDefinitions(cards[left.cardId], cards[right.cardId]));
-}
-
-function compareCardDefinitions(left, right) {
-  return cardFunctionRank(left) - cardFunctionRank(right) || left.cost - right.cost || left.name.localeCompare(right.name, "zh-Hans");
-}
-
-function cardFunctionRank(definition) {
-  const effects = definition.effects ?? [];
-  if (effects.some((effect) => effect.type === "block" || effect.type === "shellReflect" || effect.status === "ward")) return 0;
-  if (effects.some((effect) => effect.type === "damage" || effect.type === "execute")) return 1;
-  if (effects.some((effect) => ["status", "amplifyDebuffs", "thunderMark", "bleedSiphon"].includes(effect.type))) return 2;
-  if (effects.some((effect) => ["draw", "gainEnergy", "recoverDiscard"].includes(effect.type))) return 3;
-  if (effects.some((effect) => ["heal", "cleanse"].includes(effect.type))) return 4;
-  return 5;
 }
 
 function renderEnemy(enemy) {
@@ -482,12 +434,11 @@ function renderHand(run, combat) {
   const area = el("section", "hand-area");
   const cardsNode = el("div", "hand");
 
-  for (const cardInstance of sortCardInstancesByFunction(combat.hand)) {
+  for (const cardInstance of combat.hand) {
     const definition = cards[cardInstance.cardId];
-    const costInfo = effectiveCardCost(run, definition);
     const canPlay = canPlayCard(definition, run);
     const canDiscard = !combat.flags.discardedThisTurn && !run.pendingChoice;
-    const play = () => {
+    const node = renderCard(definition, () => {
       if (canPlay) {
         dispatch({
           type: "playCard",
@@ -495,9 +446,7 @@ function renderHand(run, combat) {
           targetUid: selectedTargetUid,
         });
       }
-    };
-    const node = renderCard(definition, play, { costInfo });
-    attachLongPressDetail(node, definition);
+    });
 
     if (!canPlay) {
       node.classList.add("disabled");
@@ -505,7 +454,7 @@ function renderHand(run, combat) {
 
     const slot = el("div", "hand-card-slot", [
       node,
-      button(canDiscard ? "弃置+抽" : "已弃", canDiscard ? "ghost small discard-action" : "ghost small discard-action disabled", () => {
+      button(canDiscard ? "弃置并抽 1" : "本回合已弃", canDiscard ? "ghost small discard-action" : "ghost small discard-action disabled", () => {
         if (canDiscard) dispatch({ type: "discardHandCard", cardUid: cardInstance.uid });
       }),
     ]);
@@ -514,7 +463,7 @@ function renderHand(run, combat) {
 
   area.append(
     el("div", "hand-head", [
-      el("div", "", [el("h2", "", `手牌 ${combat.hand.length}/${run.handLimit ?? 5}`), renderPileStrip(run, combat), renderMobilePlayerStrip(run)]),
+      el("div", "", [el("h2", "", `手牌 ${combat.hand.length}/${run.handLimit ?? 5}`), renderPileStrip(run, combat)]),
       button("结束回合", "danger", () => dispatch({ type: "endTurn" })),
     ]),
     cardsNode,
@@ -523,114 +472,20 @@ function renderHand(run, combat) {
   return area;
 }
 
-function attachLongPressDetail(node, definition) {
-  let timer = null;
-  let longPressed = false;
-  const clearTimer = () => {
-    if (timer) {
-      window.clearTimeout(timer);
-      timer = null;
-    }
-  };
-
-  node.addEventListener("pointerdown", () => {
-    longPressed = false;
-    clearTimer();
-    timer = window.setTimeout(() => {
-      longPressed = true;
-      suppressCardClickUntil = Date.now() + 800;
-      openDetail(detailForCard(definition));
-    }, 520);
-  });
-  node.addEventListener("pointerup", clearTimer);
-  node.addEventListener("pointerleave", clearTimer);
-  node.addEventListener("pointercancel", clearTimer);
-  node.addEventListener(
-    "click",
-    (event) => {
-      if (!longPressed && Date.now() >= suppressCardClickUntil) return;
-      event.preventDefault();
-      event.stopImmediatePropagation();
-      longPressed = false;
-    },
-    true,
-  );
-  node.addEventListener("contextmenu", (event) => {
-    event.preventDefault();
-    openDetail(detailForCard(definition));
-  });
-}
-
-function renderMobilePlayerStrip(run) {
-  return el("div", "mobile-player-strip", [
-    el("div", "mobile-vitals", [
-      el("span", "", `命 ${run.hp}/${run.maxHp}`),
-      el("span", "", `挡 ${run.combat?.block ?? 0}`),
-      el("span", "", `气 ${run.energy}/${run.maxEnergy}`),
-    ]),
-    el("div", "mobile-status-line", [el("span", "muted", "自身"), renderStatusChips(run.statuses)]),
-  ]);
-}
-
-function renderCard(definition, onClick, options = {}) {
+function renderCard(definition, onClick) {
   const node = el("button", `game-card rarity-${definition.rarity}`);
   node.type = "button";
-  node.addEventListener("click", (event) => {
-    if (Date.now() < suppressCardClickUntil) {
-      event.preventDefault();
-      return;
-    }
-    onClick(event);
-  });
-  const displayCost = options.costInfo?.cost ?? definition.cost;
-  const costText = options.costInfo?.firstFree ? `免/${definition.cost}` : displayCost === definition.cost ? `${definition.cost}` : `${displayCost}/${definition.cost}`;
+  node.addEventListener("click", onClick);
   node.append(
     el("span", "card-rarity", rarityInfo[definition.rarity].label),
     el("strong", "", definition.name),
-    el("span", "card-cost", costText),
+    el("span", "card-cost", `${definition.cost}`),
     el("p", "", definition.text),
     renderCardStyle(definition),
     renderEffectBadges(definition),
     el("span", "myth-tags", definition.mythTags.join(" / ")),
   );
   return node;
-}
-
-function detailForCard(definition) {
-  const style = definition.style ? styleInfo[definition.style]?.label ?? definition.style : "通用";
-  const grade = definition.grade ? gradeInfo[definition.grade] ?? `${definition.grade} 阶` : "无阶";
-  const mythBoost = cardMythBoost(state.run, definition, state.meta);
-  const costInfo = effectiveCardCost(state.run, definition);
-  const effectiveCostLine = costInfo.firstFree
-    ? `当前费用：首张洪荒牌免费（原 ${definition.cost}）`
-    : costInfo.cost !== definition.cost
-      ? `当前费用：${costInfo.cost}/${definition.cost}`
-      : `费用：${definition.cost}`;
-  const perkLines = (definition.mythTags ?? [])
-    .filter((tag) => hasMythMasteryPerk(state.run ?? state.meta, tag, state.meta))
-    .map((tag) => MYTH_MASTERY_PERKS[tag]?.text)
-    .filter(Boolean);
-  const mythLine = mythBoost.active
-    ? `箓印：${mythBoost.tag} ${mythBoost.level}/${MYTH_MASTERY_MAX}，数值 +${mythBoost.numericBonus}，状态 +${mythBoost.statusBonus}`
-    : mythBoost.level > 0
-      ? `箓印：${mythBoost.tag} ${mythBoost.level}/${MYTH_MASTERY_MAX}，此牌没有可加成的战斗数值`
-    : "箓印：当前未生效";
-  return {
-    key: `card:${definition.id}`,
-    type: "卡牌详情",
-    title: definition.name,
-    main: definition.text,
-    lines: [
-      effectiveCostLine,
-      `品级：${rarityInfo[definition.rarity].label}`,
-      `流派：${style} / ${grade}`,
-      `功能：${cardFunctionLabel(definition)}`,
-      `效果：${cardEffectLabels(definition).join("，") || "无"}`,
-      mythLine,
-      ...perkLines,
-      `神话标签：${definition.mythTags.join(" / ")}`,
-    ],
-  };
 }
 
 function renderCardStyle(definition) {
@@ -645,8 +500,7 @@ function renderCardStyle(definition) {
 }
 
 function canPlayCard(definition, run) {
-  const costInfo = effectiveCardCost(run, definition);
-  if (run.energy < costInfo.cost) return false;
+  if (run.energy < definition.cost) return false;
   if (definition.id === "meditate" && run.energy >= run.maxEnergy) return false;
   return true;
 }
@@ -663,14 +517,6 @@ function renderRewardChoice(reward) {
     node.type = "button";
     node.addEventListener("click", () => dispatch({ type: "chooseReward", rewardId: reward.id }));
     node.append(el("span", "card-rarity", rarityInfo[relic.rarity].label), el("strong", "", relic.name), el("p", "", relic.text));
-    return node;
-  }
-
-  if (reward.type === "specialFragment") {
-    const node = el("button", "relic-choice rarity-legendary");
-    node.type = "button";
-    node.addEventListener("click", () => dispatch({ type: "chooseReward", rewardId: reward.id }));
-    node.append(el("span", "card-rarity", "异兆"), el("strong", "", "玄箓残片"), el("p", "", "特殊通关目标进度 +1。普通遗物不会触发特殊通关。"));
     return node;
   }
 
@@ -724,7 +570,7 @@ function renderGoalPanel(run) {
   const progress = goalProgress(run);
   const goal = run.goal ?? createRunGoal(run.seed);
   const specialText = progress.specialActive
-    ? `特殊：${goal.special.title}（残片 ${progress.special}）`
+    ? `特殊：${goal.special.title}（遗物 ${progress.special}）`
     : `特殊：${goal.special.title}（本局未显，约十局一现）`;
   return el("section", "goal-panel", [
     el("div", "goal-title", [el("strong", "", "本局目标"), el("span", "", `${progress.targetMinutes} 分钟`)]),
@@ -781,19 +627,18 @@ function groupCardIds(cardIds) {
 
   return [...counts.entries()]
     .map(([cardId, count]) => ({ cardId, count }))
-    .sort((left, right) => compareCardDefinitions(cards[left.cardId], cards[right.cardId]));
+    .sort((left, right) => cards[left.cardId].name.localeCompare(cards[right.cardId].name, "zh-Hans"));
 }
 
 function renderDiscardPickPanel(run) {
   const choice = run.pendingChoice;
   const combat = run.combat;
-  const options = sortCardInstancesByFunction(combat.discardPile.filter((card) => canRecoverDiscardCard(card, choice)));
+  const options = combat.discardPile.filter((card) => card.uid !== choice.sourceUid);
   return el("aside", "discard-pick-panel", [
     el("div", "detail-head", [
       el("div", "", [el("span", "muted", "弃牌回收"), el("h2", "", choice.title)]),
       button("跳过", "ghost small", () => dispatch({ type: "cancelDiscardPick" })),
     ]),
-    renderMobilePlayerStrip(run),
     el("p", "detail-main", "弃牌堆不是永久废弃，它会洗回牌库，也可以被归藏类卡牌主动取回。"),
     el(
       "div",
@@ -806,13 +651,6 @@ function renderDiscardPickPanel(run) {
       }),
     ),
   ]);
-}
-
-function canRecoverDiscardCard(cardInstance, choice) {
-  if (cardInstance.uid === choice.sourceUid) return false;
-  const excluded = new Set(choice.excludeStyles ?? []);
-  const style = cards[cardInstance.cardId]?.style;
-  return !style || !excluded.has(style);
 }
 
 function renderStatusChips(statuses) {
@@ -841,37 +679,20 @@ function blockMeter(value) {
 }
 
 function renderEffectBadges(definition) {
-  return el("div", "effect-badges", cardEffectLabels(definition).slice(0, 3).map((label) => el("span", "", label)));
-}
-
-function cardEffectLabels(definition) {
   const labels = [];
-  const mythBoost = cardMythBoost(state.run, definition, state.meta);
-  if (mythBoost.active) {
-    labels.push(`${mythBoost.tag}箓印 +${mythBoost.level}`);
-  }
   for (const effect of definition.effects) {
     if (effect.type === "damage") labels.push(`伤害 ${effect.value}`);
-    if (effect.type === "execute") labels.push(`斩杀 ${effect.threshold ?? 35}%`);
     if (effect.type === "block") labels.push(`格挡 ${effect.value}`);
     if (effect.type === "heal") labels.push(`回复 ${effect.value}`);
     if (effect.type === "draw") labels.push(`抽牌 ${effect.value}`);
     if (effect.type === "gainEnergy") labels.push(`能量 ${effect.value}`);
     if (effect.type === "status") labels.push(`${statusInfo[effect.status]?.label ?? effect.status} ${effect.stacks}`);
-    if (effect.type === "thunderMark") labels.push(`雷痕 ${effect.stacks ?? effect.value}`);
     if (effect.type === "amplifyDebuffs") labels.push(`状态 +${effect.value}`);
-    if (effect.type === "bleedSiphon") labels.push(`汲血 /${effect.ratio ?? 3}`);
-    if (effect.type === "shellReflect") labels.push(`反震 ${Math.round((effect.ratio ?? 0.5) * 100)}%`);
-    if (effect.type === "recoverDiscard") labels.push(effect.excludeStyles?.includes("control") ? `回收非控 ${effect.value}` : `回收 ${effect.value}`);
+    if (effect.type === "recoverDiscard") labels.push(`回收 ${effect.value}`);
     if (effect.type === "loseHp") labels.push(`失血 ${effect.value}`);
   }
 
-  return labels;
-}
-
-function cardFunctionLabel(definition) {
-  const labels = ["格挡", "攻击", "状态", "运转", "回复", "其他"];
-  return labels[cardFunctionRank(definition)] ?? "其他";
+  return el("div", "effect-badges", labels.slice(0, 3).map((label) => el("span", "", label)));
 }
 
 function renderIntentButton(enemy) {
@@ -882,20 +703,10 @@ function renderIntentButton(enemy) {
 }
 
 function intentButtonText(enemy) {
-  const stun = statusValue(enemy, "stun");
-  if (stun > 0) {
-    return "眩晕空过";
-  }
-
   const chaos = statusValue(enemy, "chaos");
   if (chaos > 0) {
     const hasAlly = state.run?.combat?.enemies.some((item) => item.uid !== enemy.uid && item.hp > 0);
     return enemy.intent.type === "attack" && hasAlly ? "离间转火" : "离间空过";
-  }
-
-  const bind = statusValue(enemy, "bind");
-  if (bind > 0) {
-    return enemy.intent.type === "block" ? "禁锢格挡" : "禁锢空过";
   }
 
   const preview = previewEnemyIntent(state.run, enemy);
@@ -942,26 +753,11 @@ function impactLabels(statuses, owner) {
     if (status.id === "spirit") {
       result.push({ status, kind: "impact-buff", label: `出牌伤害 +${status.stacks}` });
     }
-    if (status.id === "battleIntent") {
-      result.push({ status, kind: "impact-buff", label: `物理伤害 +${status.stacks}` });
-    }
     if (status.id === "ward") {
       result.push({ status, kind: "impact-buff", label: `先抵消 ${status.stacks}` });
     }
     if (status.id === "chaos") {
       result.push({ status, kind: "impact-debuff", label: `内斗 ${status.stacks} 次` });
-    }
-    if (status.id === "bind") {
-      result.push({ status, kind: "impact-debuff", label: `禁攻禁法 ${status.stacks} 次` });
-    }
-    if (status.id === "stun") {
-      result.push({ status, kind: "impact-debuff", label: `跳过行动 ${status.stacks} 次` });
-    }
-    if (status.id === "brittle") {
-      result.push({ status, kind: "impact-debuff", label: `承伤 x1.5 / ${status.stacks}` });
-    }
-    if (status.id === "thunderMark") {
-      result.push({ status, kind: "impact-debuff", label: `雷痕 ${status.stacks}/8` });
     }
     if (status.id === "stasis") {
       result.push({ status, kind: "impact-debuff", label: `保留状态 ${status.stacks} 次` });
@@ -973,8 +769,7 @@ function impactLabels(statuses, owner) {
       result.push({ status, kind: "impact-debuff", label: `回合掉血 ${status.stacks}` });
     }
     if (status.id === "poison") {
-      const weakness = owner === "enemy" ? ` / 攻击 -${Math.min(5, Math.floor(status.stacks / 4))}` : "";
-      result.push({ status, kind: "impact-debuff", label: `回合掉血 ${status.stacks}${weakness}` });
+      result.push({ status, kind: "impact-debuff", label: `回合掉血 ${status.stacks}` });
     }
     if (status.id === "bleed") {
       result.push({ status, kind: "impact-debuff", label: `流血压制 ${status.stacks}` });
@@ -999,11 +794,6 @@ function renderDetailPanel(info) {
 
 function showDetail(info) {
   detailInfo = detailInfo?.key && detailInfo.key === info.key ? null : info;
-  render();
-}
-
-function openDetail(info) {
-  detailInfo = info;
   render();
 }
 
@@ -1076,18 +866,13 @@ function detailForStatus(status) {
   const stacks = status.stacks;
   const map = {
     spirit: [`当前数值 ${stacks} 表示：你用卡牌造成伤害时，会按卡牌费用获得部分伤害加成。`, "低费牌只能承载部分灵气，高费牌更容易吃满收益；战斗结束后清空。"],
-    battleIntent: [`当前数值 ${stacks} 表示：物理牌造成伤害时额外 +${stacks}。`, "每打出一张物理伤害牌后，战意会继续增加 7 层；它会随回合逐步减少，战斗结束后清空。"],
     ward: [`当前数值 ${stacks} 表示：下次受到伤害前，先抵消 ${stacks} 点。`, "它会优先保护血条，作用类似一层可消耗的小格挡。"],
     chaos: [`当前数值 ${stacks} 表示：敌人接下来 ${stacks} 次行动会被离间干扰。`, "如果本次是攻击且有同伴，会转而攻击同伴；否则会直接空过，不会攻击、格挡或施加状态。"],
-    bind: [`当前数值 ${stacks} 表示：敌人接下来 ${stacks} 次行动会受禁锢影响。`, "攻击和施法会被封住并空过；如果本来要格挡，则仍可格挡，但禁锢会减少 1 层。"],
-    stun: [`当前数值 ${stacks} 表示：敌人接下来 ${stacks} 次行动会被眩晕跳过。`, "眩晕会先于离间结算；被眩晕的敌人不会攻击、格挡或施加状态。"],
-    brittle: [`当前数值 ${stacks} 表示：敌人处于脆化窗口，受到伤害变为 1.5 倍。`, "离间、禁锢、眩晕合计达到 6 层会触发心防崩裂：清空敌人格挡，并获得脆化。"],
-    thunderMark: [`当前数值 ${stacks} 表示：敌人身上已积累 ${stacks} 层雷痕。`, `每满 8 层会立刻触发天劫，造成 32 点无视格挡雷伤，并施加 1 次眩晕。当前还差 ${Math.max(0, 8 - (stacks % 8 || 8))} 层。`],
     stasis: [`当前数值 ${stacks} 表示：流血、毒瘴、离间将要减少层数时，先消耗凝滞。`, "它会让核心 debuff 不掉层，适合把流血、中毒、控制不断堆高。"],
     curse: [`当前数值 ${stacks} 表示：受到卡牌伤害时额外 +${stacks}。`, "如果在敌人身上，它会让敌人血条掉得更快；如果在你身上，敌人攻击会更痛。"],
     burn: [`当前数值 ${stacks} 表示：回合结算时受到 ${stacks} 点伤害。`, "造成伤害后会消退一半，至少减少 1 层，不会一直滚到无解。"],
-    poison: [`当前数值 ${stacks} 表示：回合结算时受到 ${stacks} 点伤害，然后减少 1 层。`, `如果在敌人身上，它攻击时会被虚弱 ${Math.min(5, Math.floor(stacks / 4))} 点；适合拖回合削弱高伤敌人。`],
-    bleed: [`当前数值 ${stacks} 表示：回合间会先扣格挡再造成伤害；被攻击时也会额外爆开。`, "血魔牌会先付出生命，再按敌人流血层数回血。层数堆高后，流血会从风险变成续航和爆发来源。"],
+    poison: [`当前数值 ${stacks} 表示：回合结算时受到 ${stacks} 点伤害，然后减少 1 层。`, "它会直接压低血条，适合拖回合滚雪球。"],
+    bleed: [`当前数值 ${stacks} 表示：回合间会先扣格挡再造成伤害；被攻击时也会额外爆开。`, "它现在既能压格挡，也能在你攻击时打出爆发，但每次结算会减少层数。"],
   };
 
   return {
@@ -1101,21 +886,6 @@ function detailForStatus(status) {
 
 function detailForIntent(enemy) {
   const intent = enemy.intent;
-  const stun = statusValue(enemy, "stun");
-  if (stun > 0) {
-    return {
-      key: `intent:${enemy.uid}:stun:${stun}:${intent.text}`,
-      type: "敌人意图",
-      title: "眩晕空过",
-      main: `${enemy.name} 当前被眩晕压制，本次不会执行原意图。`,
-      lines: [
-        `眩晕层数：${stun}`,
-        "它不会攻击、格挡或施加状态，会直接空过这一回合。",
-        "结算后眩晕减少 1 层。",
-      ],
-    };
-  }
-
   const chaos = statusValue(enemy, "chaos");
   if (chaos > 0) {
     const hasAlly = state.run?.combat?.enemies.some((item) => item.uid !== enemy.uid && item.hp > 0);
@@ -1133,22 +903,6 @@ function detailForIntent(enemy) {
     };
   }
 
-  const bind = statusValue(enemy, "bind");
-  if (bind > 0) {
-    const willBlock = intent.type === "block";
-    return {
-      key: `intent:${enemy.uid}:bind:${bind}:${intent.text}`,
-      type: "敌人意图",
-      title: willBlock ? "禁锢格挡" : "禁锢空过",
-      main: `${enemy.name} 当前受到禁锢影响，本次行动会先检查是否为攻击或施法。`,
-      lines: [
-        `禁锢层数：${bind}`,
-        willBlock ? "它本次原本要格挡，所以仍会获得格挡，但禁锢减少 1 层。" : "它本次原本要攻击或施法，会直接空过，不会伤害你或施加状态。",
-        "离间、禁锢、眩晕合计达到 6 层时，会触发心防崩裂，清空格挡并获得脆化。",
-      ],
-    };
-  }
-
   if (intent.type === "attack") {
     const preview = previewEnemyIntent(state.run, enemy);
     return {
@@ -1159,7 +913,6 @@ function detailForIntent(enemy) {
       lines: [
         `基础伤害：${preview?.base ?? intent.value}`,
         `难度/ Boss 加成：${preview?.bonus ?? 0}`,
-        `毒瘴虚弱：-${preview?.poisonWeakness ?? 0}`,
         `你身上的诅咒加成：${preview?.curse ?? 0}`,
         `预计未被护体和格挡抵消前伤害：${preview?.expectedDamage ?? intent.value}`,
         "伤害会先被你的护体和格挡抵消。",

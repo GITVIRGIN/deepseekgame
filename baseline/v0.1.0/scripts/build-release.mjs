@@ -15,7 +15,6 @@ const moduleOrder = [
   "src/core/status.js",
   "src/core/goals.js",
   "src/core/nodes.js",
-  "src/core/myth.js",
   "src/core/progression.js",
   "src/core/state.js",
   "src/core/economy.js",

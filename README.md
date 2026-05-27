@@ -25,5 +25,27 @@ node scripts/serve.mjs 5173
 ## 打包
 
 ```bash
+node scripts/simulate-runs.mjs --runs=100
 node scripts/build-release.mjs
+```
+
+发布前必须先跑 100 局自动模拟，并根据胜率、平均层数、流派出牌和状态峰值做一次节奏评估；流派专项变更还要追加对应 profile，例如：
+
+```bash
+node scripts/simulate-runs.mjs --runs=100 --profile=bleed
+```
+
+中毒、龟壳等专项也可以指定对应 profile：
+
+```bash
+node scripts/simulate-runs.mjs --runs=100 --profile=poison
+node scripts/simulate-runs.mjs --runs=100 --profile=shell
+node scripts/simulate-runs.mjs --runs=100 --profile=spell
+node scripts/simulate-runs.mjs --runs=100 --profile=control
+```
+
+连续失败补偿类改动需要额外指定失败次数，例如：
+
+```bash
+node scripts/simulate-runs.mjs --runs=100 --profile=shell --lossStreak=3
 ```

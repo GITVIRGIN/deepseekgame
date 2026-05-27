@@ -7,20 +7,15 @@
  * @typedef {"home" | "route" | "combat" | "reward" | "shop" | "gameOver"} Phase
  * @typedef {"common" | "rare" | "epic" | "legendary"} Rarity
  * @typedef {"self" | "enemy" | "allEnemies"} Target
- * @typedef {"burn" | "bleed" | "poison" | "curse" | "spirit" | "battleIntent" | "chaos" | "bind" | "brittle" | "stasis" | "ward" | "thunderMark" | "stun"} StatusId
+ * @typedef {"burn" | "bleed" | "poison" | "curse" | "spirit" | "chaos" | "stasis" | "ward"} StatusId
  *
  * @typedef {object} Effect
- * @property {"damage" | "execute" | "block" | "heal" | "loseHp" | "draw" | "gainEnergy" | "status" | "amplifyDebuffs" | "thunderMark" | "bleedSiphon" | "shellReflect" | "recoverDiscard" | "maxEnergy" | "maxHp" | "cleanse" | "rareCard" | "handLimit" | "deckLimit" | "gold" | "relic"} type
+ * @property {"damage" | "block" | "heal" | "loseHp" | "draw" | "gainEnergy" | "status" | "amplifyDebuffs" | "recoverDiscard" | "maxEnergy" | "maxHp" | "cleanse" | "rareCard" | "handLimit" | "deckLimit" | "gold" | "relic"} type
  * @property {Target=} target
  * @property {number=} value
- * @property {number=} ratio
- * @property {number=} consumeRatio
  * @property {StatusId=} status
  * @property {StatusId[]=} statuses
- * @property {string[]=} excludeStyles
  * @property {number=} stacks
- * @property {number=} cardMythBonus
- * @property {number=} cardMythStatusBonus
  *
  * @typedef {object} CardDefinition
  * @property {string} id
@@ -75,7 +70,7 @@
  *
  * @typedef {object} Reward
  * @property {string} id
- * @property {"card" | "gold" | "relic" | "heal" | "specialFragment"} type
+ * @property {"card" | "gold" | "relic" | "heal"} type
  * @property {string | number} value
  *
  * @typedef {object} RouteNode
@@ -93,8 +88,6 @@
  * @property {number} floor
  * @property {object=} goal
  * @property {Record<string, number>=} archetypeAffinity
- * @property {Record<string, number>=} mythMastery
- * @property {{plays: Record<string, number>, lastAward: object | null}=} mythStats
  * @property {RouteNode[]=} nodeChoices
  * @property {RouteNode | null=} currentNode
  * @property {number[]=} completedSideTiers
@@ -125,9 +118,7 @@
  * @property {number} soul
  * @property {number} totalRuns
  * @property {number} wins
- * @property {number=} lossStreak
  * @property {Record<string, number>=} talents
- * @property {Record<string, number>=} mythMastery
  *
  * @typedef {object} GameState
  * @property {Phase} phase

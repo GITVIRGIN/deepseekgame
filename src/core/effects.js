@@ -1,8 +1,15 @@
 import { cards, relics } from "./data.js";
 import { drawCards, finishCombatIfWon } from "./combat.js";
+import { awardMythMasteryForRunEnd, cardMythBoost, consumeMythFirstStrike, mythAwardText, mythFirstStrikeDamageBonus, mythStatusDamageBonus } from "./myth.js";
 import { addStatus, reduceConsumableDebuff, reduceStatus, statusLabel, statusStacks } from "./status.js";
 
 const SPIRIT_BONUS_PER_COST = 4;
+const PHYSICAL_INTENT_GAIN = 7;
+const THUNDER_TRIBULATION_THRESHOLD = 8;
+const THUNDER_TRIBULATION_DAMAGE = 32;
+const CONTROL_BREAK_THRESHOLD = 6;
+const BRITTLE_STACKS = 2;
+const BRITTLE_MULTIPLIER = 1.5;
 
 function combatLog(state, text) {
   state.run?.combat?.log.push(text);
@@ -32,12 +39,8 @@ export function applyEffect(state, effect, targetUid) {
   if (!run || !combat) return state;
 
   if (effect.type === "draw") {
-    const requested = effect.value ?? 0;
-    const crit = Math.random() < 0.1 ? 2 : 1;
-    const drawn = drawCards(state, requested * crit);
-    if (crit > 1) combatLog(state, "暴击！");
+    const drawn = drawCards(state, effect.value ?? 0);
     combatLog(state, `抽 ${drawn} 张牌。`);
-    if (drawn > 0) addStatus(playerFighter(run), "fatigue", drawn);
     return finishCombatIfWon(state);
   }
 
@@ -49,94 +52,71 @@ export function applyEffect(state, effect, targetUid) {
   }
 
   if (effect.type === "recoverDiscard") {
-    const count = effect.value ?? 1;
-    startDiscardPick(state, count, effect.sourceUid, effect.excludeStyle);
-    addStatus(playerFighter(run), "fatigue", count);
+    startDiscardPick(state, effect.value ?? 1, effect.sourceUid, effect);
     return finishCombatIfWon(state);
   }
 
   const targets = resolveTargets(run, effect.target, targetUid);
 
-  if (effect.type === "leechBleed") {
-    let totalBleed = 0;
-    const names = [];
-    for (const target of targets) {
-      totalBleed += statusStacks(target, "bleed");
-      names.push(target.name);
-    }
-    const heal = Math.floor(totalBleed * (effect.value ?? 0.3));
-    if (heal > 0) {
-      const player = playerFighter(run);
-      player.hp = Math.min(player.maxHp, player.hp + heal);
-      syncPlayerFighter(run, player);
-      combatLog(state, `从 ${names.join("、")} 的流血中汲取 ${heal} 点生命。`);
-    }
+  if (effect.type === "bleedSiphon") {
+    applyBleedSiphon(state, targets, effect);
+    return finishCombatIfWon(state);
+  }
+
+  if (effect.type === "shellReflect") {
+    applyShellReflect(state, targets, effect);
     return finishCombatIfWon(state);
   }
 
   for (const target of targets) {
     if (effect.type === "damage") {
-      applyCardDamage(state, target, effect.value ?? 0, effect.cardCost ?? 1, effect.cardStyle);
+      applyCardDamage(state, target, boostedValue(effect), effect.cardCost ?? 1, effect.cardStyle);
     }
 
     if (effect.type === "execute") {
-      const threshold = effect.threshold ?? 0.25;
-      if (target.hp > 0 && target.hp <= target.maxHp * threshold) {
-        target.block = 0;
-        target.hp = 0;
-        combatLog(state, `${target.name} 血线见底——斩魂索命，直接斩杀！`);
-      } else {
-        applyCardDamage(state, target, effect.value ?? 25, effect.cardCost ?? 1, effect.cardStyle);
-        combatLog(state, `${target.name} 未入斩杀线，转为普通一击。`);
-      }
+      applyExecute(state, target, effect);
     }
 
     if (effect.type === "block") {
-      const blockBonus = getFactionBlockBonus(state);
-      target.block += (effect.value ?? 0) + blockBonus;
-      combatLog(state, `获得 ${effect.value} 点格挡。`);
+      const amount = boostedValue(effect);
+      target.block += amount;
+      combatLog(state, `获得 ${amount} 点格挡。`);
     }
 
     if (effect.type === "heal") {
-      target.hp = Math.min(target.maxHp, target.hp + (effect.value ?? 0));
-      combatLog(state, `回复 ${effect.value} 点生命。`);
+      const amount = boostedValue(effect);
+      target.hp = Math.min(target.maxHp, target.hp + amount);
+      combatLog(state, `回复 ${amount} 点生命。`);
     }
 
     if (effect.type === "loseHp") {
       target.hp = Math.max(0, target.hp - (effect.value ?? 0));
       combatLog(state, `失去 ${effect.value} 点生命。`);
+      if (target.uid === "player" && target.hp <= 0) {
+        syncPlayerFighter(run, target);
+        finishDefeat(state, "血誓反噬，残箓染赤。");
+        return state;
+      }
     }
 
     if (effect.type === "status" && effect.status) {
-      addStatus(target, effect.status, effect.stacks ?? 0);
-      combatLog(state, `${target.uid === "player" ? "你" : target.name} 获得 ${statusLabel(effect.status)} ${effect.stacks}。`);
+      const stacks = boostedStacks(effect);
+      addStatus(target, effect.status, stacks);
+      combatLog(state, `${target.uid === "player" ? "你" : target.name} 获得 ${statusLabel(effect.status)} ${stacks}。`);
+      triggerControlBreak(state, target);
     }
 
     if (effect.type === "amplifyDebuffs") {
-      const added = amplifyDebuffs(target, effect.statuses, effect.value ?? 0);
+      const added = amplifyDebuffs(target, effect.statuses, (effect.value ?? 0) + (effect.cardMythStatusBonus ?? 0));
       if (added > 0) {
         combatLog(state, `${target.uid === "player" ? "你" : target.name} 的负面状态增长 ${added} 层。`);
       }
+      triggerThunderTribulations(state, target, effect);
+      triggerControlBreak(state, target);
     }
 
-    if (effect.type === "spikeBurst") {
-      const spikes = statusStacks(playerFighter(run), "spikes");
-      const block = run.combat?.block ?? 0;
-      const raw = Math.min(block, spikes * 3);
-      if (raw > 0) {
-        const blocked = Math.min(target.block, raw);
-        target.block -= blocked;
-        target.hp = Math.max(0, target.hp - (raw - blocked));
-        combatLog(state, `荆棘爆发！${target.name} 受到 ${raw - blocked} 点格挡反射伤害。`);
-      }
-    }
-
-    if (effect.type === "doubleBlock") {
-      if (run.combat) {
-        const before = run.combat.block;
-        run.combat.block *= 2;
-        combatLog(state, `格挡翻倍：${before} → ${run.combat.block}。`);
-      }
+    if (effect.type === "thunderMark") {
+      applyThunderMark(state, target, effect);
     }
 
     if (target.uid === "player") {
@@ -152,41 +132,63 @@ export function applyCardDamage(state, target, baseDamage, cardCost = 1, cardSty
   const combat = run?.combat;
   if (!run || !combat || target.hp <= 0) return;
 
-  const spirit = statusStacks(playerFighter(run), "spirit");
+  const player = playerFighter(run);
+  const spirit = statusStacks(player, "spirit");
+  const battleIntent = cardStyle === "physical" ? statusStacks(player, "battleIntent") : 0;
   const curse = statusStacks(target, "curse");
-  const fury = cardStyle === "physical" ? statusStacks(playerFighter(run), "fury") : 0;
   const spiritBonus = Math.min(spirit, Math.max(1, cardCost) * SPIRIT_BONUS_PER_COST);
-  const brittle = statusStacks(target, "brittle") > 0 ? 1.5 : 1;
-  const factionDmg = getFactionDamageBonus(state, cardStyle);
-  let damage = Math.floor((baseDamage + spiritBonus + curse + fury * 3 + factionDmg) * brittle);
+  const firstStrikeBonus = mythFirstStrikeDamageBonus(run, target);
+  let damage = baseDamage + spiritBonus + battleIntent + curse + firstStrikeBonus;
+
+  if (battleIntent > 0) {
+    combatLog(state, `战意追加 ${battleIntent} 点物理伤害。`);
+  }
+  if (firstStrikeBonus > 0) {
+    consumeMythFirstStrike(run, firstStrikeBonus);
+    combatLog(state, `妖箓印满级：首击追加 ${firstStrikeBonus} 点伤害。`);
+  }
 
   if (run.relics.includes("thunderSeal") && !combat.flags.thunderSealUsed) {
     damage += 4;
     combat.flags.thunderSealUsed = true;
     combatLog(state, `${relics.thunderSeal.name} 追加 4 点雷伤。`);
   }
-  const yaoFirst = getFactionFirstHitBonus(state);
-  if (yaoFirst > 0 && !combat.flags.yaoFirstUsed) {
-    damage += yaoFirst;
-    combat.flags.yaoFirstUsed = true;
-    combatLog(state, `妖力涌动，首击追加 ${yaoFirst} 点伤害。`);
-  }
 
+  damage = applyBrittleDamage(state, target, damage);
   damage = applyBlock(target, damage);
   target.hp = Math.max(0, target.hp - damage);
   combatLog(state, `对 ${target.name} 造成 ${damage} 点伤害。`);
 
   const bleed = statusStacks(target, "bleed");
   if (bleed > 0 && target.hp > 0) {
-    const bleedDamage = applyBlock(target, bleed);
+    const bleedBonus = mythStatusDamageBonus(run, target, "bleed");
+    const rawBleedDamage = applyBrittleDamage(state, target, bleed + bleedBonus);
+    const bleedDamage = applyBlock(target, rawBleedDamage);
     target.hp = Math.max(0, target.hp - bleedDamage);
     const reduced = reduceConsumableDebuff(target, "bleed", 1);
-    combatLog(state, `${target.name} 流血爆开，格挡抵消 ${bleed - bleedDamage} 点，额外受到 ${bleedDamage} 点伤害${reduced ? "。" : "，凝滞保留了流血。"}`);
+    combatLog(state, `${target.name} 流血爆开，格挡抵消 ${rawBleedDamage - bleedDamage} 点，额外受到 ${bleedDamage} 点伤害${reduced ? "。" : "，凝滞保留了流血。"}`);
   }
 
   if (target.hp <= 0) {
     onEnemyKilled(state, target);
   }
+}
+
+function applyExecute(state, target, effect) {
+  const run = state.run;
+  const combat = run?.combat;
+  if (!run || !combat || target.hp <= 0) return;
+
+  const threshold = effect.threshold ?? 35;
+  const hpPercent = (target.hp / target.maxHp) * 100;
+  if (hpPercent <= threshold) {
+    target.hp = 0;
+    combatLog(state, `${target.name} 血线低于 ${threshold}%，被无视格挡斩杀。`);
+    onEnemyKilled(state, target);
+    return;
+  }
+
+  applyCardDamage(state, target, (effect.fallbackDamage ?? 0) + (effect.cardMythBonus ?? 0), effect.cardCost ?? 1, effect.cardStyle);
 }
 
 export function applyIncomingDamage(state, rawDamage) {
@@ -219,9 +221,11 @@ export function tickDamageStatus(state, fighter, statusId) {
   const stacks = statusStacks(fighter, statusId);
   if (stacks <= 0) return;
 
-  const damage = applyBlock(fighter, stacks);
+  const bonus = mythStatusDamageBonus(state.run, fighter, statusId);
+  const rawDamage = applyBrittleDamage(state, fighter, stacks + bonus);
+  const damage = applyBlock(fighter, rawDamage);
   fighter.hp = Math.max(0, fighter.hp - damage);
-  const blocked = stacks - damage;
+  const blocked = rawDamage - damage;
   combatLog(state, `${fighter.uid === "player" ? "你" : fighter.name} 受到 ${statusLabel(statusId)} ${damage} 点伤害${blocked > 0 ? `，格挡抵消 ${blocked} 点` : ""}。`);
 
   if (["bleed", "poison"].includes(statusId)) {
@@ -249,11 +253,32 @@ export function tickDamageStatus(state, fighter, statusId) {
 
 export function applyCardEffects(state, cardInstance, targetUid) {
   const card = cards[cardInstance.cardId];
+  const mythBoost = cardMythBoost(state.run, card);
+  const growsBattleIntent = card.style === "physical" && card.effects.some((effect) => ["damage", "execute"].includes(effect.type));
+  if (mythBoost.active) {
+    combatLog(state, `${mythBoost.tag}箓印 ${mythBoost.level} 生效。`);
+  }
   for (const effect of card.effects) {
-    applyEffect(state, { ...effect, sourceUid: cardInstance.uid, cardCost: card.cost, cardStyle: card.style }, targetUid);
+    applyEffect(
+      state,
+      {
+        ...effect,
+        sourceUid: cardInstance.uid,
+        cardCost: card.cost,
+        cardStyle: card.style,
+        cardMythBonus: mythBoost.numericBonus,
+        cardMythStatusBonus: mythBoost.statusBonus,
+      },
+      targetUid,
+    );
     if (state.phase !== "combat") {
       break;
     }
+  }
+
+  if (state.phase === "combat" && growsBattleIntent && statusStacks(playerFighter(state.run), "battleIntent") > 0) {
+    addStatus({ statuses: state.run.statuses }, "battleIntent", PHYSICAL_INTENT_GAIN);
+    combatLog(state, `物理攻势推进，战意 +${PHYSICAL_INTENT_GAIN}。`);
   }
 }
 
@@ -263,17 +288,12 @@ export function pickDiscardCard(state, cardUid) {
   const choice = run?.pendingChoice;
   if (!run || !combat || choice?.type !== "discardPick") return state;
 
-  const index = combat.discardPile.findIndex((card) => card.uid === cardUid && card.uid !== choice.sourceUid);
-  if (index < 0) return state;
+  const availableCards = recoverableDiscardCards(combat, choice);
+  const allowed = availableCards.some((card) => card.uid === cardUid);
+  if (!allowed) return state;
 
-  // 二次校验：如果限制了流派，不允许回收该流派卡牌
-  if (choice.excludeStyle) {
-    const cardDef = cards[combat.discardPile[index].cardId];
-    if (cardDef?.style === choice.excludeStyle) {
-      combat.log.push("拾遗诀无法回收控制牌。");
-      return state;
-    }
-  }
+  const index = combat.discardPile.findIndex((card) => card.uid === cardUid);
+  if (index < 0) return state;
 
   const [card] = combat.discardPile.splice(index, 1);
   combat.hand.push(card);
@@ -296,7 +316,7 @@ export function cancelDiscardPick(state) {
   return state;
 }
 
-function startDiscardPick(state, count, sourceUid, excludeStyle = null) {
+function startDiscardPick(state, count, sourceUid, effect = {}) {
   const run = state.run;
   const combat = run?.combat;
   if (!run || !combat) return;
@@ -305,12 +325,12 @@ function startDiscardPick(state, count, sourceUid, excludeStyle = null) {
     type: "discardPick",
     count,
     sourceUid,
-    excludeStyle,
-    title: `从弃牌堆选择 ${count} 张牌加入手牌`,
+    excludeStyles: effect.excludeStyles ?? [],
+    title: effect.excludeStyles?.includes("control") ? `从弃牌堆选择 ${count} 张非控制牌加入手牌` : `从弃牌堆选择 ${count} 张牌加入手牌`,
   };
 
   if (recoverableDiscardCards(combat, choice).length === 0) {
-    combat.log.push(excludeStyle ? "弃牌堆没有可回收的非控制牌。" : "弃牌堆没有可回收的牌。");
+    combat.log.push("弃牌堆没有可回收的牌。");
     return;
   }
 
@@ -319,14 +339,12 @@ function startDiscardPick(state, count, sourceUid, excludeStyle = null) {
 }
 
 function recoverableDiscardCards(combat, choice) {
-  let list = combat.discardPile.filter((ci) => ci.uid !== choice.sourceUid);
-  if (choice.excludeStyle) {
-    list = list.filter((ci) => {
-      const def = cards[ci.cardId];
-      return def?.style !== choice.excludeStyle;
-    });
-  }
-  return list;
+  const excluded = new Set(choice.excludeStyles ?? []);
+  return combat.discardPile.filter((card) => {
+    if (card.uid === choice.sourceUid) return false;
+    const style = cards[card.cardId]?.style;
+    return !style || !excluded.has(style);
+  });
 }
 
 function resolveTargets(run, targetType, targetUid) {
@@ -346,7 +364,7 @@ function resolveTargets(run, targetType, targetUid) {
 }
 
 function amplifyDebuffs(target, statuses, value) {
-  const debuffs = statuses ?? ["burn", "bleed", "poison", "curse", "chaos", "stasis"];
+  const debuffs = statuses ?? ["burn", "bleed", "poison", "curse", "chaos", "bind", "stun", "stasis", "thunderMark", "brittle"];
   let added = 0;
 
   for (const statusId of debuffs) {
@@ -360,10 +378,155 @@ function amplifyDebuffs(target, statuses, value) {
   return added;
 }
 
+function applyThunderMark(state, target, effect) {
+  const run = state.run;
+  const combat = run?.combat;
+  if (!run || !combat || target.hp <= 0) return;
+
+  const stacks = (effect.stacks ?? effect.value ?? 0) + (effect.cardMythStatusBonus ?? 0);
+  if (stacks <= 0) return;
+
+  addStatus(target, "thunderMark", stacks);
+  combatLog(state, `${target.name} 雷痕 +${stacks}。`);
+  triggerThunderTribulations(state, target, effect);
+}
+
+function triggerThunderTribulations(state, target, effect = {}) {
+  const run = state.run;
+  const combat = run?.combat;
+  if (!run || !combat || target.hp <= 0) return;
+
+  const threshold = effect.threshold ?? THUNDER_TRIBULATION_THRESHOLD;
+  const damage = effect.damage ?? THUNDER_TRIBULATION_DAMAGE;
+  const stun = effect.stun ?? 1;
+
+  while (target.hp > 0 && statusStacks(target, "thunderMark") >= threshold) {
+    reduceStatus(target, "thunderMark", threshold);
+    const finalDamage = damage + statusStacks(target, "curse");
+    target.hp = Math.max(0, target.hp - finalDamage);
+    addStatus(target, "stun", stun);
+    triggerControlBreak(state, target);
+    combatLog(state, `天劫降下，${target.name} 无视格挡受到 ${finalDamage} 点雷伤，并眩晕 ${stun} 次。`);
+    if (target.hp <= 0) {
+      onEnemyKilled(state, target);
+    }
+  }
+}
+
+function applyBleedSiphon(state, targets, effect) {
+  const run = state.run;
+  const combat = run?.combat;
+  if (!run || !combat || targets.length === 0) return;
+
+  const totalBleed = targets.reduce((sum, target) => sum + statusStacks(target, "bleed"), 0);
+  if (totalBleed <= 0) {
+    combatLog(state, "没有可汲取的流血。");
+    return;
+  }
+
+  const ratio = Math.max(1, effect.ratio ?? 3);
+  const heal = Math.floor(totalBleed / ratio) + (effect.value ?? 0) + (effect.cardMythBonus ?? 0);
+  if (heal <= 0) {
+    combatLog(state, `流血不足 ${ratio} 层，未能回血。`);
+    return;
+  }
+
+  const before = run.hp;
+  run.hp = Math.min(run.maxHp, run.hp + heal);
+  const actual = run.hp - before;
+  const source = targets.length > 1 ? `敌方流血合计 ${totalBleed} 层` : `${targets[0].name} 流血 ${totalBleed} 层`;
+  combatLog(state, `血魔汲血：${source}，回复 ${actual} 点生命。`);
+}
+
+function applyShellReflect(state, targets, effect) {
+  const run = state.run;
+  const combat = run?.combat;
+  if (!run || !combat || targets.length === 0) return;
+
+  const block = combat.block ?? 0;
+  if (block <= 0) {
+    combatLog(state, "没有格挡可用于反震。");
+    return;
+  }
+
+  const ratio = Math.max(0, effect.ratio ?? 0.5);
+  const rawDamage = Math.floor(block * ratio) + (effect.value ?? 0) + (effect.cardMythBonus ?? 0);
+  if (rawDamage <= 0) {
+    combatLog(state, "反震力道不足。");
+    return;
+  }
+
+  for (const target of targets) {
+    if (target.hp <= 0) continue;
+    const finalRawDamage = applyBrittleDamage(state, target, rawDamage);
+    const damage = applyBlock(target, finalRawDamage);
+    target.hp = Math.max(0, target.hp - damage);
+    combatLog(state, `以 ${block} 点格挡反震 ${target.name}，造成 ${damage} 点伤害。`);
+    if (target.hp <= 0) {
+      onEnemyKilled(state, target);
+    }
+  }
+
+  const consumeRatio = Math.max(0, effect.consumeRatio ?? 0);
+  const consumed = Math.min(combat.block, Math.ceil(block * consumeRatio));
+  if (consumed > 0) {
+    combat.block -= consumed;
+    combatLog(state, `反震消耗 ${consumed} 点格挡。`);
+  }
+}
+
 function applyBlock(fighter, rawDamage) {
   const blocked = Math.min(fighter.block, rawDamage);
   fighter.block -= blocked;
   return rawDamage - blocked;
+}
+
+function boostedValue(effect) {
+  return (effect.value ?? 0) + (effect.cardMythBonus ?? 0);
+}
+
+function boostedStacks(effect) {
+  return (effect.stacks ?? 0) + (effect.cardMythStatusBonus ?? 0);
+}
+
+function applyBrittleDamage(state, target, rawDamage) {
+  if (rawDamage <= 0 || target.uid === "player" || statusStacks(target, "brittle") <= 0) {
+    return rawDamage;
+  }
+
+  const amplified = Math.ceil(rawDamage * BRITTLE_MULTIPLIER);
+  combatLog(state, `${target.name} 脆化承伤，伤害 ${rawDamage} -> ${amplified}。`);
+  return amplified;
+}
+
+function triggerControlBreak(state, target) {
+  const combat = state.run?.combat;
+  if (!combat || target.uid === "player" || target.hp <= 0) return;
+
+  while (controlPressure(target) >= CONTROL_BREAK_THRESHOLD) {
+    consumeControlPressure(target, CONTROL_BREAK_THRESHOLD);
+    const clearedBlock = target.block ?? 0;
+    target.block = 0;
+    addStatus(target, "brittle", BRITTLE_STACKS);
+    combatLog(state, `${target.name} 心防崩裂，清空 ${clearedBlock} 点格挡，获得脆化 ${BRITTLE_STACKS}。`);
+  }
+}
+
+function controlPressure(target) {
+  return statusStacks(target, "chaos") + statusStacks(target, "bind") + statusStacks(target, "stun");
+}
+
+function consumeControlPressure(target, amount) {
+  let remaining = amount;
+  for (const statusId of ["chaos", "bind", "stun"]) {
+    if (remaining <= 0) return;
+    const stacks = statusStacks(target, statusId);
+    const spent = Math.min(stacks, remaining);
+    if (spent > 0) {
+      reduceStatus(target, statusId, spent);
+      remaining -= spent;
+    }
+  }
 }
 
 function onEnemyKilled(state, enemy) {
@@ -394,28 +557,10 @@ function finishDefeat(state, message) {
   const run = state.run;
   if (!run || run.finished) return;
 
+  const mythAward = awardMythMasteryForRunEnd(state, "defeat");
   run.finished = true;
   state.phase = "gameOver";
-  state.message = message;
+  state.message = mythAward ? `${message} ${mythAwardText(mythAward)}` : message;
   state.meta.soul += Math.max(3, run.floor * 2);
   state.meta.lossStreak = (state.meta.lossStreak ?? 0) + 1;
-}
-
-function getFactionDamageBonus(state, cardStyle) {
-  const mastery = state.meta?.factionMastery ?? {};
-  // 幽冥: bonus for bleed/poison cards
-  if (cardStyle === "bleed" || cardStyle === "poison") {
-    return mastery["幽冥"] ?? 0;
-  }
-  return 0;
-}
-
-function getFactionBlockBonus(state) {
-  const mastery = state.meta?.factionMastery ?? {};
-  return mastery["山海"] ?? 0;
-}
-
-function getFactionFirstHitBonus(state) {
-  const mastery = state.meta?.factionMastery ?? {};
-  return (mastery["妖"] ?? 0) * 3;
 }
