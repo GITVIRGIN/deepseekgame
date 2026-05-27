@@ -214,7 +214,7 @@ function rewardWeight(run, card) {
 }
 
 export function rollRelicReward(run) {
-  const available = Object.values(relics).filter((relic) => !run.relics.includes(relic.id));
+  const available = Object.values(relics).filter((relic) => !run.relics.includes(relic.id) && !relic.text?.includes("真武专属"));
   if (available.length === 0) return null;
   return weightedChoice(run, available, (relic) => rarityInfo[relic.rarity].weight);
 }

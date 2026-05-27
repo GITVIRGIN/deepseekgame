@@ -140,8 +140,7 @@ function renderHome() {
 
 function isTrueMartialUnlocked(meta) {
   const mastery = meta.factionMastery || {};
-  const threeAtThree = Object.values(mastery).filter(v => v >= 3).length >= 3;
-  return threeAtThree;
+  return Object.values(mastery).some(v => v >= 5);
 }
 
 function renderMartialSelect() {
