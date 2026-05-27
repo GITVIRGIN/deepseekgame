@@ -133,6 +133,7 @@ function combatAct(s, stepC, profile = "balanced") {
   const hpPct = run.hp / run.maxHp;
   const block = combat.block ?? 0;
   const enemies = combat.enemies.filter(e => e.hp > 0);
+  const isBoss = enemies.some(e => e.maxHp && e.maxHp >= 40 && enemies.length === 1);
   const enemyDmg = estimateIncoming(run);
 
   // Discard pick
@@ -140,12 +141,19 @@ function combatAct(s, stepC, profile = "balanced") {
     return handleDiscard(run);
   }
 
+  // Boss fight: max aggression, kill before curse stacks kill you
+  if (isBoss) {
+    const dmgCard = findBest(run, hand, e => e.type === "damage" || e.type === "execute");
+    if (dmgCard) return { type: "playCard", cardUid: dmgCard.uid, targetUid: null };
+  }
+
   // Can we kill an enemy this turn?
   const canKill = findKill(run, hand);
   if (canKill && hpPct > 0.2) return { type: "playCard", cardUid: canKill.uid, targetUid: null };
 
-  // Low HP defense
-  if (hpPct < 0.3 && block < enemyDmg) {
+  // Low HP defense - BUT if we can kill an enemy, do it
+  const nearDeath = enemies.some(e => e.hp <= 15);
+  if (hpPct < 0.3 && block < enemyDmg && !nearDeath) {
     const blockCard = findBest(run, hand, e => e.type === "block");
     if (blockCard) return { type: "playCard", cardUid: blockCard.uid, targetUid: null };
   }
@@ -178,10 +186,15 @@ function cardScore(run, card, profile) {
   const block = run.combat?.block ?? 0;
   
 
-  // Damage: good, better when safe
-  if (card.effects.some(e => e.type === "damage")) { s += 20; if (hpPct > 0.4) s += 15; }
-  // Block: essential when low
-  if (card.effects.some(e => e.type === "block")) s += hpPct < 0.35 ? 50 : hpPct < 0.6 ? 20 : run.floor <= 6 ? 5 : 10;
+  // Damage: good, better when safe or enemy near death
+  const nearKill = (run.combat?.enemies || []).some(e => e.hp > 0 && e.hp <= 15);
+  if (card.effects.some(e => e.type === "damage")) { s += 20 + (nearKill ? 30 : 0); if (hpPct > 0.4) s += 15; }
+  // Block: essential when low, but don't over-block
+  const enemyDmg2 = estimateIncoming(run);
+  if (card.effects.some(e => e.type === "block")) {
+    const needed = Math.max(0, estimateIncoming(run) - (run.combat?.block ?? 0));
+    s += hpPct < 0.3 && needed > 0 ? 50 : hpPct < 0.5 ? 15 : 5;
+  }
   // Draw/energy: always positive
   if (card.effects.some(e => e.type === "draw" || e.type === "gainEnergy")) s += 35;
   // Shell reflect: good with block

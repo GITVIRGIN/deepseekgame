@@ -21,9 +21,16 @@ let cloudBusy = false;
 let cloudMessage = "";
 let cloudTimer = null;
 let suppressCardClickUntil = 0;
+let replayRecording = null;
 
 function dispatch(action) {
+  if (replayRecording && state.phase !== "gameOver") {
+    replayRecording.actions.push({ phase: state.phase, action });
+  }
   state = reduceGame(state, action);
+  if (state.run && !replayRecording) {
+    replayRecording = { seed: state.run.seed, style: state.run.trueMartialStyle || null, actions: [] };
+  }
   pileInfo = null;
 
   const alive = state.run?.combat?.enemies.filter((enemy) => enemy.hp > 0) ?? [];
@@ -46,6 +53,7 @@ function renderShell() {
   shell.append(renderHeader());
 
   if (state.phase === "home") {
+    replayRecording = null;
     shell.append(renderHome());
   }
 
@@ -71,6 +79,10 @@ function renderShell() {
 
   if (state.phase === "gameOver") {
     shell.append(renderGameOver());
+    if (replayRecording) {
+      replayRecording.result = { floor: state.run?.floor, won: !!state.run?.goal?.completedBy };
+      shell.append(downloadReplayButton());
+    };
   }
 
   if (detailInfo) {
@@ -278,6 +290,19 @@ function renderReward() {
 
   view.append(rewards);
   return view;
+}
+
+
+function downloadReplayButton() {
+  const btn = el("button", "", "下载回放");
+  btn.style.cssText = "display:block;margin:8px auto;padding:8px 16px;background:#e8c97a;color:#1a1a2e;border:none;border-radius:4px;cursor:pointer;font-size:14px;";
+  btn.addEventListener("click", () => {
+    const blob = new Blob([JSON.stringify(replayRecording, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a"); a.href = url; a.download = "replay_" + Date.now() + ".json"; a.click();
+    URL.revokeObjectURL(url);
+  });
+  return btn;
 }
 
 function renderGameOver() {
