@@ -319,6 +319,8 @@ export const cards = {
   furySlash: { id: "furySlash", name: "怒斩", rarity: "common", cost: 1, text: "造成 7 伤，获得 3 层战意。真武专属。", mythTags: ["人间"], style: "physical", grade: 1, trueMartial: true, effects: [{ type: "damage", target: "enemy", value: 7 },{ type: "status", target: "self", status: "battleIntent", stacks: 3 }]},
   thunderCall: { id: "thunderCall", name: "唤雷术", rarity: "common", cost: 1, text: "造成 5 伤，施加 3 层雷印。真武专属。", mythTags: ["天庭"], style: "spell", grade: 1, trueMartial: true, effects: [{ type: "damage", target: "enemy", value: 5 },{ type: "thunderMark", target: "enemy", value: 3 }]},
   bloodFang: { id: "bloodFang", name: "血牙", rarity: "common", cost: 1, text: "施加 5 层流血，回复 2 生命。真武专属。", mythTags: ["幽冥"], style: "bleed", grade: 1, trueMartial: true, effects: [{ type: "status", target: "enemy", status: "bleed", stacks: 5 },{ type: "heal", target: "self", value: 2 }]},
+    warGodStrike: { id: "warGodStrike", name: "战神一击", rarity: "common", cost: 2, text: "造成 20 点伤害。真武专属。", mythTags: ["天庭"], style: "physical", grade: 1, trueMartial: true, effects: [{ type: "damage", target: "enemy", value: 20 }]},
+  thunderBurst: { id: "thunderBurst", name: "雷爆", rarity: "common", cost: 1, text: "如果目标有3层以上雷印，立即触发天劫。真武专属。", mythTags: ["天庭"], style: "spell", grade: 1, trueMartial: true, effects: [{ type: "thunderMark", target: "enemy", value: 5 }]},
   venomFang: { id: "venomFang", name: "毒牙", rarity: "common", cost: 1, text: "施加 6 层毒瘴。真武专属。", mythTags: ["山海"], style: "poison", grade: 1, trueMartial: true, effects: [{ type: "status", target: "enemy", status: "poison", stacks: 6 }]},
   skyShellMandate: {
     id: "skyShellMandate",
@@ -1098,8 +1100,8 @@ export const shopItems = {
 
 
 export const trueMartialDecks = {
-  physical: ["strike","strike","heavySlash","chainBlade","traceCutter","readyStance","armorBreaker","killingIntent","furySlash","furySlash","guard","guard"],
-  spell: ["strike","strike","thunderCharm","thunderCharm","attractThunder","thunderCall","thunderArmy","guard","guard","meditate"],
+  physical: ["strike","strike","heavySlash","chainBlade","traceCutter","readyStance","armorBreaker","killingIntent","furySlash","furySlash","warGodStrike","guard"],
+  spell: ["strike","strike","thunderCharm","thunderCharm","attractThunder","thunderCall","thunderArmy","thunderBurst","guard","guard"],
   bleed: ["strike","strike","bloodNeedle","bloodNeedle","ghostNeedle","bloodNet","bloodSurge","bloodRecycle","bloodFang","bloodFang","guard"],
   poison: ["strike","strike","poisonPowder","poisonPowder","miasma","centipedeJar","poisonBurst","boneDust","venomFang","venomFang","guard"],
   control: ["strike","strike","discordCharm","discordCharm","bindingRope","echoBell","stasisCharm","curseKill","guard","guard"],

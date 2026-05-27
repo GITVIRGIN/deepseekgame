@@ -87,8 +87,8 @@ function styleBaseRewardWeight(run, styleId, dominant, score, floor) {
     if (dominant?.style === "physical" && score >= 9) {
       return floor >= 13 ? 1.1 : floor >= 7 ? 0.9 : 0.6;
     }
-    if (score >= 5) return 0.5;
-    return 0.35;
+    if (score >= 5) return 0.55;
+    return 0.45;
   }
 
   if (styleId === "shell") {
@@ -118,7 +118,7 @@ function styleBaseRewardWeight(run, styleId, dominant, score, floor) {
     }
 
     if (score >= 5) return floor >= 7 ? 0.84 : 0.64;
-    return 0.62;
+    return 0.70;
   }
 
   if (styleId === "control") {

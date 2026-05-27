@@ -62,7 +62,6 @@ export function generateRewards(state) {
     return rewards;
   }
 
-  console.log("[REWARD DEBUG]", "floor:", run.floor, "tier:", node?.tier ?? tierForFloor(run.floor), "affinity:", JSON.stringify(run.archetypeAffinity), "seed:", run.seed);
   const tier = node?.tier ?? tierForFloor(run.floor);
   for (let index = 0; index < 3; index += 1) {
     const card =
@@ -71,7 +70,6 @@ export function generateRewards(state) {
         : index === 0 && tier >= 2
           ? rollProgressCardReward(run, false)
           : rollCardReward(run);
-    console.log("[REWARD CARD]", "slot:", index, "card:", card.name, card.id, "seed:", run.seed);
     rewards.push({
       id: `reward_card_${index}_${card.id}`,
       type: "card",
