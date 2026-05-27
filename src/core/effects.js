@@ -458,6 +458,7 @@ function applyShellReflect(state, targets, effect) {
 
   const ratio = Math.max(0, effect.ratio ?? 0.5);
   const rawDamage = Math.max(1, Math.floor(block * ratio) + (effect.value ?? 0) + (effect.cardMythBonus ?? 0));
+  console.log("[龟甲反震]", "格挡:", block, "倍率:", ratio, "伤害:", rawDamage);
   // Always apply block shield when consumeRatio is 0
   if (effect.consumeRatio === 0 && block > 0) {
     const pf = playerFighter(run);
