@@ -627,7 +627,7 @@ function runPowerPressure(run) {
 function clearEndOfCombatStatuses(run) {
   clearStatus(run, "spirit");
   clearStatus(run, "spikes");
-  clearStatus(run, "battleIntent");
+    clearStatus(run, "battleIntent");
 }
 
 function rollEnemyIntent(run, enemyId) {
