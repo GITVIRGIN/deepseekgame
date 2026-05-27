@@ -47,10 +47,8 @@ export function finishCurrentNode(run) {
   }
 
   if (node.type === "side") {
-    run.completedSideTiers = run.completedSideTiers ?? [];
-    if (!run.completedSideTiers.includes(node.tier)) {
-      run.completedSideTiers.push(node.tier);
-    }
+    run.completedSideTiers = run.completedSideTiers ?? {};
+    run.completedSideTiers[node.tier] = (run.completedSideTiers[node.tier] ?? 0) + 1;
     if (node.id === "side_final") {
       run.finalSideCompleted = true;
     }
@@ -106,7 +104,7 @@ function buildNodeChoices(run) {
     return [...finalChoices, ...choices];
   }
 
-  const completedSideTiers = run.completedSideTiers ?? [];
+  const completedSideTiers = run.completedSideTiers ?? {};
   const branch = run.routeCooldown ? null : branchForFloor(run, tier, completedSideTiers, visitedShopTiers);
   run.routeCooldown = false;
 
@@ -148,7 +146,8 @@ function branchForFloor(run, tier, completedSideTiers, visitedShopTiers) {
 
   const roll = routeRoll(run.seed, tier, run.floor);
   const canShop = (run.shopTiers ?? []).includes(tier) && !visitedShopTiers.includes(tier);
-  const canSide = !completedSideTiers.includes(tier);
+  const sideMax = tier >= 2 ? 2 : 1;
+  const canSide = (completedSideTiers[tier] ?? 0) < sideMax;
 
   if (canShop && roll < 24) return "shop";
   if (canSide && roll >= 24 && roll < 62) return "side";

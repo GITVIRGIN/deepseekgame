@@ -25,6 +25,15 @@ export function clearSave() {
   localStorage.removeItem(SAVE_KEY);
 }
 
+function migrateSideTiers(value) {
+  if (Array.isArray(value)) {
+    const obj = {};
+    for (const t of value) obj[t] = 1;
+    return obj;
+  }
+  return value ?? {};
+}
+
 function migrateGame(state) {
   state.meta = migrateMeta(state.meta);
 
@@ -40,7 +49,7 @@ function migrateGame(state) {
   run.nodeChoices = run.nodeChoices ?? [];
   run.currentNode = run.currentNode ?? null;
   run.lossStreak = run.lossStreak ?? state.meta.lossStreak ?? 0;
-  run.completedSideTiers = run.completedSideTiers ?? [];
+  run.completedSideTiers = migrateSideTiers(run.completedSideTiers);
   run.finalSideCompleted = Boolean(run.finalSideCompleted);
   run.visitedShopTiers = run.visitedShopTiers ?? [];
   run.finalShopVisited = Boolean(run.finalShopVisited);

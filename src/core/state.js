@@ -57,7 +57,7 @@ export function startRun(state) {
     mythMastery: snapshotMythMastery(next.meta),
     mythStats: { plays: {}, lastAward: null },
     lossStreak: next.meta.lossStreak ?? 0,
-    completedSideTiers: [],
+    completedSideTiers: {},
     finalSideCompleted: false,
     shopTiers: [],
     visitedShopTiers: [],
