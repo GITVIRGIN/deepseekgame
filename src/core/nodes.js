@@ -31,6 +31,7 @@ export function selectNode(state, nodeId) {
 
   run.currentNode = node;
   run.nodeChoices = [];
+  if (node.type === "shop" || node.type === "side") run.routeCooldown = true;
   return state;
 }
 
@@ -106,7 +107,8 @@ function buildNodeChoices(run) {
   }
 
   const completedSideTiers = run.completedSideTiers ?? [];
-  const branch = branchForFloor(run, tier, completedSideTiers, visitedShopTiers);
+  const branch = run.routeCooldown ? null : branchForFloor(run, tier, completedSideTiers, visitedShopTiers);
+  run.routeCooldown = false;
 
   if (branch === "side") {
     choices.push({

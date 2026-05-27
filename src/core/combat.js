@@ -474,11 +474,14 @@ function createEnemiesForFloor(run) {
   const pool = ["littleYao", "shanxiao", "foxYao", "waterGhost", "ironCorpse"];
   const tier = run.currentNode?.tier ?? Math.min(3, Math.ceil(run.floor / TIER_SIZE));
   const isSide = run.currentNode?.type === "side";
+  // 中期(floor 7-13) 2-3只，后期(floor 14+) 3-4只，Boss保持1只
   const count = isSide
     ? randomInt(run, tier >= 2 ? 2 : 1, tier >= 3 ? 3 : 2)
-    : run.floor >= 5
-      ? randomInt(run, 2, 3)
-      : randomInt(run, 1, 2);
+    : run.floor >= 14
+      ? randomInt(run, 3, 4)
+      : run.floor >= 7
+        ? randomInt(run, 2, 3)
+        : randomInt(run, 1, 2);
   const result = [];
 
   for (let index = 0; index < count; index += 1) {

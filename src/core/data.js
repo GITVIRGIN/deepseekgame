@@ -860,13 +860,13 @@ export const cards = {
     name: "归藏符",
     rarity: "rare",
     cost: 1,
-    text: "从弃牌堆选择 1 张非控制牌加入手牌，获得 1 点能量。",
+    text: "获得 1 点能量，从弃牌堆选择 2 张非控制牌加入手牌。",
     mythTags: ["昆仑"],
     style: "spell",
     grade: 2,
     effects: [
       { type: "gainEnergy", value: 1 },
-      { type: "recoverDiscard", value: 1, excludeStyles: ["control"] },
+      { type: "recoverDiscard", value: 2, excludeStyles: ["control"] },
     ],
   },
   cycleMandate: {
