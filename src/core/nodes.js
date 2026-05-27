@@ -146,7 +146,7 @@ function branchForFloor(run, tier, completedSideTiers, visitedShopTiers) {
 
   const roll = routeRoll(run.seed, tier, run.floor);
   const canShop = (run.shopTiers ?? []).includes(tier) && !visitedShopTiers.includes(tier);
-  const sideMax = tier >= 2 ? 2 : 1;
+  const sideMax = tier === 2 ? 2 : 1;
   const canSide = (completedSideTiers[tier] ?? 0) < sideMax;
 
   if (canShop && roll < 24) return "shop";
