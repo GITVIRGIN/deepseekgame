@@ -213,6 +213,7 @@ export function applyIncomingDamage(state, rawDamage) {
   }
 
   const hasBlockShield = player.statuses?.some(s => s.id === "blockShield" && s.stacks > 0);
+  if (hasBlockShield) console.log("[格挡锁定] 生效，格挡", player.block, "免疫伤害", damage);
   damage = hasBlockShield ? damage : applyBlock(player, damage);
   player.hp = Math.max(0, player.hp - damage);
   syncPlayerFighter(run, player);
