@@ -428,10 +428,12 @@ function renderCloudOverlay() {
 function renderRunPanel(run) {
   const panel = el("aside", "run-panel");
   panel.append(
-    el("h2", "", `第 ${run.floor}/${MAX_FLOOR} 层`),
-    el("div", "floor-actions", [
-      button("修行", "ghost micro", () => { progressionOpen = true; render(); }),
-      button("放弃", "danger micro", () => dispatch({ type: "abandonRun" })),
+    el("div", "floor-head", [
+      el("h2", "", `第 ${run.floor}/${MAX_FLOOR} 层`),
+      el("div", "floor-actions", [
+        button("修行", "ghost micro", () => { progressionOpen = true; render(); }),
+        button("放弃", "danger micro", () => dispatch({ type: "abandonRun" })),
+      ]),
     ]),
     renderPlayerVitals(run),
     el("div", "stat-grid", [

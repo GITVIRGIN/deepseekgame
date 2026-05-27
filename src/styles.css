@@ -1376,3 +1376,19 @@ p {
 .floor-actions { display: flex; gap: 4px; }
 .floor-actions button { font-size: 10px; padding: 1px 6px; min-height: 20px; }
 .micro { font-size: 10px; padding: 2px 6px; min-height: 22px; }
+
+.floor-head { display: flex; align-items: center; justify-content: space-between; }
+.floor-head h2 { margin: 0; font-size: 15px; }
+.floor-actions { display: flex; gap: 3px; }
+.floor-actions button { font-size: 10px; padding: 1px 5px; min-height: 18px; }
+.micro { font-size: 10px; padding: 2px 5px; min-height: 20px; }
+
+/* 手牌极限压缩 */
+.game-card { padding: 3px 4px; font-size: 9px; line-height: 1.15; min-height: 48px; }
+.game-card strong { font-size: 10px; display: block; }
+.game-card p { font-size: 8px; margin: 0; line-height: 1.1; }
+.game-card .card-cost { font-size: 9px; min-width: 14px; padding: 1px 3px; }
+.game-card .card-rarity { font-size: 7px; }
+.game-card .effect-badges { gap: 1px; }
+.game-card .effect-badges span, .game-card .style-badges span { font-size: 7px; padding: 0 2px; }
+.game-card .myth-tags { font-size: 7px; }
