@@ -97,11 +97,12 @@ function renderShell() {
 }
 
 function renderHeader() {
+  const inGame = state.phase !== "home" && state.phase !== "gameOver";
   const header = el("header", "topbar");
   header.append(
     el("div", "brand", [
       image("./assets/seal.svg", "玄箓印"),
-      el("div", "", [el("h1", "", "玄箓行"), el("p", "", `神话杂糅文字肉鸽 · v${gameVersion.app}`)]),
+      el("div", "", [el("h1", "", "玄箓行"), el("p", "", `v${gameVersion.app}`)]),
     ]),
     el("div", "topbar-actions", [
       el("div", "meta", [
@@ -109,7 +110,7 @@ function renderHeader() {
         stat("行旅", state.meta.totalRuns),
         stat("通关", state.meta.wins),
       ]),
-      button("云存档", "ghost small cloud-shortcut", () => {
+      inGame ? "" : button("云存档", "ghost small cloud-shortcut", () => {
         cloudOpen = true;
         render();
       }),

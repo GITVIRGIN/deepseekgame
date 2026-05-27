@@ -1235,6 +1235,33 @@ p {
   line-height: 1.45;
 }
 
+
+/* 紧凑标题行 */
+.topbar { display: flex; align-items: center; gap: 6px; }
+.brand { display: flex; align-items: center; gap: 6px; flex: 1; }
+.brand img { width: 32px; height: 32px; }
+.brand h1 { font-size: 20px; margin: 0; }
+.brand p { font-size: 11px; color: var(--muted); margin: 0; }
+.topbar-actions { display: flex; align-items: center; gap: 4px; }
+.topbar-actions .meta { display: flex; gap: 4px; }
+.topbar-actions .stat { padding: 2px 4px; min-width: 36px; }
+.topbar-actions .stat span { font-size: 9px; }
+.topbar-actions .stat strong { font-size: 12px; }
+.cloud-shortcut { font-size: 11px; min-height: 28px; min-width: 56px; }
+
+/* 手牌压缩 */
+.game-card { font-size: 11px; line-height: 1.2; }
+.game-card strong { font-size: 12px; }
+.game-card p { font-size: 10px; margin: 1px 0; }
+.game-card .card-cost { font-size: 11px; min-width: 16px; }
+.game-card .card-rarity { font-size: 9px; }
+.game-card .effect-badges span, .game-card .style-badges span { font-size: 9px; padding: 1px 3px; }
+.game-card .myth-tags { font-size: 9px; }
+
+/* 运行操作同行 */
+.run-actions { display: flex; gap: 4px; }
+.run-actions button { flex: 1; font-size: 11px; min-height: 26px; }
+
 @media (max-width: 1080px) {
   .combat-layout,
   .route-layout {
