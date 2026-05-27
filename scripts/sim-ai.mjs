@@ -30,7 +30,7 @@ function runOne(seed, profile, trueMartial = false) {
       continue;
     }
     if (s.phase === "combat") {
-      s = reduceGame(s, combatAct(s, stepCombat));
+      s = reduceGame(s, combatAct(s, stepCombat, profile));
     }
   }
   return {
@@ -125,7 +125,7 @@ function rewardScore(run, reward) {
 }
 
 // ============ COMBAT AI ============
-function combatAct(s, stepC) {
+function combatAct(s, stepC, profile = "balanced") {
   if (stepC > 200) return { type: "endTurn" }; // safety valve
   const run = s.run;
   const combat = run.combat;
@@ -154,6 +154,9 @@ function combatAct(s, stepC) {
   const drawCard = findBest(run, hand, e => e.type === "draw" || e.type === "gainEnergy");
   if (drawCard && run.energy >= 2) return { type: "playCard", cardUid: drawCard.uid, targetUid: null };
 
+  // Archetype preference
+  const styleBoost = profile !== "balanced" ? 10 : 0;
+
   // Play sensible cards
   const playable = hand
     .map(inst => ({ inst, card: cards[inst.cardId] }))
@@ -162,14 +165,14 @@ function combatAct(s, stepC) {
   if (playable.length === 0) return { type: "endTurn" };
 
   // Score each playable card
-  playable.sort((a, b) => cardScore(run, b.card) - cardScore(run, a.card));
+  playable.sort((a, b) => cardScore(run, b.card, profile) - cardScore(run, a.card, profile));
   const best = playable[0];
-  if (cardScore(run, best.card) < 0 && hpPct > 0.5) return { type: "endTurn" };
+  if (cardScore(run, best.card, profile) < 0 && hpPct > 0.5) return { type: "endTurn" };
 
   return { type: "playCard", cardUid: best.inst.uid, targetUid: null };
 }
 
-function cardScore(run, card) {
+function cardScore(run, card, profile) {
   let s = 0;
   const hpPct = run.hp / run.maxHp;
   const block = run.combat?.block ?? 0;
@@ -197,6 +200,19 @@ function cardScore(run, card) {
   if (card.effects.some(e => e.type === "thunderMark")) s += 25;
   // Self-damage: avoid when low
   if (card.effects.some(e => e.type === "loseHp")) s -= hpPct < 0.5 ? 80 : 15;
+  if (card.style === profile) s += 12;
+  // Profile synergy bonuses
+  const e = card.effects;
+  if (profile === "bleed" && e.some(f => f.type === "bleedSiphon")) s += 45;
+  if (profile === "bleed" && e.some(f => f.type === "status" && f.status === "bleed")) s += 18;
+  if (profile === "shell" && e.some(f => f.type === "shellReflect")) s += block > 12 ? 50 : 20;
+  if (profile === "shell" && e.some(f => f.type === "block")) s += 10;
+  if (profile === "poison" && e.some(f => f.type === "status" && f.status === "poison")) s += 22;
+  if (profile === "poison" && e.some(f => f.type === "amplifyDebuffs")) s += 30;
+  if (profile === "spell" && e.some(f => f.type === "thunderMark")) s += 35;
+  if (profile === "control" && e.some(f => ["chaos","bind","stasis"].includes(f.status))) s += 30;
+  if (profile === "physical" && e.some(f => f.type === "execute")) s += 28;
+  if (profile === "physical" && e.some(f => f.type === "status" && f.status === "battleIntent")) s += 15;
 
   // High cost penalty if low energy
   if (card.cost >= 2 && run.maxEnergy < 4 && run.energy <= card.cost) s -= 20;
