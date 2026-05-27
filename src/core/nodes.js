@@ -1,6 +1,14 @@
 import { MAX_FLOOR, TIER_SIZE } from "./types.js";
 
 const tierNames = ["山门外", "妖雾岭", "黑山道"];
+export function isBossFloor(floor) {
+  return floor === 3 || floor === 6 || floor === 9 || floor === 12 || floor === 15 || floor === MAX_FLOOR;
+}
+
+export function isStageBossFloor(floor) {
+  return floor === 6 || floor === 12 || floor === MAX_FLOOR;
+}
+
 
 export function tierForFloor(floor) {
   return Math.min(3, Math.max(1, Math.ceil(floor / TIER_SIZE)));

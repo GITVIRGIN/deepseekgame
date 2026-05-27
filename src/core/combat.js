@@ -16,6 +16,7 @@ import {
   statusStacks,
 } from "./status.js";
 import { MAX_FLOOR, TIER_SIZE } from "./types.js";
+import { isBossFloor } from "./nodes.js";
 
 const ROUND_DECAY_STATUSES = ["curse", "spirit", "battleIntent", "ward", "stasis", "brittle"];
 const ROUND_DECAY_CONSUMABLE_DEBUFFS = ["chaos"];
@@ -466,9 +467,20 @@ function skipEnemyByBind(combat, enemy) {
   combat.log.push(`${enemy.name} 被禁锢封住攻击和术法，空过了这一回合。`);
 }
 
+function bossForFloor(floor) {
+  if (floor >= MAX_FLOOR) return "blackMountain";
+  if (floor === 3) return "yaoJiang";
+  if (floor === 6) return "shanJun";
+  if (floor === 9) return "guiJiang";
+  if (floor === 12) return "panGuan";
+  if (floor === 15) return "moZun";
+  return null;
+}
+
 function createEnemiesForFloor(run) {
-  if (run.currentNode?.type === "main" && run.floor >= MAX_FLOOR) {
-    return [makeEnemy(run, "blackMountain")];
+  const bossId = bossForFloor(run.floor);
+  if (bossId) {
+    return [makeEnemy(run, bossId)];
   }
 
   const pool = ["littleYao", "shanxiao", "foxYao", "waterGhost", "ironCorpse"];

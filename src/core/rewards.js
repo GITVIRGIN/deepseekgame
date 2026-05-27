@@ -21,6 +21,17 @@ export function generateRewards(state) {
   const node = run.currentNode;
   migrateArchetypes(run);
 
+  if (node?.rewardKind === "bossPremium") {
+    // Boss: premium cards + guaranteed relic
+    for (let index = 0; index < 3; index += 1) {
+      const card = rollPremiumCardReward(run, index === 0);
+      rewards.push({ id: `reward_card_${index}_${card.id}`, type: "card", value: card.id });
+    }
+    const relic = rollRelicReward(run);
+    if (relic) rewards[2] = { id: `reward_relic_${relic.id}`, type: "relic", value: relic.id };
+    return rewards;
+  }
+
   if (node?.rewardKind === "side") {
     rewards.push({
       id: "reward_side_gold",
@@ -66,7 +77,7 @@ export function generateRewards(state) {
     });
   }
 
-  if (run.floor % 3 === 0 || node?.rewardKind === "tierPremium") {
+  if (node?.rewardKind === "tierPremium") {
     const relic = rollRelicReward(run);
     if (relic) {
       rewards[2] = {

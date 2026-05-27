@@ -899,7 +899,60 @@ export const cards = {
   },
 };
 
-export const enemies = {
+export const enemies = {  yaoJiang: {
+    id: "yaoJiang",
+    name: "妖将",
+    maxHp: 42,
+    intents: [
+      { type: "attack", value: 8, text: "劈斩 8" },
+      { type: "attack", value: 12, text: "重劈 12" },
+      { type: "block", value: 8, text: "妖气护体 8" },
+    ],
+  },
+  shanJun: {
+    id: "shanJun",
+    name: "山君",
+    maxHp: 80,
+    intents: [
+      { type: "attack", value: 12, text: "虎爪 12" },
+      { type: "attack", value: 18, text: "扑杀 18" },
+      { type: "block", value: 12, text: "虎踞 12" },
+      { type: "status", status: "curse", stacks: 2, text: "虎啸震慑 2" },
+    ],
+  },
+  guiJiang: {
+    id: "guiJiang",
+    name: "鬼将",
+    maxHp: 60,
+    intents: [
+      { type: "attack", value: 10, text: "鬼爪 10" },
+      { type: "attack", value: 15, text: "索命 15" },
+      { type: "status", status: "curse", stacks: 3, text: "鬼咒 3" },
+    ],
+  },
+  panGuan: {
+    id: "panGuan",
+    name: "判官",
+    maxHp: 120,
+    intents: [
+      { type: "attack", value: 14, text: "判笔 14" },
+      { type: "attack", value: 20, text: "生死判 20" },
+      { type: "block", value: 15, text: "阴律护身 15" },
+      { type: "status", status: "curse", stacks: 4, text: "判词 4" },
+    ],
+  },
+  moZun: {
+    id: "moZun",
+    name: "魔尊",
+    maxHp: 90,
+    intents: [
+      { type: "attack", value: 14, text: "魔焰 14" },
+      { type: "attack", value: 20, text: "灭世 20" },
+      { type: "status", status: "burn", stacks: 4, text: "焚天 4" },
+      { type: "status", status: "curse", stacks: 3, text: "魔咒 3" },
+    ],
+  },
+
   littleYao: {
     id: "littleYao",
     name: "小妖",
