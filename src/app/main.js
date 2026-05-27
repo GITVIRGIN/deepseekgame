@@ -436,6 +436,7 @@ function renderRunPanel(run) {
       ]),
     ]),
     renderPlayerVitals(run),
+    renderArchetypePanel(run),
     el("div", "stat-grid", [
       stat("生命", `${run.hp}/${run.maxHp}`),
       stat("格挡", run.combat?.block ?? 0),

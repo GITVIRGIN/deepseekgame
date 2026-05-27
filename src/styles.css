@@ -1302,7 +1302,7 @@ p {
   .combat-layout .run-panel { gap: 3px; padding: 6px; }
   .combat-layout .run-panel > h2 { font-size: 14px; }
   .combat-layout .goal-panel,
-  .combat-layout .archetype-panel,
+  
   .combat-layout .vitals,
   .combat-layout .run-panel > h3,
   .combat-layout .run-panel > .muted,
