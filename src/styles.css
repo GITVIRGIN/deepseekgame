@@ -1323,9 +1323,9 @@ p {
   .combat-layout .enemy-row { grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); gap: 3px; }
   .combat-layout .enemy { min-height: 64px; gap: 2px; padding: 4px; }
   .combat-layout .enemy h3 { font-size: 12px; }
-  .combat-layout .enemy .meter { height: 14px; }
-  .combat-layout .enemy .meter em { font-size: 10px; }
-  .combat-layout .enemy button { font-size: 8px; padding: 1px 3px; }
+  .combat-layout .enemy .meter { height: 22px; border-radius: 6px; }
+  .combat-layout .enemy .meter em { font-size: 12px; font-weight: 700; }
+  .combat-layout .enemy button { font-size: 7px; padding: 0px 2px; min-height: 16px; }
 
   /* 手牌 3列 */
   .combat-layout .hand { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 3px; }
