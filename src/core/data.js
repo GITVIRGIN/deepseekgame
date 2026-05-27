@@ -180,7 +180,7 @@ export const cards = {
     cost: 1,
     text: "获得 7 点格挡和 2 层荆棘。",
     mythTags: ["山海"],
-    style: "guard",
+    style: "shell",
     grade: 1,
     effects: [
       { type: "block", target: "self", value: 7 },
@@ -194,7 +194,7 @@ export const cards = {
     cost: 1,
     text: "获得 8 点格挡和 3 层荆棘。",
     mythTags: ["昆仑"],
-    style: "guard",
+    style: "shell",
     grade: 2,
     effects: [
       { type: "block", target: "self", value: 8 },
@@ -208,7 +208,7 @@ export const cards = {
     cost: 2,
     text: "获得 15 点格挡和 4 层荆棘，并立即反射格挡伤害。",
     mythTags: ["山海"],
-    style: "guard",
+    style: "shell",
     grade: 3,
     effects: [
       { type: "block", target: "self", value: 15 },
@@ -223,7 +223,7 @@ export const cards = {
     cost: 3,
     text: "获得 25 点格挡和 6 层荆棘，格挡值翻倍。",
     mythTags: ["洪荒"],
-    style: "guard",
+    style: "shell",
     grade: 3,
     effects: [
       { type: "block", target: "self", value: 25 },
