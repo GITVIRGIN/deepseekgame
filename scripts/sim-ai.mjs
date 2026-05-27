@@ -179,9 +179,9 @@ function cardScore(run, card, profile) {
   
 
   // Damage: good, better when safe
-  if (card.effects.some(e => e.type === "damage")) s += 20 + (hpPct > 0.5 ? 15 : -5);
-  // Block: essential when low, still good otherwise
-  if (card.effects.some(e => e.type === "block")) s += hpPct < 0.4 ? 50 : hpPct < 0.7 ? 30 : 10;
+  if (card.effects.some(e => e.type === "damage")) { s += 20; if (hpPct > 0.4) s += 15; }
+  // Block: essential when low
+  if (card.effects.some(e => e.type === "block")) s += hpPct < 0.35 ? 50 : hpPct < 0.6 ? 20 : run.floor <= 6 ? 5 : 10;
   // Draw/energy: always positive
   if (card.effects.some(e => e.type === "draw" || e.type === "gainEnergy")) s += 35;
   // Shell reflect: good with block

@@ -75,10 +75,10 @@ function buildNodeChoices(run) {
       id: `main_${run.floor}`,
       type: "main",
       tier,
-      title: run.floor >= MAX_FLOOR ? "关底 Boss" : `主线 ${run.floor}/${MAX_FLOOR}`,
-      text: run.floor >= MAX_FLOOR ? "黑山老妖守在山路尽头。" : `${tierName} 的主线战斗，推进通关进度。`,
-      rewardText: isTierGateFloor(run.floor) ? "精品奖励" : "卡牌奖励",
-      rewardKind: isTierGateFloor(run.floor) ? "tierPremium" : "normal",
+      title: isBossFloor(run.floor) ? (isStageBossFloor(run.floor) ? "阶段 Boss" : "精英怪") : (run.floor >= MAX_FLOOR ? "关底 Boss" : `主线 ${run.floor}/${MAX_FLOOR}`),
+      text: isBossFloor(run.floor) ? (isStageBossFloor(run.floor) ? "真正的考验到了。" : "比寻常妖物强上不少。") : (run.floor >= MAX_FLOOR ? "黑山老妖守在山路尽头。" : `${tierName} 的主线战斗，推进通关进度。`),
+      rewardText: isBossFloor(run.floor) ? "丰厚奖励" : (isTierGateFloor(run.floor) ? "精品奖励" : "卡牌奖励"),
+      rewardKind: isBossFloor(run.floor) ? "bossPremium" : (isTierGateFloor(run.floor) ? "tierPremium" : "normal"),
     },
   ];
 
