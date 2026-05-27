@@ -504,12 +504,14 @@ function createEnemiesForFloor(run) {
 }
 
 function makeEnemy(run, enemyId) {
+  const tmMult = run.trueMartial ? 1.5 : 1;
+  const tmAtkMult = run.trueMartial ? 1.3 : 1;
   const definition = enemies[enemyId];
   const isSide = run.currentNode?.type === "side";
   const tier = run.currentNode?.tier ?? Math.min(3, Math.ceil(run.floor / TIER_SIZE));
   const floorBonus = enemyId === "blackMountain" ? 0 : Math.max(0, run.floor - 1) * (isSide ? 5 : 4);
   const sideMultiplier = isSide ? 0.95 + tier * 0.12 : 1;
-  const maxHp = Math.max(12, Math.round((definition.maxHp + floorBonus) * sideMultiplier * enemyHpMultiplier(run)));
+  const maxHp = Math.max(12, Math.round((definition.maxHp + floorBonus) * sideMultiplier * enemyHpMultiplier(run) * tmMult));
 
   return {
     uid: nextEnemyUid(run),

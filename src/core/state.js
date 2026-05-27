@@ -1,4 +1,4 @@
-import { cards, startingDeck } from "./data.js";
+import { cards, startingDeck, trueMartialDecks, trueMartialRelics } from "./data.js";
 import { createArchetypeAffinity } from "./archetypes.js";
 import { createRunGoal, markSpecialGoalBaseline } from "./goals.js";
 import { prepareRouteChoice } from "./nodes.js";
@@ -41,10 +41,15 @@ export function makeCard(run, cardId) {
   };
 }
 
-export function startRun(state) {
+export function startRun(state, trueMartialStyle = null) {
   const next = cloneState(state);
   const seed = (Date.now() >>> 0) || 1;
   next.meta = migrateMeta(next.meta);
+  next.run = null; // will be set below
+  return trueMartialStyle ? startTrueMartialRun(next, seed, trueMartialStyle) : startNormalRun(next, seed);
+}
+
+function startNormalRun(next, seed) {
 
   next.run = {
     seed,

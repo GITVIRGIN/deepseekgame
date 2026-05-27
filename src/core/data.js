@@ -1039,8 +1039,43 @@ export const relics = {
     rarity: "legendary",
     text: "每场战斗开始时，抽 2 张牌，获得 1 点能量。",
   },
+  poJunLing: {
+    id: "poJunLing",
+    name: "破军令",
+    rarity: "legendary",
+    text: "物理卡牌造成伤害时追加3点真实伤害。真武专属。",
+  },
+  nineSkyTribulation: {
+    id: "nineSkyTribulation",
+    name: "九天雷劫",
+    rarity: "legendary",
+    text: "天劫伤害+20，眩晕额外持续一回合。真武专属。",
+  },
+  asuraHeart: {
+    id: "asuraHeart",
+    name: "修罗心",
+    rarity: "legendary",
+    text: "血魔吸血倍率翻倍。真武专属。",
+  },
+  venomScripture: {
+    id: "venomScripture",
+    name: "万毒真经",
+    rarity: "legendary",
+    text: "毒瘴每回合伤害翻倍。真武专属。",
+  },
+  chaosTreasure: {
+    id: "chaosTreasure",
+    name: "混沌灵宝",
+    rarity: "legendary",
+    text: "开局获得3层离间和3层禁锢。真武专属。",
+  },
+  turtleShell: {
+    id: "turtleShell",
+    name: "玄龟甲",
+    rarity: "legendary",
+    text: "格挡上限+20，荆棘反射伤害翻倍。真武专属。",
+  },
 };
-
 export const shopItems = {
   peachWine: {
     id: "peachWine",
@@ -1120,6 +1155,24 @@ export const shopItems = {
   },
 };
 
+
+export const trueMartialDecks = {
+  physical: ["heavySlash", "heavySlash", "heavySlash", "chainBlade", "chainBlade", "traceCutter", "battleSurge", "strike", "strike", "guard"],
+  spell: ["thunderCharm", "thunderCharm", "thunderStrike", "thunderStrike", "chainLightning", "fireRite", "returnTalisman", "strike", "strike", "guard"],
+  bleed: ["bloodNeedle", "bloodNeedle", "bloodNeedle", "ghostNeedle", "bloodNet", "bloodRiver", "strike", "strike", "guard", "guard"],
+  poison: ["poisonPowder", "poisonPowder", "miasma", "miasma", "centipedeJar", "thousandVenom", "strike", "strike", "guard", "guard"],
+  control: ["discordCharm", "discordCharm", "soulBind", "soulBind", "heartLock", "echoBell", "stasisCharm", "strike", "strike", "guard"],
+  guard: ["guard", "guard", "guard", "thornMail", "thornMail", "jiaoScale", "reflectArt", "turtleCrush", "strike", "strike"],
+};
+
+export const trueMartialRelics = {
+  physical: "poJunLing",
+  spell: "nineSkyTribulation",
+  bleed: "asuraHeart",
+  poison: "venomScripture",
+  control: "chaosTreasure",
+  guard: "turtleShell",
+};
 export const startingDeck = [
   "strike",
   "strike",
