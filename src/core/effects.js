@@ -76,6 +76,11 @@ export function applyEffect(state, effect, targetUid) {
     if (effect.type === "execute") {
       applyExecute(state, target, effect);
     }
+    if (effect.tmExecute) {
+      const dmg = effect.value ?? 8;
+      const mult = target.hp <= target.maxHp * 0.5 ? 2 : 1;
+      applyCardDamage(state, target, dmg * mult, effect.cardCost ?? 1, effect.cardStyle);
+    }
 
     if (effect.type === "block") {
       const amount = boostedValue(effect);

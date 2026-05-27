@@ -525,8 +525,8 @@ function createEnemiesForFloor(run) {
 }
 
 function makeEnemy(run, enemyId) {
-  const tmMult = run.trueMartial ? 1.5 : 1;
-  const tmAtkMult = run.trueMartial ? 1.3 : 1;
+  const tmMult = run.trueMartial ? 1.15 : 1;
+  const tmAtkMult = run.trueMartial ? 1.15 : 1;
   const definition = enemies[enemyId];
   const isSide = run.currentNode?.type === "side";
   const tier = run.currentNode?.tier ?? Math.min(3, Math.ceil(run.floor / TIER_SIZE));

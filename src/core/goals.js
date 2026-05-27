@@ -88,6 +88,17 @@ export function canOfferSpecialFragment(run) {
   return goal.special.active && specialFragmentCount(goal) < requiredFragments;
 }
 
+function grantTrueMartialRelic(state) {
+  if (!state.run?.trueMartial) return;
+  const allTM = Object.values(relics).filter(r => r.text?.includes("真武专属"));
+  const owned = state.meta.collectedRelics ?? [];
+  const available = allTM.filter(r => !owned.includes(r.id));
+  if (available.length === 0) return;
+  const relic = available[Math.floor(Math.abs(state.run.seed * 7 + state.meta.wins * 13) % available.length)];
+  state.meta.collectedRelics = [...new Set([...owned, relic.id])];
+  state.message += ` 真武馈赠：获得专属遗物「${relic.name}」。`;
+}
+
 export function grantSpecialFragment(run, amount = 1) {
   const goal = migrateRunGoal(run);
   const requiredFragments = goal.special.requiredFragments ?? 2;

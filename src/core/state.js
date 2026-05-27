@@ -49,6 +49,54 @@ export function startRun(state, trueMartialStyle = null) {
   return trueMartialStyle ? startTrueMartialRun(next, seed, trueMartialStyle) : startNormalRun(next, seed);
 }
 
+function startTrueMartialRun(state, seed, style) {
+  const next = state;
+  const deckList = trueMartialDecks[style] ?? trueMartialDecks["physical"];
+
+  next.run = {
+    seed,
+    nextUid: 0,
+    floor: 1,
+    goal: createRunGoal(seed),
+    nodeChoices: [],
+    currentNode: null,
+    archetypeAffinity: createArchetypeAffinity(),
+    completedSideTiers: {},
+    finalSideCompleted: false,
+    shopTiers: [],
+    visitedShopTiers: [],
+    finalShopVisited: false,
+    shopStock: [],
+    pendingChoice: null,
+    guaranteedNextHand: [],
+    retainedHand: [],
+    lastGoldDrop: 0,
+    hp: 72,
+    maxHp: 72,
+    gold: 0,
+    energy: 3,
+    maxEnergy: 3,
+    handLimit: 5,
+    deckLimit: 30,
+    deck: [],
+    relics: [],
+    statuses: [],
+    combat: null,
+    rewards: [],
+    finished: false,
+    factionAffinity: {},
+    trueMartial: true,
+    trueMartialStyle: style,
+  };
+
+  applyMetaProgression(next.run, next.meta);
+  next.run.deck = deckList.map((cardId) => makeCard(next.run, cardId));
+  next.run.lossStreak = next.meta.lossStreak ?? 0;
+  next.meta.totalRuns += 1;
+  next.message = `真武降临——你以${style}之名入山。`;
+  return prepareRouteChoice(next);
+}
+
 function startNormalRun(next, seed) {
 
   next.run = {
