@@ -137,7 +137,9 @@ function startNormalRun(next, seed) {
 
   applyMetaProgression(next.run, next.meta);
   markSpecialGoalBaseline(next.run);
-  next.run.deck = startingDeck.map((cardId) => makeCard(next.run, cardId));
+  // TEST MODE: shell + poison test deck
+  const TEST_DECK = ["shellTap","shellTap","miasma","miasma","poisonPowder","poisonPowder","thornMail","reflectArt","guard","guard","strike","strike"];
+  next.run.deck = TEST_DECK.map((cardId) => makeCard(next.run, cardId));
   next.meta.totalRuns += 1;
   next.message = "你携一卷残箓入山。";
 
