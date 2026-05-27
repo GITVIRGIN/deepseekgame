@@ -30,6 +30,7 @@ export const statusInfo = {
   thunderMark: { label: "雷痕", text: "敌人身上的雷法层数。达到 8 层时触发天劫，造成 32 点无视格挡伤害，并眩晕 1 次。" },
   stun: { label: "眩晕", text: "敌人行动前触发：跳过本次行动，然后减少 1 层。" },
   battleIntent: { label: "战意", text: "提高物理牌伤害；战意存在时，每打出一张物理伤害牌后继续增加战意。" },
+  blockShield: { label: "格挡锁定", text: "格挡值不会被攻击消耗。回合结束时移除。" },
   spikes: { label: "荆棘" },
   chaos: { label: "离间", text: "敌人行动前触发：攻击会优先打同伴，非攻击或没有同伴则空过，然后减少 1 层。" },
   bind: { label: "禁锢", text: "敌人行动前触发：攻击和施法会空过，格挡仍可执行，然后减少 1 层。" },

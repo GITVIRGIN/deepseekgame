@@ -478,6 +478,10 @@ function applyShellReflect(state, targets, effect) {
     combat.block -= consumed;
     combatLog(state, `反震消耗 ${consumed} 点格挡。`);
   }
+  if (consumeRatio === 0 && block > 0) {
+    addStatus(playerFighter(run), "blockShield", 1);
+    combatLog(state, "格挡锁定，本回合不消耗。");
+  }
 }
 
 function applyBlock(fighter, rawDamage) {

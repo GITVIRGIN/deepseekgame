@@ -134,6 +134,7 @@ function combatAct(s, stepC, profile = "balanced") {
   const block = combat.block ?? 0;
   const enemies = combat.enemies.filter(e => e.hp > 0);
   const isBoss = enemies.some(e => e.maxHp && e.maxHp >= 40 && enemies.length === 1);
+  const isTM = run.trueMartial;
   const enemyDmg = estimateIncoming(run);
 
   // Discard pick
@@ -301,3 +302,46 @@ function runBatch(label, styles, tmFlag) {
 
 runBatch("=== 常规模式 ===", STYLES, false);
 runBatch("=== 真武模式 ===", STYLES, true);
+function makeAction(h) { return { type: "playCard", cardUid: h.inst.uid, targetUid: null }; }
+function aliveEnemy(run) { return run?.combat?.enemies?.find(e => e.hp > 0) ?? null; }
+
+function bleedAI(run, hand) {
+  const ok = h => run.energy >= h.card.cost;
+  const curBleed = aliveEnemy(run)?.statuses?.find(s => s.id === "bleed")?.stacks ?? 0;
+  const siphon = hand.filter(h => ok(h) && h.card.effects.some(e => e.type === "bleedSiphon"));
+  const bleed = hand.filter(h => ok(h) && h.card.effects.some(e => e.type === "status" && e.status === "bleed"));
+  if (siphon.length > 0 && curBleed >= 6) return makeAction(siphon[0]);
+  if (siphon.length > 0 && curBleed >= 3 && run.hp <= run.maxHp * 0.5) return makeAction(siphon[0]);
+  if (bleed.length > 0) return makeAction(bleed.sort((a,b)=>(b.card.effects.find(e=>e.status==="bleed")?.stacks||0)-(a.card.effects.find(e=>e.status==="bleed")?.stacks||0))[0]);
+  if (run.hp <= run.maxHp * 0.3) { const b=hand.filter(h=>ok(h)&&h.card.effects.some(e=>e.type==="block")); if(b.length>0)return makeAction(b[0]); }
+  return null;
+}
+function poisonAI(run, hand) {
+  const ok = h => run.energy >= h.card.cost;
+  const psn = hand.filter(h => ok(h) && h.card.effects.some(e => e.type === "status" && e.status === "poison"));
+  const amp = hand.filter(h => ok(h) && h.card.effects.some(e => e.type === "amplifyDebuffs"));
+  const curPsn = aliveEnemy(run)?.statuses?.find(s => s.id === "poison")?.stacks ?? 0;
+  if (psn.length > 0) return makeAction(psn.sort((a,b)=>(b.card.effects.find(e=>e.status==="poison")?.stacks||0)-(a.card.effects.find(e=>e.status==="poison")?.stacks||0))[0]);
+  if (amp.length > 0 && curPsn >= 8) return makeAction(amp[0]);
+  if (run.hp <= run.maxHp * 0.3) { const b=hand.filter(h=>ok(h)&&h.card.effects.some(e=>e.type==="block")); if(b.length>0)return makeAction(b[0]); }
+  return null;
+}
+function physicalAI(run, hand) {
+  const ok = h => run.energy >= h.card.cost;
+  const target = aliveEnemy(run);
+  const exec = hand.filter(h => ok(h) && h.card.effects.some(e => e.type === "execute" || e.tmExecute));
+  const dmg = hand.filter(h => ok(h) && h.card.effects.some(e => e.type === "damage"));
+  if (exec.length > 0 && target && target.hp <= target.maxHp * 0.3) return makeAction(exec[0]);
+  if (dmg.length > 0) return makeAction(dmg.sort((a,b)=>(b.card.effects.find(e=>e.type==="damage")?.value||0)-(a.card.effects.find(e=>e.type==="damage")?.value||0))[0]);
+  return null;
+}
+function spellAI(run, hand) {
+  const ok = h => run.energy >= h.card.cost;
+  const mark = hand.filter(h => ok(h) && h.card.effects.some(e => e.type === "thunderMark"));
+  const tm = aliveEnemy(run)?.statuses?.find(s => s.id === "thunderMark")?.stacks ?? 0;
+  if (tm >= 6) { const d=hand.filter(h=>ok(h)&&h.card.effects.some(e=>e.type==="damage")); if(d.length>0)return makeAction(d[0]); }
+  if (mark.length > 0) return makeAction(mark.sort((a,b)=>(b.card.effects.find(e=>e.type==="thunderMark")?.value||0)-(a.card.effects.find(e=>e.type==="thunderMark")?.value||0))[0]);
+  return null;
+}
+
+
