@@ -68,7 +68,7 @@ export function generateRewards(state) {
       node?.rewardKind === "tierPremium"
         ? rollPremiumCardReward(run, index === 0)
         : index === 0 && tier >= 2
-          ? rollProgressCardReward(run, true)
+          ? rollProgressCardReward(run, false)
           : rollCardReward(run);
     rewards.push({
       id: `reward_card_${index}_${card.id}`,
