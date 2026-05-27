@@ -160,6 +160,9 @@ export function startPlayerTurn(state) {
   tickDamageStatus(state, playerAsFighter(run), "poison");
   if (state.phase !== "combat") return state;
 
+  applySpikesReflect(state);
+  if (state.phase !== "combat") return state;
+
   if (run.relics.includes("jadeRuyi")) {
     addStatus(playerAsFighter(run), "spirit", 1);
     combat.log.push(`${relics.jadeRuyi.name} 生辉，获得 灵气 1。`);
@@ -477,6 +480,24 @@ function bossForFloor(floor) {
   return null;
 }
 
+function applySpikesReflect(state) {
+  const run = state.run;
+  const combat = run?.combat;
+  if (!run || !combat) return;
+  const spikes = statusStacks(playerAsFighter(run), "spikes");
+  if (spikes <= 0) return;
+  const block = combat.block ?? 0;
+  const damage = Math.min(block, spikes * 3);
+  if (damage <= 0) return;
+  const alive = combat.enemies.filter(e => e.hp > 0);
+  if (alive.length === 0) return;
+  const target = alive[Math.abs((run.seed * 92821 + combat.turn * 68917) % alive.length)];
+  const blocked = Math.min(target.block, damage);
+  target.block -= blocked;
+  target.hp = Math.max(0, target.hp - (damage - blocked));
+  combat.log.push(`荆棘反震！${target.name} 受到 ${damage - blocked} 点反射伤害。`);
+}
+
 function createEnemiesForFloor(run) {
   const bossId = bossForFloor(run.floor);
   if (bossId) {
@@ -605,6 +626,7 @@ function runPowerPressure(run) {
 
 function clearEndOfCombatStatuses(run) {
   clearStatus(run, "spirit");
+  clearStatus(run, "spikes");
   clearStatus(run, "battleIntent");
 }
 
