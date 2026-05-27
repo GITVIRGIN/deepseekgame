@@ -600,7 +600,6 @@ function enemyRawAttackDamage(run, enemy, intent) {
   const red = Math.min(5, Math.floor(poison / 2));
   const base = Math.max(0, iv + bonus - red);
   if (enemy.statuses?.some(s => s.id === "chaos" && s._chaosDebuff && s.stacks > 0)) return Math.floor(base * 0.5);
-  console.log("[毒减伤]", enemy.name, "基础:", iv, "加成:", bonus, "毒:", poison, "减:", red, "=>", base);
   return base;
 }
 
