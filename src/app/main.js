@@ -429,29 +429,16 @@ function renderRunPanel(run) {
   const panel = el("aside", "run-panel");
   panel.append(
     el("h2", "", `第 ${run.floor}/${MAX_FLOOR} 层`),
+    el("div", "floor-actions", [
+      button("修行", "ghost micro", () => { progressionOpen = true; render(); }),
+      button("放弃", "danger micro", () => dispatch({ type: "abandonRun" })),
+    ]),
     renderPlayerVitals(run),
-    renderGoalPanel(run),
-    renderArchetypePanel(run),
     el("div", "stat-grid", [
       stat("生命", `${run.hp}/${run.maxHp}`),
       stat("格挡", run.combat?.block ?? 0),
       stat("受伤加成", `+${statusValue(run, "curse")}`),
-      stat("能量", `${run.energy}/${run.maxEnergy}`),
-      stat("牌组上限", `${run.deck.length}/${run.deckLimit ?? 30}`),
-      stat("手牌", `${currentHandCount(run)}/${run.handLimit ?? 5}`),
-      stat("抽牌堆", run.combat?.drawPile.length ?? 0, run.combat ? () => showPile("抽牌堆", run.combat.drawPile) : null),
-      stat("弃牌/回收", run.combat?.discardPile.length ?? 0),
       stat("金", run.gold),
-    ]),
-    renderStatusLine("自身状态", run.statuses),
-    el("h3", "", "遗物"),
-    renderRelics(run.relics),
-    el("div", "run-actions", [
-      button("查看修行", "ghost small", () => {
-        progressionOpen = true;
-        render();
-      }),
-      button("放弃并结算", "danger small", () => dispatch({ type: "abandonRun" })),
     ]),
   );
   return panel;
@@ -554,7 +541,7 @@ function renderHand(run, combat) {
 
   area.append(
     el("div", "hand-head", [
-      el("div", "", [el("h2", "", `手牌 ${combat.hand.length}/${run.handLimit ?? 5}`), renderPileStrip(run, combat), renderMobilePlayerStrip(run)]),
+      el("div", "", [el("h2", "", `⚡${run.energy}/${run.maxEnergy} 手牌 ${combat.hand.length}/${run.handLimit ?? 5}`), renderPileStrip(run, combat), renderMobilePlayerStrip(run)]),
       button("结束回合", "danger", () => dispatch({ type: "endTurn" })),
     ]),
     cardsNode,
