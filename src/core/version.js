@@ -1,8 +1,8 @@
 export const gameVersion = {
-  app: "0.5.2",
-  core: "0.5.2",
+  app: "0.5.3",
+  core: "0.5.3",
   ui: "0.1.0",
   data: "0.1.0",
-  save: "0.5.2",
-  label: "v0.5.2_core-0.5.2_ui-0.1.0_data-0.1.0",
+  save: "0.5.3",
+  label: "v0.5.3_core-0.5.3_ui-0.1.0_data-0.1.0",
 };

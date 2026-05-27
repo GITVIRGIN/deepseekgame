@@ -408,7 +408,9 @@ function resolveEnemyIntent(state, enemy) {
 
   if (intent.type === "attack") {
     combat.log.push(`${enemy.name} 攻击。`);
-    applyIncomingDamage(state, enemyRawAttackDamage(run, enemy, intent));
+    const dmg = enemyRawAttackDamage(run, enemy, intent);
+    console.log("[ATTACK DEBUG]", enemy.name, "final damage:", dmg);
+    applyIncomingDamage(state, dmg);
     return;
   }
 
@@ -599,7 +601,9 @@ function enemyRawAttackDamage(run, enemy, intent) {
 function poisonAttackReduction(enemy) {
   const poison = statusStacks(enemy, "poison");
   if (poison <= 0) return 0;
-  return Math.min(5, Math.floor(poison / 4));
+  const red = Math.min(5, Math.floor(poison / 4));
+  console.log("[POISON DEBUG]", enemy.name, "poison:", poison, "reduction:", red);
+  return red;
 }
 
 function enemyAttackBonus(run, enemy) {
