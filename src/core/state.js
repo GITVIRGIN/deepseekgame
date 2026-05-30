@@ -52,6 +52,7 @@ export function startRun(state, trueMartialStyle = null) {
 function startTrueMartialRun(state, seed, style) {
   const next = state;
   const deckList = trueMartialDecks[style] ?? trueMartialDecks["physical"];
+  const relicId = trueMartialRelics[style];
 
   next.run = {
     seed,
@@ -79,7 +80,7 @@ function startTrueMartialRun(state, seed, style) {
     handLimit: 5,
     deckLimit: 30,
     deck: [],
-    relics: [],
+    relics: relicId ? [relicId] : [],
     statuses: [],
     combat: null,
     rewards: [],
@@ -87,6 +88,9 @@ function startTrueMartialRun(state, seed, style) {
     factionAffinity: {},
     trueMartial: true,
     trueMartialStyle: style,
+    mythMastery: snapshotMythMastery(next.meta),
+    mythStats: { lastAward: null },
+    lossStreak: next.meta.lossStreak ?? 0,
   };
 
   applyMetaProgression(next.run, next.meta);

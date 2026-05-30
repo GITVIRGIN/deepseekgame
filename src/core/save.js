@@ -11,14 +11,19 @@ export function loadGame() {
   try {
     const raw = localStorage.getItem(SAVE_KEY);
     if (!raw) return createInitialState();
-    return migrateGame({ ...createInitialState(), ...JSON.parse(raw) });
+    return migrateGameState(JSON.parse(raw));
   } catch {
     return createInitialState();
   }
 }
 
 export function saveGame(state) {
-  localStorage.setItem(SAVE_KEY, JSON.stringify(state));
+  try {
+    localStorage.setItem(SAVE_KEY, JSON.stringify(state));
+  } catch (e) {
+    console.warn("存档写入失败:", e.message);
+  }
+  return state;
 }
 
 export function clearSave() {
@@ -32,6 +37,24 @@ function migrateSideTiers(value) {
     return obj;
   }
   return value ?? {};
+}
+
+export function migrateGameState(state) {
+  if (!state) return createInitialState();
+  let next = structuredClone(state);
+  next.meta = next.meta ?? {};
+  next.meta.mythMastery = next.meta.mythMastery ?? {};
+  if (next.meta.factionMastery) {
+    next.meta.mythMastery = { ...next.meta.mythMastery, ...next.meta.factionMastery };
+    delete next.meta.factionMastery;
+  }
+  next.meta.collectedRelics = next.meta.collectedRelics ?? [];
+  next.meta.soul = next.meta.soul ?? 0;
+  next.meta.totalRuns = next.meta.totalRuns ?? 0;
+  next.meta.wins = next.meta.wins ?? 0;
+  next.meta.lossStreak = next.meta.lossStreak ?? 0;
+  next.meta.talents = next.meta.talents ?? {};
+  return next;
 }
 
 function migrateGame(state) {

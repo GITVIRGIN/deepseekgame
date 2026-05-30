@@ -151,7 +151,7 @@ function renderHome() {
 
 
 function isTrueMartialUnlocked(meta) {
-  const mastery = meta.factionMastery || {};
+  const mastery = meta?.mythMastery ?? {};
   const normalRelicIds = Object.values(relics).filter(r => !r.text?.includes("真武专属")).map(r => r.id);
   const allNormalRelics = normalRelicIds.every(id => (meta.collectedRelics || []).includes(id));
   const threeAtThree = Object.values(mastery).filter(v => v >= 3).length >= 3;
@@ -165,7 +165,7 @@ function renderMartialSelect() {
     { id: "bleed", name: "流血", desc: "血魔自残·吸血", relic: "修罗心" },
     { id: "poison", name: "中毒", desc: "毒瘴虚弱·消耗", relic: "万毒真经" },
     { id: "control", name: "控制", desc: "离间禁锢·脆化", relic: "混沌灵宝" },
-    { id: "guard", name: "龟壳", desc: "叠甲反震·铁壁", relic: "玄龟甲" },
+    { id: "shell", name: "龟壳", desc: "叠甲反震·铁壁", relic: "玄龟甲" },
   ];
   const view = el("section", "martial-select");
   view.append(

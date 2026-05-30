@@ -1,5 +1,5 @@
 import { cards, enemies, relics } from "./data.js";
-import { applyCardEffects, applyIncomingDamage, tickDamageStatus } from "./effects.js";
+import { applyCardEffects, applyIncomingDamage, tickDamageStatus, onEnemyKilled } from "./effects.js";
 import { generateRewards, rollRelicReward } from "./rewards.js";
 import { grantGoldDrop } from "./economy.js";
 import { completeRunVictory } from "./goals.js";
@@ -42,6 +42,12 @@ export function startCombat(state) {
 
   state.phase = "combat";
   startPlayerTurn(state);
+
+  const combat = run.combat;
+  if (run.relics.includes("turtleShell")) {
+    combat.block = (combat.block ?? 0) + 20;
+    combat.log.push("玄龟甲护身，开局格挡 +20。");
+  }
 
   if (run.relics.includes("chaosFragment")) {
     const drawn = drawCards(state, 2);
@@ -162,6 +168,16 @@ export function startPlayerTurn(state) {
 
   applySpikesReflect(state);
   if (state.phase !== "combat") return state;
+
+  if (run.relics.includes("chaosTreasure")) {
+    for (const enemy of (combat?.enemies ?? [])) {
+      if (enemy.hp > 0) {
+        addStatus(enemy, "chaos", 3);
+        addStatus(enemy, "bind", 3);
+      }
+    }
+    combat.log.push("混沌灵宝震动，敌方陷入离间与禁锢。");
+  }
 
   if (run.relics.includes("jadeRuyi")) {
     addStatus(playerAsFighter(run), "spirit", 1);
@@ -497,6 +513,8 @@ function applySpikesReflect(state) {
   target.block -= blocked;
   target.hp = Math.max(0, target.hp - (damage - blocked));
   combat.log.push(`荆棘反震！${target.name} 受到 ${damage - blocked} 点反射伤害。`);
+  if (target.hp <= 0) onEnemyKilled(state, target);
+  finishCombatIfWon(state);
 }
 
 function createEnemiesForFloor(run) {

@@ -5,12 +5,15 @@
   "scripts": {
     "serve": "node scripts/serve.mjs 5173",
     "build:release": "node scripts/build-release.mjs",
+    "check": "npm run validate:data && npm run smoke && node --check src/core/data.js && node --check src/core/effects.js && node --check src/core/combat.js && node --check src/core/state.js && node --check src/core/reducer.js && node --check src/app/main.js && node --check src/core/save.js && node --check src/core/goals.js && node --check src/core/rewards.js && node --check src/core/shop.js && echo 'All syntax OK'",
+    "validate:data": "node scripts/validate-data.mjs",
     "sim:100": "node scripts/simulate-runs.mjs --runs=100",
     "sim:bleed": "node scripts/simulate-runs.mjs --runs=100 --profile=bleed",
     "sim:physical": "node scripts/simulate-runs.mjs --runs=100 --profile=physical",
     "sim:spell": "node scripts/simulate-runs.mjs --runs=100 --profile=spell",
     "sim:shell": "node scripts/simulate-runs.mjs --runs=100 --profile=shell",
     "sim:poison": "node scripts/simulate-runs.mjs --runs=100 --profile=poison",
+    "smoke": "node scripts/smoke-tests.mjs",
     "sim:control": "node scripts/simulate-runs.mjs --runs=100 --profile=control"
   }
 }

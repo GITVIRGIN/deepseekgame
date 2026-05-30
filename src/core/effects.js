@@ -68,24 +68,37 @@ export function applyEffect(state, effect, targetUid) {
     return finishCombatIfWon(state);
   }
 
+  if (effect.type === "spikeBurst") {
+    applySpikeBurst(state, targets);
+    return finishCombatIfWon(state);
+  }
+
   for (const target of targets) {
     if (effect.type === "damage") {
-      applyCardDamage(state, target, boostedValue(effect), effect.cardCost ?? 1, effect.cardStyle);
+      if (effect.tmExecute) {
+        const mult = target.hp <= target.maxHp * 0.5 ? 2 : 1;
+        applyCardDamage(state, target, (effect.value ?? 8) * mult, effect.cardCost ?? 1, effect.cardStyle);
+      } else {
+        applyCardDamage(state, target, boostedValue(effect), effect.cardCost ?? 1, effect.cardStyle);
+      }
     }
 
     if (effect.type === "execute") {
       applyExecute(state, target, effect);
-    }
-    if (effect.tmExecute) {
-      const dmg = effect.value ?? 8;
-      const mult = target.hp <= target.maxHp * 0.5 ? 2 : 1;
-      applyCardDamage(state, target, dmg * mult, effect.cardCost ?? 1, effect.cardStyle);
     }
 
     if (effect.type === "block") {
       const amount = boostedValue(effect);
       target.block += amount;
       combatLog(state, `获得 ${amount} 点格挡。`);
+    }
+
+    if (effect.type === "doubleBlock") {
+      if (run.combat) {
+        const before = run.combat.block;
+        run.combat.block *= 2;
+        combatLog(state, `格挡翻倍：${before} → ${run.combat.block}。`);
+      }
     }
 
     if (effect.type === "heal") {
@@ -194,6 +207,25 @@ function applyExecute(state, target, effect) {
   }
 
   applyCardDamage(state, target, (effect.fallbackDamage ?? 0) + (effect.cardMythBonus ?? 0), effect.cardCost ?? 1, effect.cardStyle);
+}
+
+export 
+function applySpikeBurst(state, targets) {
+  const run = state.run;
+  const combat = run?.combat;
+  if (!run || !combat || targets.length === 0) return;
+  const spikes = statusStacks(playerFighter(run), "spikes");
+  const block = combat.block ?? 0;
+  const raw = Math.min(block, spikes * 3);
+  if (raw <= 0) { combatLog(state, "棘刺无力。"); return; }
+  for (const target of targets) {
+    if (target.hp <= 0) continue;
+    const blocked = Math.min(target.block, raw);
+    target.block -= blocked;
+    target.hp = Math.max(0, target.hp - (raw - blocked));
+    combatLog(state, `荆棘爆发！${target.name} 受到 ${raw - blocked} 点反射伤害。`);
+    if (target.hp <= 0) onEnemyKilled(state, target);
+  }
 }
 
 export function applyIncomingDamage(state, rawDamage) {
@@ -461,7 +493,8 @@ function applyShellReflect(state, targets, effect) {
   }
 
   const ratio = Math.max(0, effect.ratio ?? 0.5);
-  const rawDamage = Math.max(1, Math.floor(block * ratio) + (effect.value ?? 0) + (effect.cardMythBonus ?? 0));
+  const turtleMult = state.run.relics.includes("turtleShell") ? 2 : 1;
+  const rawDamage = Math.max(1, (Math.floor(block * ratio) + (effect.value ?? 0) + (effect.cardMythBonus ?? 0)) * turtleMult);
   // Always apply block shield when consumeRatio is 0
   if (effect.consumeRatio === 0 && block > 0) {
     const pf = playerFighter(run);
@@ -548,7 +581,7 @@ function consumeControlPressure(target, amount) {
   }
 }
 
-function onEnemyKilled(state, enemy) {
+export function onEnemyKilled(state, enemy) {
   const run = state.run;
   const combat = run?.combat;
   if (!run || !combat || combat.flags[`killed_${enemy.uid}`]) return;

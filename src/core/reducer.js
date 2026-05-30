@@ -18,7 +18,17 @@ export function reduceGame(state, action) {
 
   if (action.type === "martialSelect") {
     next.phase = "martialSelect";
-    grantFirstTimeMartialRelic(next);
+    // Grant first TM relic if player has none yet
+    const owned = (next.meta.collectedRelics ?? []);
+    const tmRelicIds = ["poJunLing","nineSkyTribulation","asuraHeart","venomScripture","chaosTreasure","turtleShell"];
+    if (!tmRelicIds.some(id => owned.includes(id))) {
+      const avail = tmRelicIds.filter(id => !owned.includes(id));
+      if (avail.length > 0) {
+        const pick = avail[Math.floor(Math.abs((next.run?.seed ?? 1) * 7 + (next.meta.wins ?? 0) * 13) % avail.length)];
+        next.meta.collectedRelics = [...owned, pick];
+        next.message = `真武初现！获得专属遗物「${pick}」。`;
+      }
+    }
     return next;
   }
 
