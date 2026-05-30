@@ -1,0 +1,6 @@
+dist/
+versions/
+deepseek/
+photo_*.jpg
+*.zip
+ai-review/

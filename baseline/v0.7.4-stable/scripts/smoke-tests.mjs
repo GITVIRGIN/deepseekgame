@@ -68,14 +68,14 @@ test("九天雷劫52伤+2眩晕", () => {
 });
 
 // 5. asuraHeart - FORCED hand
-test("修罗心回血12(12层流血)", () => {
+test("修罗心回血8(12层流血)", () => {
   let s = enterCombat("bleed");
   assert(s.run.relics.includes("asuraHeart"));
   enemy(s).statuses = [{ id: "bleed", stacks: 12 }];
   s.run.hp = 30;
   forceCard(s, "bloodRecycle");
   s = reduceGame(s, { type: "playCard", cardUid: s.run.combat.hand[0].uid, targetUid: enemy(s).uid });
-  assert(s.run.hp === 42, `expected HP=42, got ${s.run.hp}`);
+  assert(s.run.hp === 38, `expected HP=38, got ${s.run.hp}`);
 });
 
 // 6. venomScripture - enemy poison
@@ -105,7 +105,7 @@ test("混沌灵宝只一次", () => {
   let s = enterCombat("control");
   assert(s.run.relics.includes("chaosTreasure"));
   let c0 = enemy(s)?.statuses?.find(x => x.id === "chaos")?.stacks ?? 0;
-  assert(c0 >= 2, `chaos=${c0}`);
+  assert(c0 >= 3, `chaos=${c0}`);
 });
 
 // 9. turtleShell - direct startPlayerTurn, no enemy attacks

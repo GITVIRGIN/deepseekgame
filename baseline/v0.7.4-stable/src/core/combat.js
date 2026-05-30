@@ -49,21 +49,15 @@ export function startCombat(state) {
     combat.flags.chaosTreasureApplied = true;
     for (const enemy of (combat.enemies ?? [])) {
       if (enemy.hp > 0) {
-        addStatus(enemy, "chaos", 2);
-        addStatus(enemy, "bind", 2);
+        addStatus(enemy, "chaos", 3);
+        addStatus(enemy, "bind", 3);
       }
     }
     combat.log.push("混沌灵宝震动，敌方陷入离间与禁锢。");
   }
   if (run.relics.includes("turtleShell")) {
-    combat.block = (combat.block ?? 0) + 10;
-    combat.log.push("玄龟甲护身，开局格挡 +10。");
-  }
-  if (run.relics.includes("venomScripture")) {
-    for (const enemy of (combat.enemies ?? [])) {
-      if (enemy.hp > 0) addStatus(enemy, "poison", 2);
-    }
-    combat.log.push("万毒真经散发，敌人初始中毒。");
+    combat.block = (combat.block ?? 0) + 20;
+    combat.log.push("玄龟甲护身，开局格挡 +20。");
   }
 
   if (run.relics.includes("chaosFragment")) {

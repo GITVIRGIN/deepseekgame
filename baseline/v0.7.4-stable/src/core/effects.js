@@ -189,8 +189,8 @@ export function applyCardDamage(state, target, baseDamage, cardCost = 1, cardSty
   }
 
   if (run.relics.includes("poJunLing") && cardStyle === "physical") {
-    target.hp = Math.max(0, target.hp - 7);
-    combatLog(state, "破军令追加 7 点真伤。");
+    target.hp = Math.max(0, target.hp - 3);
+    combatLog(state, "破军令追加 3 点真伤。");
     if (target.hp <= 0) onEnemyKilled(state, target);
   }
 
@@ -452,9 +452,9 @@ function triggerThunderTribulations(state, target, effect = {}) {
   const threshold = effect.threshold ?? THUNDER_TRIBULATION_THRESHOLD;
   const baseDamage = effect.damage ?? THUNDER_TRIBULATION_DAMAGE;
   const nineSky = run.relics.includes("nineSkyTribulation");
-  const damage = nineSky ? baseDamage + 25 : baseDamage;
+  const damage = nineSky ? baseDamage + 20 : baseDamage;
   const stun = nineSky ? 2 : 1;
-  if (nineSky) combatLog(state, "九天雷劫强化天劫，雷伤+25，眩晕+1。");
+  if (nineSky) combatLog(state, "九天雷劫强化天劫，雷伤+20，眩晕+1。");
 
   while (target.hp > 0 && statusStacks(target, "thunderMark") >= threshold) {
     reduceStatus(target, "thunderMark", threshold);
@@ -480,8 +480,7 @@ function applyBleedSiphon(state, targets, effect) {
     return;
   }
 
-  let ratio = Math.max(1, effect.ratio ?? 3);
-  if (run.relics.includes("asuraHeart")) ratio = Math.max(1, ratio - 1);
+  const ratio = Math.max(1, effect.ratio ?? 3);
   let heal = Math.floor(totalBleed / ratio) + (effect.value ?? 0) + (effect.cardMythBonus ?? 0);
   if (run.relics.includes("asuraHeart")) { heal *= 2; combatLog(state, "修罗心翻涌，血魔汲血翻倍。"); }
   if (heal <= 0) {

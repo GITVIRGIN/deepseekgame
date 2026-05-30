@@ -982,12 +982,12 @@ export const enemies = {
 };
 
 export const relics = {
-  poJunLing: { id: "poJunLing", name: "破军令", rarity: "legendary", text: "物理卡牌伤害追加7点真伤。真武专属。" },
-  nineSkyTribulation: { id: "nineSkyTribulation", name: "九天雷劫", rarity: "legendary", text: "天劫伤害+25，眩晕+1回合。真武专属。" },
-  asuraHeart: { id: "asuraHeart", name: "修罗心", rarity: "legendary", text: "血魔吸血倍率翻倍，每层流血汲血效率+50%。真武专属。" },
-  venomScripture: { id: "venomScripture", name: "万毒真经", rarity: "legendary", text: "毒瘴每回合伤害翻倍，开局敌人中毒+2。真武专属。" },
-  chaosTreasure: { id: "chaosTreasure", name: "混沌灵宝", rarity: "legendary", text: "开局2层离间+2层禁锢。真武专属。" },
-  turtleShell: { id: "turtleShell", name: "玄龟甲", rarity: "legendary", text: "每场战斗开局格挡+10，反射伤害翻倍。真武专属。" },
+  poJunLing: { id: "poJunLing", name: "破军令", rarity: "legendary", text: "物理卡牌伤害追加3点真伤。真武专属。" },
+  nineSkyTribulation: { id: "nineSkyTribulation", name: "九天雷劫", rarity: "legendary", text: "天劫伤害+20，眩晕+1回合。真武专属。" },
+  asuraHeart: { id: "asuraHeart", name: "修罗心", rarity: "legendary", text: "血魔吸血倍率翻倍。真武专属。" },
+  venomScripture: { id: "venomScripture", name: "万毒真经", rarity: "legendary", text: "毒瘴每回合伤害翻倍。真武专属。" },
+  chaosTreasure: { id: "chaosTreasure", name: "混沌灵宝", rarity: "legendary", text: "开局3层离间+3层禁锢。真武专属。" },
+  turtleShell: { id: "turtleShell", name: "玄龟甲", rarity: "legendary", text: "每场战斗开局格挡+20，反射伤害翻倍。真武专属。" },
   bloodGourd: {
     id: "bloodGourd",
     name: "血葫芦",
