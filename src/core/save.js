@@ -54,14 +54,12 @@ export function migrateGameState(state) {
   next.meta.wins = next.meta.wins ?? 0;
   next.meta.lossStreak = next.meta.lossStreak ?? 0;
   next.meta.talents = next.meta.talents ?? {};
-  // Also migrate run-level fields
-  if (next.run) {
-    next.run.completedSideTiers = migrateSideTiers(next.run.completedSideTiers);
-    next.run.visitedShopTiers = next.run.visitedShopTiers ?? [];
-    next.run.pendingChoice = next.run.pendingChoice ?? null;
-    next.run.guaranteedNextHand = next.run.guaranteedNextHand ?? [];
-    next.run.retainedHand = next.run.retainedHand ?? [];
-    next.run.shopStock = next.run.shopStock ?? [];
+  // Also call old migrateGame for full run-level migration
+  next = migrateGame(next);
+  // Ensure latest meta fields survive
+  if (next.meta.factionMastery) {
+    next.meta.mythMastery = { ...next.meta.mythMastery, ...next.meta.factionMastery };
+    delete next.meta.factionMastery;
   }
   return next;
 }

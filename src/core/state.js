@@ -141,7 +141,6 @@ function startNormalRun(next, seed) {
 
   applyMetaProgression(next.run, next.meta);
   markSpecialGoalBaseline(next.run);
-  // TEST MODE: shell + poison test deck
   next.run.deck = startingDeck.map((cardId) => makeCard(next.run, cardId));
   next.run.deck = startingDeck.map((cardId) => makeCard(next.run, cardId));
   next.meta.totalRuns += 1;

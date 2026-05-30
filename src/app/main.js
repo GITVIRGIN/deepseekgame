@@ -1090,7 +1090,7 @@ async function handleCloudAction(action) {
       if (!cloudState) {
         cloudMessage = `云端没有 ${savedConfig.playerId} 的存档`;
       } else if (window.confirm("读取云端存档会覆盖当前本地存档，继续吗？")) {
-        state = cloudState;
+        state = migrateGameState(cloudState);
         saveGame(state);
         cloudMessage = `已读取 ${savedConfig.playerId} 的云端存档`;
       } else {

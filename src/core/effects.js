@@ -188,6 +188,12 @@ export function applyCardDamage(state, target, baseDamage, cardCost = 1, cardSty
     combatLog(state, `${target.name} 流血爆开，格挡抵消 ${rawBleedDamage - bleedDamage} 点，额外受到 ${bleedDamage} 点伤害${reduced ? "。" : "，凝滞保留了流血。"}`);
   }
 
+  if (run.relics.includes("poJunLing") && cardStyle === "physical") {
+    target.hp = Math.max(0, target.hp - 3);
+    combatLog(state, "破军令追加 3 点真伤。");
+    if (target.hp <= 0) onEnemyKilled(state, target);
+  }
+
   if (target.hp <= 0) {
     onEnemyKilled(state, target);
   }
@@ -442,8 +448,11 @@ function triggerThunderTribulations(state, target, effect = {}) {
   if (!run || !combat || target.hp <= 0) return;
 
   const threshold = effect.threshold ?? THUNDER_TRIBULATION_THRESHOLD;
-  const damage = effect.damage ?? THUNDER_TRIBULATION_DAMAGE;
-  const stun = effect.stun ?? 1;
+  const baseDamage = effect.damage ?? THUNDER_TRIBULATION_DAMAGE;
+  const nineSky = run.relics.includes("nineSkyTribulation");
+  const damage = nineSky ? baseDamage + 20 : baseDamage;
+  const stun = nineSky ? 2 : 1;
+  if (nineSky) combatLog(state, "九天雷劫强化天劫，雷伤+20，眩晕+1。");
 
   while (target.hp > 0 && statusStacks(target, "thunderMark") >= threshold) {
     reduceStatus(target, "thunderMark", threshold);

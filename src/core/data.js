@@ -987,7 +987,7 @@ export const relics = {
   asuraHeart: { id: "asuraHeart", name: "修罗心", rarity: "legendary", text: "血魔吸血倍率翻倍。真武专属。" },
   venomScripture: { id: "venomScripture", name: "万毒真经", rarity: "legendary", text: "毒瘴每回合伤害翻倍。真武专属。" },
   chaosTreasure: { id: "chaosTreasure", name: "混沌灵宝", rarity: "legendary", text: "开局3层离间+3层禁锢。真武专属。" },
-  turtleShell: { id: "turtleShell", name: "玄龟甲", rarity: "legendary", text: "格挡上限+20，反射翻倍。真武专属。" },
+  turtleShell: { id: "turtleShell", name: "玄龟甲", rarity: "legendary", text: "每场战斗开局格挡+20，反射伤害翻倍。真武专属。" },
   bloodGourd: {
     id: "bloodGourd",
     name: "血葫芦",
