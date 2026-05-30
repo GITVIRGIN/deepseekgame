@@ -2,7 +2,7 @@ import { cards, gradeInfo, rarityInfo, relics, shopItems, statusInfo, styleInfo 
 import { archetypeRanking, dominantArchetype, styleLabel } from "../core/archetypes.js";
 import { previewEnemyIntent } from "../core/combat.js";
 import { reduceGame } from "../core/reducer.js";
-import { clearSave, loadGame, saveGame } from "../core/save.js";
+import { clearSave, loadGame, migrateGameState, saveGame } from "../core/save.js";
 import { MAX_FLOOR } from "../core/types.js";
 import { gameVersion } from "../core/version.js";
 import { createRunGoal, goalProgress } from "../core/goals.js";

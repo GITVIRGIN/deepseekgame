@@ -1,5 +1,6 @@
 import { cards, enemies, relics } from "./data.js";
-import { applyCardEffects, applyIncomingDamage, tickDamageStatus, onEnemyKilled } from "./effects.js";
+import { applyCardEffects, applyIncomingDamage, tickDamageStatus } from "./effects.js";
+import { onEnemyKilled } from "./combat-events.js";
 import { generateRewards, rollRelicReward } from "./rewards.js";
 import { grantGoldDrop } from "./economy.js";
 import { completeRunVictory } from "./goals.js";
@@ -44,6 +45,16 @@ export function startCombat(state) {
   startPlayerTurn(state);
 
   const combat = run.combat;
+  if (run.relics.includes("chaosTreasure") && !combat.flags.chaosTreasureApplied) {
+    combat.flags.chaosTreasureApplied = true;
+    for (const enemy of (combat.enemies ?? [])) {
+      if (enemy.hp > 0) {
+        addStatus(enemy, "chaos", 3);
+        addStatus(enemy, "bind", 3);
+      }
+    }
+    combat.log.push("混沌灵宝震动，敌方陷入离间与禁锢。");
+  }
   if (run.relics.includes("turtleShell")) {
     combat.block = (combat.block ?? 0) + 20;
     combat.log.push("玄龟甲护身，开局格挡 +20。");
@@ -168,16 +179,6 @@ export function startPlayerTurn(state) {
 
   applySpikesReflect(state);
   if (state.phase !== "combat") return state;
-
-  if (run.relics.includes("chaosTreasure")) {
-    for (const enemy of (combat?.enemies ?? [])) {
-      if (enemy.hp > 0) {
-        addStatus(enemy, "chaos", 3);
-        addStatus(enemy, "bind", 3);
-      }
-    }
-    combat.log.push("混沌灵宝震动，敌方陷入离间与禁锢。");
-  }
 
   if (run.relics.includes("jadeRuyi")) {
     addStatus(playerAsFighter(run), "spirit", 1);
@@ -504,7 +505,8 @@ function applySpikesReflect(state) {
   const spikes = statusStacks(playerAsFighter(run), "spikes");
   if (spikes <= 0) return;
   const block = combat.block ?? 0;
-  const damage = Math.min(block, spikes * 3);
+  const turtleMult = run.relics.includes("turtleShell") ? 2 : 1;
+  const damage = Math.min(block, spikes * 3) * turtleMult;
   if (damage <= 0) return;
   const alive = combat.enemies.filter(e => e.hp > 0);
   if (alive.length === 0) return;

@@ -54,6 +54,15 @@ export function migrateGameState(state) {
   next.meta.wins = next.meta.wins ?? 0;
   next.meta.lossStreak = next.meta.lossStreak ?? 0;
   next.meta.talents = next.meta.talents ?? {};
+  // Also migrate run-level fields
+  if (next.run) {
+    next.run.completedSideTiers = migrateSideTiers(next.run.completedSideTiers);
+    next.run.visitedShopTiers = next.run.visitedShopTiers ?? [];
+    next.run.pendingChoice = next.run.pendingChoice ?? null;
+    next.run.guaranteedNextHand = next.run.guaranteedNextHand ?? [];
+    next.run.retainedHand = next.run.retainedHand ?? [];
+    next.run.shopStock = next.run.shopStock ?? [];
+  }
   return next;
 }
 

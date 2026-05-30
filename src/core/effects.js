@@ -1,5 +1,6 @@
 import { cards, relics } from "./data.js";
 import { drawCards, finishCombatIfWon } from "./combat.js";
+import { onEnemyKilled } from "./combat-events.js";
 import { awardMythMasteryForRunEnd, cardMythBoost, consumeMythFirstStrike, mythAwardText, mythFirstStrikeDamageBonus, mythStatusDamageBonus } from "./myth.js";
 import { addStatus, reduceConsumableDebuff, reduceStatus, statusLabel, statusStacks } from "./status.js";
 
@@ -216,7 +217,8 @@ function applySpikeBurst(state, targets) {
   if (!run || !combat || targets.length === 0) return;
   const spikes = statusStacks(playerFighter(run), "spikes");
   const block = combat.block ?? 0;
-  const raw = Math.min(block, spikes * 3);
+  const turtleMult = run.relics.includes("turtleShell") ? 2 : 1;
+  const raw = Math.min(block, spikes * 3) * turtleMult;
   if (raw <= 0) { combatLog(state, "棘刺无力。"); return; }
   for (const target of targets) {
     if (target.hp <= 0) continue;
@@ -581,29 +583,7 @@ function consumeControlPressure(target, amount) {
   }
 }
 
-export function onEnemyKilled(state, enemy) {
-  const run = state.run;
-  const combat = run?.combat;
-  if (!run || !combat || combat.flags[`killed_${enemy.uid}`]) return;
 
-  combat.flags[`killed_${enemy.uid}`] = true;
-  combatLog(state, `${enemy.name} 被击败。`);
-
-  if (run.relics.includes("bloodGourd") && !combat.flags.bloodGourdUsed) {
-    run.hp = Math.min(run.maxHp, run.hp + 5);
-    combat.flags.bloodGourdUsed = true;
-    combatLog(state, "血葫芦回涌，回复 5 点生命。");
-  }
-
-  if (run.relics.includes("ghostLantern")) {
-    for (const other of combat.enemies) {
-      if (other.hp > 0) {
-        addStatus(other, "curse", 2);
-      }
-    }
-    combatLog(state, "引魂灯摇动，余敌皆染诅咒 2。");
-  }
-}
 
 function finishDefeat(state, message) {
   const run = state.run;
