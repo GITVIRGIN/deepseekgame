@@ -3,13 +3,14 @@ import { reduceGame } from "../src/core/reducer.js";
 import { cards } from "../src/core/data.js";
 import { migrateGameState } from "../src/core/save.js";
 import { saveGame } from "../src/core/save.js";
+import { onEnemyKilled } from "../src/core/combat-events.js";
 import { applyCardDamage, tickDamageStatus } from "../src/core/effects.js";
 import { startPlayerTurn } from "../src/core/combat.js";
 
 let passed = 0, failed = 0;
+const _tests = [];
 function test(name, fn) {
-  try { fn(); console.log("✅", name); passed++; }
-  catch (e) { console.error("❌", name, e.message); failed++; }
+  _tests.push({ name, fn });
 }
 function assert(cond, msg) { if (!cond) throw new Error(msg); }
 function enemy(s) { return s.run?.combat?.enemies?.[0]; }
@@ -149,10 +150,15 @@ test("saveGame容错", () => {
 });
 
 // 13. combat-events
-test("combat-events模块", async () => {
-  let m = await import("../src/core/combat-events.js");
-  assert(typeof m.onEnemyKilled === "function");
+test("combat-events模块", () => {
+  assert(typeof onEnemyKilled === "function");
 });
 
-console.log(`\n${passed} passed, ${failed} failed`);
-process.exit(failed > 0 ? 1 : 0);
+(async () => {
+  for (const t of _tests) {
+    try { await t.fn(); console.log("✅", t.name); passed++; }
+    catch (e) { console.error("❌", t.name, e.message); failed++; }
+  }
+  console.log(`\n${passed} passed, ${failed} failed`);
+  process.exit(failed > 0 ? 1 : 0);
+})();

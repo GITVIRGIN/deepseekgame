@@ -2,11 +2,25 @@
 
 ## 当前版本
 
-- 总版本：v0.26.0
-- core：0.24.0
-- ui：0.23.0
-- data：0.16.2
-- save：0.9.1
+- 总版本：v0.7.4
+- core：0.7.4
+- ui：0.1.0
+- data：0.1.0
+- save：0.7.4
+
+## v0.7.4
+
+- 版本号同步至 v0.7.4，smoke 测试支持 async 包装
+- v0.7.3 稳定基线确认：真武六遗物真实生效、smoke 测试通过、ai-review-pack 审核包流程、云端存档 migrateGameState 迁移、combat-events 击杀处理拆分
+
+## v0.7.3
+
+- 真武六遗物全部真实生效（poJunLing/nineSky/asuraHeart/venomScripture/chaosTreasure/turtleShell）
+- smoke 18项全通过，零随机依赖
+- ai-review-pack 审核包流程
+- 云端存档 migrateGameState 迁移
+- combat-events.js 击杀处理拆分，消除循环依赖
+- 格挡锁定 + 毒减伤翻倍
 
 ## 命名规则
 
