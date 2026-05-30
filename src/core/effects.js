@@ -272,8 +272,10 @@ export function tickDamageStatus(state, fighter, statusId) {
   const stacks = statusStacks(fighter, statusId);
   if (stacks <= 0) return;
 
+  const venomMult = (state.run.relics.includes("venomScripture") && fighter.uid !== "player" && statusId === "poison") ? 2 : 1;
+  if (venomMult > 1) combatLog(state, "万毒真经生效，毒瘴伤害翻倍。");
   const bonus = mythStatusDamageBonus(state.run, fighter, statusId);
-  const rawDamage = applyBrittleDamage(state, fighter, stacks + bonus);
+  const rawDamage = applyBrittleDamage(state, fighter, stacks * venomMult + bonus);
   const damage = applyBlock(fighter, rawDamage);
   fighter.hp = Math.max(0, fighter.hp - damage);
   const blocked = rawDamage - damage;
@@ -479,7 +481,8 @@ function applyBleedSiphon(state, targets, effect) {
   }
 
   const ratio = Math.max(1, effect.ratio ?? 3);
-  const heal = Math.floor(totalBleed / ratio) + (effect.value ?? 0) + (effect.cardMythBonus ?? 0);
+  let heal = Math.floor(totalBleed / ratio) + (effect.value ?? 0) + (effect.cardMythBonus ?? 0);
+  if (run.relics.includes("asuraHeart")) { heal *= 2; combatLog(state, "修罗心翻涌，血魔汲血翻倍。"); }
   if (heal <= 0) {
     combatLog(state, `流血不足 ${ratio} 层，未能回血。`);
     return;
