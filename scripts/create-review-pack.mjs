@@ -74,10 +74,12 @@ if (npmScriptExists("check")) commands.push("npm run check");
 if (npmScriptExists("build:release")) commands.push("npm run build:release");
 if (fileExists("scripts/simulate-runs.mjs")) commands.push("node scripts/simulate-runs.mjs --runs=50 --json");
 if (fileExists("scripts/sim-ai.mjs")) commands.push("node scripts/sim-ai.mjs");
+if (npmScriptExists("ai:rc-check")) commands.push("npm run ai:rc-check");
+if (npmScriptExists("ai:sim-consistency")) commands.push("npm run ai:sim-consistency");
 
 const commandResults = commands.map((command) => {
-  const timeout = command.includes("simulate-runs") || command.includes("sim-ai")
-    ? 15 * 60 * 1000
+  const timeout = command.includes("simulate-runs") || command.includes("sim-ai") || command.includes("ai:rc-check")
+    ? 30 * 60 * 1000
     : 10 * 60 * 1000;
   return run(command, timeout);
 });

@@ -8,16 +8,58 @@
 - data：0.1.0
 - save：0.7.5
 
-## v0.7.5
+## v0.7.5 Release Candidate
 
-- 真武平衡轮：增强 sim-ai 模拟策略（流派专用 AI + TM 遗物感知 + 多 seed）
-- 破军令真伤 3→7；修罗心吸血效率提升（ratio 3→2）；万毒真经开局中毒+2；混沌灵宝 3+3→2+2；玄龟甲格挡 +20→+10；九天雷劫 +20→+25 伤害
-- baseline/v0.7.4-stable/ 基线存档已创建
+**真武六流派平衡进入 RC。质量闸门全部通过。确定性模拟已实现。**
+
+sim-ai 支持 --seedBase 确定性种子（默认 2026052700），同参数多次运行精确一致。
+`ai:sim-consistency` 通过严格 JSON 字符串比较。
+
+`npm run ai:rc-check` 结果（seedBase=2026052700）：
+
+full trueMartial / styleAware，200局/流派，2 seed：
+
+| 物理 | 法术 | 流血 | 龟壳 | 中毒 | 控制 |
+|------|------|------|------|------|------|
+| 8.5% | 18.0% | 8.5% | 9.0% | 8.5% | 31.0% |
+
+高样本复核（400局/3 seed）：
+
+- physical：9.8%
+- bleed：8.5%
+- shell：8.3%
+当前 full trueMartial 200局/2seed 下六流派均 ≥8%，控制为 31.0%，低于 40% 上限；physical、bleed、shell 三个边界流派经 400局/3seed 高样本复核均 ≥8%。因此 v0.7.5 进入 Release Candidate，不再继续调数值，避免过拟合采样波动。
+
+
+- `npm run validate:data` ✅
+- `npm run smoke` ✅ 26 passed, 0 failed
+- `npm run check` ✅
+- `npm run build:release` ✅
+- `node scripts/simulate-runs.mjs --runs=50 --json` ✅
+- `node scripts/sim-ai.mjs` ✅
+
+修复过的重要问题：
+
+- poisonBurst 已真实触发毒爆且不消耗毒层
+- shellReflect consumeRatio:0 不再错误赋予 blockShield
+- 玄龟甲反射路径统一为 1.25
+- smoke 覆盖真武遗物和关键平衡机制
+- sim-ai 支持 --mode/--strategy/--runs/--seeds/--json/--profile
+
+当前真武遗物数值：
+- 破军令：开局格挡 +18；物理卡追加 9 点真伤
+- 九天雷劫：开局敌方 2 层雷印；天劫总伤 57，眩晕 2
+- 修罗心：血魔吸血倍率翻倍
+- 万毒真经：开局敌毒 +8；敌方毒伤翻倍，玩家中毒不翻倍
+- 混沌灵宝：开局 3 层离间 +3 层禁锢
+- 玄龟甲：开局格挡 +18，反射伤害 +25%（1.25 倍统一）
+- shellReflect / spikeBurst / applySpikesReflect 统一 1.25
+- consumeRatio:0 不恢复 blockShield
 
 ## v0.7.4
 
 - 版本号同步至 v0.7.4，smoke 测试支持 async 包装
-- v0.7.3 稳定基线确认：真武六遗物真实生效、smoke 测试通过、ai-review-pack 审核包流程、云端存档 migrateGameState 迁移、combat-events 击杀处理拆分
+- v0.7.3 稳定基线确认
 
 ## v0.7.3
 

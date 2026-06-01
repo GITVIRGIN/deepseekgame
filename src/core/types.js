@@ -10,7 +10,7 @@
  * @typedef {"burn" | "bleed" | "poison" | "curse" | "spirit" | "battleIntent" | "chaos" | "bind" | "brittle" | "stasis" | "ward" | "thunderMark" | "stun"} StatusId
  *
  * @typedef {object} Effect
- * @property {"damage" | "execute" | "block" | "heal" | "loseHp" | "draw" | "gainEnergy" | "status" | "amplifyDebuffs" | "thunderMark" | "bleedSiphon" | "shellReflect" | "recoverDiscard" | "maxEnergy" | "maxHp" | "cleanse" | "rareCard" | "handLimit" | "deckLimit" | "gold" | "relic"} type
+ * @property {"damage" | "execute" | "block" | "heal" | "loseHp" | "draw" | "gainEnergy" | "status" | "amplifyDebuffs" | "poisonBurst" | "thunderMark" | "bleedSiphon" | "shellReflect" | "recoverDiscard" | "maxEnergy" | "maxHp" | "cleanse" | "rareCard" | "handLimit" | "deckLimit" | "gold" | "relic"} type
  * @property {Target=} target
  * @property {number=} value
  * @property {number=} ratio

@@ -22,6 +22,18 @@
 node scripts/serve.mjs 5173
 ```
 
+## 质量闸门
+
+当前推荐验证命令：
+
+```bash
+npm run smoke
+npm run check
+npm run build:release
+node scripts/sim-ai.mjs
+npm run ai:review-pack
+```
+
 ## 打包
 
 ```bash

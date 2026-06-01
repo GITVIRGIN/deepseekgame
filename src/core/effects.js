@@ -134,6 +134,13 @@ export function applyEffect(state, effect, targetUid) {
       triggerControlBreak(state, target);
     }
 
+    if (effect.type === "poisonBurst") {
+      applyPoisonBurst(state, targets, effect);
+      finishCombatIfWon(state);
+      triggerThunderTribulations(state, target, effect);
+      triggerControlBreak(state, target);
+    }
+
     if (effect.type === "thunderMark") {
       applyThunderMark(state, target, effect);
     }
@@ -189,8 +196,8 @@ export function applyCardDamage(state, target, baseDamage, cardCost = 1, cardSty
   }
 
   if (run.relics.includes("poJunLing") && cardStyle === "physical") {
-    target.hp = Math.max(0, target.hp - 7);
-    combatLog(state, "破军令追加 7 点真伤。");
+    target.hp = Math.max(0, target.hp - 9);
+    combatLog(state, "破军令追加 9 点真伤。");
     if (target.hp <= 0) onEnemyKilled(state, target);
   }
 
@@ -223,8 +230,8 @@ function applySpikeBurst(state, targets) {
   if (!run || !combat || targets.length === 0) return;
   const spikes = statusStacks(playerFighter(run), "spikes");
   const block = combat.block ?? 0;
-  const turtleMult = run.relics.includes("turtleShell") ? 2 : 1;
-  const raw = Math.min(block, spikes * 3) * turtleMult;
+  const turtleMult = run.relics.includes("turtleShell") ? 1.25 : 1;
+  const raw = Math.floor(Math.min(block, spikes * 3) * turtleMult);
   if (raw <= 0) { combatLog(state, "棘刺无力。"); return; }
   for (const target of targets) {
     if (target.hp <= 0) continue;
@@ -480,8 +487,7 @@ function applyBleedSiphon(state, targets, effect) {
     return;
   }
 
-  let ratio = Math.max(1, effect.ratio ?? 3);
-  if (run.relics.includes("asuraHeart")) ratio = Math.max(1, ratio - 1);
+  const ratio = Math.max(1, effect.ratio ?? 3);
   let heal = Math.floor(totalBleed / ratio) + (effect.value ?? 0) + (effect.cardMythBonus ?? 0);
   if (run.relics.includes("asuraHeart")) { heal *= 2; combatLog(state, "修罗心翻涌，血魔汲血翻倍。"); }
   if (heal <= 0) {
@@ -508,15 +514,9 @@ function applyShellReflect(state, targets, effect) {
   }
 
   const ratio = Math.max(0, effect.ratio ?? 0.5);
-  const turtleMult = state.run.relics.includes("turtleShell") ? 2 : 1;
-  const rawDamage = Math.max(1, (Math.floor(block * ratio) + (effect.value ?? 0) + (effect.cardMythBonus ?? 0)) * turtleMult);
-  // Always apply block shield when consumeRatio is 0
-  if (effect.consumeRatio === 0 && block > 0) {
-    const pf = playerFighter(run);
-    addStatus(pf, "blockShield", 1);
-    syncPlayerFighter(run, pf);
-    combatLog(state, "格挡锁定，本回合不消耗。");
-  }
+  const turtleMult = run.relics.includes("turtleShell") ? 1.25 : 1;
+  const rawDamage = Math.max(1, Math.floor((Math.floor(block * ratio) + (effect.value ?? 0) + (effect.cardMythBonus ?? 0)) * turtleMult));
+  // consumeRatio: 0 means this reflect does not deduct block. It does NOT grant blockShield.
   if (rawDamage <= 0) {
     combatLog(state, "反震力道不足。");
     return;
@@ -550,6 +550,32 @@ function applyBlock(fighter, rawDamage) {
 
 function boostedValue(effect) {
   return (effect.value ?? 0) + (effect.cardMythBonus ?? 0);
+}
+
+function applyPoisonBurst(state, targets, effect) {
+  const run = state.run;
+  const combat = run?.combat;
+  if (!run || !combat) return;
+
+  for (const target of targets) {
+    if (!target || target.uid === "player" || target.hp <= 0) continue;
+
+    const poison = statusStacks(target, "poison");
+    if (poison <= 0) {
+      combatLog(state, `${target.name} 毒瘴不足，毒爆无效。`);
+      continue;
+    }
+
+    const venomMult = run.relics.includes("venomScripture") ? 2 : 1;
+    if (venomMult > 1) combatLog(state, "万毒真经生效，毒爆伤害翻倍。");
+
+    const rawDamage = applyBrittleDamage(state, target, poison * venomMult + mythStatusDamageBonus(run, target, "poison"));
+    const damage = applyBlock(target, rawDamage);
+    target.hp = Math.max(0, target.hp - damage);
+    combatLog(state, `${target.name} 毒瘴爆发，受到 ${damage} 点伤害。`);
+
+    if (target.hp <= 0) onEnemyKilled(state, target);
+  }
 }
 
 function boostedStacks(effect) {

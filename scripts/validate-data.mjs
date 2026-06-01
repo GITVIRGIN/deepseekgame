@@ -9,7 +9,7 @@ function pass(msg) { console.log("✅", msg); }
 
 const IMPLEMENTED_EFFECTS = new Set([
   "damage", "execute", "block", "heal", "loseHp", "draw", "gainEnergy",
-  "status", "amplifyDebuffs", "thunderMark", "bleedSiphon", "shellReflect",
+  "status", "amplifyDebuffs", "poisonBurst", "thunderMark", "bleedSiphon", "shellReflect",
   "recoverDiscard", "cleanse", "spikeBurst", "doubleBlock"
 ]);
 

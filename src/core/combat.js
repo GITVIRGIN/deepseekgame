@@ -49,19 +49,29 @@ export function startCombat(state) {
     combat.flags.chaosTreasureApplied = true;
     for (const enemy of (combat.enemies ?? [])) {
       if (enemy.hp > 0) {
-        addStatus(enemy, "chaos", 2);
-        addStatus(enemy, "bind", 2);
+        addStatus(enemy, "chaos", 3);
+        addStatus(enemy, "bind", 3);
       }
     }
     combat.log.push("混沌灵宝震动，敌方陷入离间与禁锢。");
   }
   if (run.relics.includes("turtleShell")) {
-    combat.block = (combat.block ?? 0) + 10;
-    combat.log.push("玄龟甲护身，开局格挡 +10。");
+    combat.block = (combat.block ?? 0) + 18;
+    combat.log.push("玄龟甲护身，开局格挡 +18。");
+  }
+  if (run.relics.includes("poJunLing")) {
+    combat.block = (combat.block ?? 0) + 18;
+    combat.log.push("破军令护体，开局格挡 +18。");
+  }
+  if (run.relics.includes("nineSkyTribulation")) {
+    for (const enemy of (combat.enemies ?? [])) {
+      if (enemy.hp > 0) addStatus(enemy, "thunderMark", 2);
+    }
+    combat.log.push("九天雷劫引动雷云，敌方获得 2 层雷印。");
   }
   if (run.relics.includes("venomScripture")) {
     for (const enemy of (combat.enemies ?? [])) {
-      if (enemy.hp > 0) addStatus(enemy, "poison", 2);
+      if (enemy.hp > 0) addStatus(enemy, "poison", 8);
     }
     combat.log.push("万毒真经散发，敌人初始中毒。");
   }
@@ -511,8 +521,8 @@ function applySpikesReflect(state) {
   const spikes = statusStacks(playerAsFighter(run), "spikes");
   if (spikes <= 0) return;
   const block = combat.block ?? 0;
-  const turtleMult = run.relics.includes("turtleShell") ? 2 : 1;
-  const damage = Math.min(block, spikes * 3) * turtleMult;
+  const turtleMult = run.relics.includes("turtleShell") ? 1.25 : 1;
+  const damage = Math.floor(Math.min(block, spikes * 3) * turtleMult);
   if (damage <= 0) return;
   const alive = combat.enemies.filter(e => e.hp > 0);
   if (alive.length === 0) return;
