@@ -45,36 +45,38 @@ for (const style of ["physical","spell","bleed","shell","poison","control"]) {
 }
 
 // 3. poJunLing
-test("破军令+9真伤穿99格挡", () => {
+test("破军令+10真伤穿99格挡", () => {
   let s = enterCombat("physical");
   assert(s.run.relics.includes("poJunLing"));
   enemy(s).block = 99; enemy(s).hp = 10;
   applyCardDamage(s, enemy(s), 6, 1, "physical");
-  // 6 raw damage blocked by 99 block. 9 true damage bypasses. HP: 10-9 = 1.
-  assert(enemy(s).hp === 1, `expected HP=1, got ${enemy(s).hp}`);
-  assert(s.run.combat.log.join(" ").includes("破军令追加 9 点真伤"), "log missing poJunLing true damage");
+  // 6 raw damage blocked by 99 block. 9 true damage bypasses. HP: 10-10 = 0.
+  assert(enemy(s).hp === 0, `expected HP=0, got ${enemy(s).hp}`);
+  assert(s.run.combat.log.join(" ").includes("破军令追加 10 点真伤"), "log missing poJunLing true damage");
 });
 
 // 4. nineSkyTribulation
-test("九天雷劫57伤+2眩晕", () => {
+test("九天雷劫120伤无眩晕", () => {
   let s = enterCombat("spell");
   assert(s.run.relics.includes("nineSkyTribulation"));
-  enemy(s).hp = 100; enemy(s).block = 0;
+  enemy(s).hp = 150; enemy(s).block = 0;
   enemy(s).statuses = [{ id: "thunderMark", stacks: 5 }];
   forceCard(s, "thunderCharm");
   s = reduceGame(s, { type: "playCard", cardUid: s.run.combat.hand[0].uid, targetUid: enemy(s).uid });
   let stun = enemy(s)?.statuses?.find(x => x.id === "stun")?.stacks ?? 0;
-  assert(stun === 2, `stun=${stun}`);
-  // 32 base + 25 from nineSky = 57 tribulation damage (plus any card damage).
-  assert(enemy(s).hp <= 43, `expected HP<=43 (trib 57), got ${enemy(s).hp}`);
+  assert(stun === 0, `tribulation should NOT apply stun, got stun=${stun}`);
+  // 60 base + 60 nineSky = 120 tribulation damage
+  assert(enemy(s).hp <= 30, `expected HP<=30 (trib 120 + card dmg), got ${enemy(s).hp}`);
+  // Log should NOT mention stun
+  assert(!s.run.combat.log.join(" ").includes("眩晕"), "tribulation log should not mention stun");
 });
 
 // 4b. nineSky start thunderMark
-test("九天雷劫开局敌人雷印+2", () => {
+test("九天雷劫开局敌人雷印3", () => {
   let s = enterCombat("spell");
   assert(s.run.relics.includes("nineSkyTribulation"));
   let tm = enemy(s)?.statuses?.find(x => x.id === "thunderMark")?.stacks ?? 0;
-  assert(tm >= 2, `expected thunderMark>=2, got ${tm}`);
+  assert(tm === 3, `expected thunderMark=3, got ${tm}`);
 });
 
 // 5. asuraHeart - FORCED hand
@@ -134,7 +136,9 @@ test("混沌灵宝只一次", () => {
   let s = enterCombat("control");
   assert(s.run.relics.includes("chaosTreasure"));
   let c0 = enemy(s)?.statuses?.find(x => x.id === "chaos")?.stacks ?? 0;
-  assert(c0 >= 3, `chaos=${c0}`);
+  assert(c0 >= 1, `chaos=${c0}`);
+  let b0 = enemy(s)?.statuses?.find(x => x.id === "bind")?.stacks ?? 0;
+  assert(b0 === 0, "bind should not exist from chaosTreasure");
 });
 
 // 9. turtleShell - direct startPlayerTurn, no enemy attacks
@@ -184,11 +188,11 @@ test("combat-events模块", () => {
 });
 
 // 14. poJunLing block
-test("破军令开局格挡+18", () => {
+test("破军令开局格挡+22", () => {
   let s = enterCombat("physical");
   assert(s.run.relics.includes("poJunLing"));
-  // startCombat adds +18 block from poJunLing
-  assert(s.run.combat.block >= 18, `block=${s.run.combat.block}`);
+  // startCombat adds +22 block from poJunLing
+  assert(s.run.combat.block >= 22, `block=${s.run.combat.block}`);
 });
 
 // 15. venomScripture +6 poison
@@ -253,6 +257,136 @@ test("反震不消耗格挡但不锁定敌方攻击", () => {
   // Log must NOT contain 格挡锁定
   let logText = s.run.combat.log.join(" ");
   assert(!logText.includes("格挡锁定"), "log should not contain 格挡锁定");
+});
+
+// 19. foxFire is spell
+test("狐火纳入法术流且施加灼烧雷痕", () => {
+  assert(cards.foxFire.style === "spell", `foxFire.style=${cards.foxFire.style}`);
+  assert(cards.foxFire.grade === 1, `foxFire.grade=${cards.foxFire.grade}`);
+  // Play foxFire
+  let s = enterCombat();
+  enemy(s).hp = 20; enemy(s).block = 0;
+  forceCard(s, "foxFire");
+  let hpBefore = enemy(s).hp;
+  s = reduceGame(s, { type: "playCard", cardUid: s.run.combat.hand[0].uid, targetUid: null });
+  // 4 damage
+  assert(enemy(s).hp === hpBefore - 4, `expected HP=${hpBefore-4}, got ${enemy(s).hp}`);
+  // 4 burn
+  let burn = enemy(s)?.statuses?.find(x => x.id === "burn")?.stacks ?? 0;
+  assert(burn >= 4, `expected burn>=4, got ${burn}`);
+  // 1 thunderMark
+  let tm = enemy(s)?.statuses?.find(x => x.id === "thunderMark")?.stacks ?? 0;
+  assert(tm === 1, `expected thunderMark=1, got ${tm}`);
+  // Should NOT trigger tribulation (threshold is 8, only 1 mark)
+  assert(s.phase !== "gameOver", "foxFire should not trigger tribulation at 1 mark");
+});
+
+// 20. Control break: 2 types >= 6 triggers — skipped: chaosTreasure now 2+2=4
+
+// 21. Control break: single type 6 does NOT trigger
+test("心防崩裂单类6不触发", () => {
+  let s = enterCombat();
+  enemy(s).hp = 50;
+  enemy(s).statuses = [{ id: "chaos", stacks: 6 }];
+  forceCard(s, "discordCharm"); // play a control card that will trigger controlBreak check
+  s = reduceGame(s, { type: "playCard", cardUid: s.run.combat.hand[0].uid, targetUid: null });
+  let brittle = enemy(s)?.statuses?.find(x => x.id === "brittle")?.stacks ?? 0;
+  assert(brittle === 0, `chaos=6 alone should NOT trigger brittle, got ${brittle}`);
+});
+
+// 22. Control break: single type 8 does trigger
+test("心防崩裂单类8触发", () => {
+  let s = enterCombat();
+  enemy(s).hp = 50; enemy(s).block = 20;
+  enemy(s).statuses = [{ id: "chaos", stacks: 8 }];
+  forceCard(s, "discordCharm");
+  s = reduceGame(s, { type: "playCard", cardUid: s.run.combat.hand[0].uid, targetUid: null });
+  let brittle = enemy(s)?.statuses?.find(x => x.id === "brittle")?.stacks ?? 0;
+  assert(brittle >= 2, `chaos=8 should trigger brittle, got ${brittle}`);
+  // Block should be cleared
+  assert(enemy(s).block === 0, `block should be cleared, got ${enemy(s).block}`);
+});
+
+// 23. Control resist resists chaos/bind/stun
+test("定力抵消离间禁锢眩晕", () => {
+  let s = enterCombat();
+  enemy(s).hp = 80;
+  enemy(s).statuses = [{ id: "controlResist", stacks: 2 }];
+  // Apply 1 chaos via discordCharm
+  forceCard(s, "discordCharm");
+  s = reduceGame(s, { type: "playCard", cardUid: s.run.combat.hand[0].uid, targetUid: null });
+  let chaos = enemy(s)?.statuses?.find(x => x.id === "chaos")?.stacks ?? 0;
+  let cr = enemy(s)?.statuses?.find(x => x.id === "controlResist")?.stacks ?? 0;
+  assert(chaos === 0, `chaos should be 0 (1 vs resist 2), got ${chaos}`);
+  assert(cr === 1, `controlResist should be 1, got ${cr}`);
+  // thunderMark should NOT be blocked
+  enemy(s).statuses = [{ id: "thunderMark", stacks: 0 }, { id: "controlResist", stacks: 2 }];
+  forceCard(s, "thunderCall");
+  s = reduceGame(s, { type: "playCard", cardUid: s.run.combat.hand[0].uid, targetUid: null });
+  let tm = enemy(s)?.statuses?.find(x => x.id === "thunderMark")?.stacks ?? 0;
+  assert(tm > 0, `thunderMark should NOT be blocked by controlResist`);
+});
+
+// 24. Control resist cap is 2
+test("定力上限2", () => {
+  let s = enterCombat();
+  let e = s.run.combat.enemies[0];
+  e.hp = 80; e.block = 0;
+  e.intent = { type: "attack", value: 5 };
+  e.statuses = [{ id: "stun", stacks: 1 }];
+  s.run.combat.enemies = [e];
+  s = reduceGame(s, { type: "endTurn" });
+  let cr = (s.run.combat.enemies[0]?.statuses || []).find(x => x.id === "controlResist")?.stacks ?? 0;
+  assert(cr >= 1, `expected controlResist>=1 after stun, got ${cr}`);
+  // Apply stun again, should cap at 2
+  e = s.run.combat.enemies[0];
+  e.statuses.push({ id: "stun", stacks: 1 });
+  s = reduceGame(s, { type: "endTurn" });
+  cr = (s.run.combat.enemies[0]?.statuses || []).find(x => x.id === "controlResist")?.stacks ?? 0;
+  assert(cr <= 2, `controlResist should be <=2, got ${cr}`);
+});
+
+// 25. Normal action reduces controlResist
+test("敌人正常行动后定力减少", () => {
+  let s = enterCombat();
+  let e = s.run.combat.enemies[0];
+  e.hp = 80; e.block = 0;
+  e.intent = { type: "attack", value: 5 };
+  e.statuses = [{ id: "controlResist", stacks: 2 }];
+  s.run.combat.enemies = [e];
+  s.run.combat.block = 0;
+  s = reduceGame(s, { type: "endTurn" });
+  let cr = (s.run.combat.enemies[0]?.statuses || []).find(x => x.id === "controlResist")?.stacks ?? 0;
+  assert(cr <= 1, `controlResist should decrease after normal action, got ${cr}`);
+});
+
+// 26. Stun skip grants controlResist, NOT clearMind
+test("敌人眩晕跳过后获得定力不获得醒神", () => {
+  let s = enterCombat();
+  let e = s.run.combat.enemies[0];
+  e.hp = 80; e.block = 0;
+  e.intent = { type: "attack", value: 5 };
+  e.statuses = [{ id: "stun", stacks: 1 }];
+  s.run.combat.enemies = [e];
+  s = reduceGame(s, { type: "endTurn" });
+  let alive = (s.run?.combat?.enemies || []).filter(x => x.hp > 0);
+  assert(alive.length > 0, "enemy should survive");
+  let cr = (alive[0].statuses || []).find(x => x.id === "controlResist")?.stacks ?? 0;
+  let cm = (alive[0].statuses || []).find(x => x.id === "clearMind")?.stacks ?? 0;
+  assert(cr >= 1, `expected controlResist>=1 after stun, got ${cr}`);
+  assert(cm === 0, `expected no clearMind, got ${cm}`);
+});
+
+// 27. Control break unchanged
+test("心防崩裂单类8触发(旧规则不变)", () => {
+  let s = enterCombat();
+  enemy(s).hp = 50; enemy(s).block = 20;
+  enemy(s).statuses = [{ id: "chaos", stacks: 8 }];
+  forceCard(s, "discordCharm");
+  s = reduceGame(s, { type: "playCard", cardUid: s.run.combat.hand[0].uid, targetUid: null });
+  let brittle = enemy(s)?.statuses?.find(x => x.id === "brittle")?.stacks ?? 0;
+  assert(brittle >= 2, `brittle should trigger with chaos=8`);
+  assert(enemy(s).block === 0, `block should be cleared`);
 });
 
 (async () => {

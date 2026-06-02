@@ -1,5 +1,6 @@
 import { cards, enemies, relics } from "./data.js";
-import { applyCardEffects, applyIncomingDamage, tickDamageStatus } from "./effects.js";
+import { dominantArchetype } from "./archetypes.js";
+import { applyCardEffects, applyIncomingDamage, gainControlResist, tickDamageStatus } from "./effects.js";
 import { onEnemyKilled } from "./combat-events.js";
 import { generateRewards, rollRelicReward } from "./rewards.js";
 import { grantGoldDrop } from "./economy.js";
@@ -45,29 +46,78 @@ export function startCombat(state) {
   startPlayerTurn(state);
 
   const combat = run.combat;
+
+  // v0.7.6: 行旅护持 — normal mode archetype-aware survival buff
+  if (!run.trueMartial && !combat.flags.travelBlessingApplied) {
+    combat.flags.travelBlessingApplied = true;
+    combat.block = (combat.block ?? 0) + 10;
+    const drawn = drawCards(state, 1);
+    const msgs = [`行旅护持，获得 10 点格挡`];
+    if (drawn > 0) msgs.push(`多抽 ${drawn} 张`);
+
+    // Archetype bonus (based on deck composition)
+    const dom = dominantArchetype(run)?.style ?? null;
+    if (dom === "physical") {
+      addStatus(run, "battleIntent", 3);
+      combat.block = (combat.block ?? 0) + 4;
+      msgs.push("武行气势初成");
+    } else if (dom === "bleed") {
+      for (const enemy of (combat.enemies ?? [])) {
+        if (enemy.hp > 0) addStatus(enemy, "bleed", 3);
+      }
+      msgs.push("血路牵引");
+    } else if (dom === "shell") {
+      combat.block = (combat.block ?? 0) + 10;
+      addStatus(run, "spikes", 2);
+      msgs.push("龟甲固守");
+    } else if (dom === "spell") {
+      for (const enemy of (combat.enemies ?? [])) {
+        if (enemy.hp > 0) addStatus(enemy, "thunderMark", 8);
+      }
+      msgs.push("雷云聚势");
+    } else if (dom === "poison") {
+      for (const enemy of (combat.enemies ?? [])) {
+        if (enemy.hp > 0) addStatus(enemy, "poison", 2);
+      }
+      msgs.push("毒瘴随行");
+    } else if (dom === "control") {
+      // Draw 1 extra card instead of applying control pressure
+      const drawn = drawCards(state, 1);
+      if (drawn > 0) msgs.push("心机流转");
+    }
+    combat.log.push(msgs.join("，") + "。");
+  }
+
   if (run.relics.includes("chaosTreasure") && !combat.flags.chaosTreasureApplied) {
     combat.flags.chaosTreasureApplied = true;
     for (const enemy of (combat.enemies ?? [])) {
       if (enemy.hp > 0) {
-        addStatus(enemy, "chaos", 3);
-        addStatus(enemy, "bind", 3);
+        addStatus(enemy, "chaos", 1);
+        addStatus(enemy, "controlResist", 1);
       }
     }
     combat.log.push("混沌灵宝震动，敌方陷入离间与禁锢。");
+  }
+  if (run.relics.includes("asuraHeart") && !combat.flags.asuraBleedApplied) {
+    combat.flags.asuraBleedApplied = true;
+    for (const enemy of (combat.enemies ?? [])) {
+      if (enemy.hp > 0) addStatus(enemy, "bleed", 4);
+    }
+    combat.log.push("修罗心鼓动，敌方气血翻涌。");
   }
   if (run.relics.includes("turtleShell")) {
     combat.block = (combat.block ?? 0) + 18;
     combat.log.push("玄龟甲护身，开局格挡 +18。");
   }
   if (run.relics.includes("poJunLing")) {
-    combat.block = (combat.block ?? 0) + 18;
-    combat.log.push("破军令护体，开局格挡 +18。");
+    combat.block = (combat.block ?? 0) + 22;
+    combat.log.push("破军令护体，开局格挡 +22。");
   }
   if (run.relics.includes("nineSkyTribulation")) {
     for (const enemy of (combat.enemies ?? [])) {
-      if (enemy.hp > 0) addStatus(enemy, "thunderMark", 2);
+      if (enemy.hp > 0) addStatus(enemy, "thunderMark", 3);
     }
-    combat.log.push("九天雷劫引动雷云，敌方获得 2 层雷印。");
+    combat.log.push("九天雷劫引动雷云，敌方获得 3 层雷印。天劫总伤 120。");
   }
   if (run.relics.includes("venomScripture")) {
     for (const enemy of (combat.enemies ?? [])) {
@@ -408,25 +458,36 @@ function resolveEnemyIntent(state, enemy) {
 
   const intent = enemy.intent;
 
+  // v0.7.6: controlResist-based anti-control instead of clearMind
+  let wasControlled = false;
+
   if (statusStacks(enemy, "stun") > 0) {
     skipEnemyByStun(combat, enemy);
+    gainControlResist(enemy);
+    wasControlled = true;
     return;
   }
 
   if (statusStacks(enemy, "chaos") > 0) {
     if (intent.type === "attack") {
       if (tryChaosAttack(state, enemy, enemyRawAttackDamage(run, enemy, intent))) {
+        gainControlResist(enemy);
+        wasControlled = true;
         return;
       }
     }
 
     skipEnemyByChaos(combat, enemy);
+    gainControlResist(enemy);
+    wasControlled = true;
     return;
   }
 
   if (statusStacks(enemy, "bind") > 0) {
     if (intent.type === "attack" || intent.type === "status") {
       skipEnemyByBind(combat, enemy);
+      gainControlResist(enemy);
+      wasControlled = true;
       return;
     }
 
@@ -437,6 +498,12 @@ function resolveEnemyIntent(state, enemy) {
       combat.log.push(`${enemy.name} 被禁锢压住攻势，但仍获得 ${blockValue} 点格挡。`);
       return;
     }
+  }
+
+  // Normal action: reduce controlResist by 1
+  if (!wasControlled && statusStacks(enemy, "controlResist") > 0) {
+    reduceStatus(enemy, "controlResist", 1);
+    combat.log.push(`${enemy.name} 定力松动。`);
   }
 
   if (intent.type === "attack") {

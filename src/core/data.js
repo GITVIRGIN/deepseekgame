@@ -27,14 +27,16 @@ export const statusInfo = {
   poison: { label: "毒瘴", text: "回合间受到伤害，然后减少 1 层；敌人攻击时，每 4 层毒瘴使其攻击 -1，最多 -5。" },
   curse: { label: "诅咒", text: "受到的卡牌伤害增加。" },
   spirit: { label: "灵气", text: "提高卡牌伤害，最多 12 层；低费牌只能承载部分灵气，战斗结束后清空。" },
-  thunderMark: { label: "雷痕", text: "敌人身上的雷法层数。达到 8 层时触发天劫，造成 32 点无视格挡伤害，并眩晕 1 次。" },
+  thunderMark: { label: "雷痕", text: "敌人身上的雷法层数。达到 8 层时触发天劫，造成 60 点无视格挡雷伤。" },
   stun: { label: "眩晕", text: "敌人行动前触发：跳过本次行动，然后减少 1 层。" },
   battleIntent: { label: "战意", text: "提高物理牌伤害；战意存在时，每打出一张物理伤害牌后继续增加战意。" },
   blockShield: { label: "格挡锁定", text: "格挡值不会被攻击消耗。回合结束时移除。" },
   spikes: { label: "荆棘" },
+  controlResist: { label: "定力", text: "抵消即将施加的离间、禁锢、眩晕层数；每抵消 1 层消耗 1 层定力。敌人被控制影响行动后获得，正常行动后减少。" },
+  clearMind: { label: "醒神", text: "下一次自身行动时，无视控制造成的行动跳过或转向。当前仅用于特殊机制。" },
   chaos: { label: "离间", text: "敌人行动前触发：攻击会优先打同伴，非攻击或没有同伴则空过，然后减少 1 层。" },
   bind: { label: "禁锢", text: "敌人行动前触发：攻击和施法会空过，格挡仍可执行，然后减少 1 层。" },
-  brittle: { label: "脆化", text: "受到伤害变为 1.5 倍。由离间、禁锢、眩晕合计达到 6 层后触发，并清空当前格挡。" },
+  brittle: { label: "脆化", text: "受到伤害变为 1.5 倍。离间、禁锢、眩晕中至少两类合计达到 6 层，或单类控制达到 8 层时触发心防崩裂，清空格挡并获得脆化。" },
   stasis: { label: "凝滞", text: "流血、毒瘴、离间将要减少层数时，先消耗凝滞并保留原状态。" },
   ward: { label: "护体", text: "抵消即将受到的伤害。" },
 };
@@ -100,11 +102,14 @@ export const cards = {
     name: "狐火",
     rarity: "rare",
     cost: 1,
-    text: "造成 5 点伤害，施加 4 层灼烧。",
-    mythTags: ["妖"],
+    text: "造成 4 点伤害，施加 4 层灼烧和 1 层雷痕。",
+    mythTags: ["妖", "天庭"],
+    style: "spell",
+    grade: 1,
     effects: [
-      { type: "damage", target: "enemy", value: 5 },
+      { type: "damage", target: "enemy", value: 4 },
       { type: "status", target: "enemy", status: "burn", stacks: 4 },
+      { type: "thunderMark", target: "enemy", stacks: 1 },
     ],
   },
   ghostNeedle: {
@@ -982,11 +987,11 @@ export const enemies = {
 };
 
 export const relics = {
-  poJunLing: { id: "poJunLing", name: "破军令", rarity: "legendary", text: "每场战斗开局格挡+18；物理卡牌伤害追加9点真伤。真武专属。" },
-  nineSkyTribulation: { id: "nineSkyTribulation", name: "九天雷劫", rarity: "legendary", text: "天劫伤害+25，眩晕+1回合，开局敌人雷印+2。真武专属。" },
-  asuraHeart: { id: "asuraHeart", name: "修罗心", rarity: "legendary", text: "血魔吸血倍率翻倍。真武专属。" },
+  poJunLing: { id: "poJunLing", name: "破军令", rarity: "legendary", text: "每场战斗开局格挡+22；物理卡牌伤害追加10点真伤。真武专属。" },
+  nineSkyTribulation: { id: "nineSkyTribulation", name: "九天雷劫", rarity: "legendary", text: "天劫总伤 120；每场战斗开局敌方 3 层雷印。真武专属。" },
+  asuraHeart: { id: "asuraHeart", name: "修罗心", rarity: "legendary", text: "每场战斗开局敌方获得 4 层流血；血魔吸血倍率翻倍。真武专属。" },
   venomScripture: { id: "venomScripture", name: "万毒真经", rarity: "legendary", text: "毒瘴每回合伤害翻倍，开局敌人中毒+8。真武专属。" },
-  chaosTreasure: { id: "chaosTreasure", name: "混沌灵宝", rarity: "legendary", text: "开局3层离间+3层禁锢。真武专属。" },
+  chaosTreasure: { id: "chaosTreasure", name: "混沌灵宝", rarity: "legendary", text: "开局敌方 1 层离间和 1 层定力。真武专属。" },
   turtleShell: { id: "turtleShell", name: "玄龟甲", rarity: "legendary", text: "每场战斗开局格挡+18，反射伤害+25%。真武专属。" },
   bloodGourd: {
     id: "bloodGourd",
@@ -1102,10 +1107,10 @@ export const shopItems = {
 
 export const trueMartialDecks = {
   physical: ["strike","strike","heavySlash","chainBlade","traceCutter","readyStance","armorBreaker","killingIntent","furySlash","furySlash","warGodStrike","guard"],
-  spell: ["strike","strike","thunderCharm","thunderCharm","attractThunder","thunderCall","thunderArmy","thunderBurst","guard","guard"],
+  spell: ["strike","foxFire","thunderCharm","thunderCharm","attractThunder","thunderCall","thunderArmy","thunderBurst","guard","guard"],
   bleed: ["strike","strike","bloodNeedle","bloodNeedle","ghostNeedle","bloodNet","bloodSurge","bloodRecycle","bloodFang","bloodFang","guard"],
   poison: ["strike","strike","poisonPowder","poisonPowder","miasma","centipedeJar","poisonBurst","boneDust","venomFang","venomFang","guard"],
-  control: ["strike","strike","discordCharm","discordCharm","bindingRope","echoBell","stasisCharm","curseKill","guard","guard"],
+  control: ["strike","strike","strike","discordCharm","bindingRope","echoBell","stasisCharm","curseKill","guard","guard"],
   shell: ["guard","guard","strike","thornMail","thornMail","reflectArt","jiaoScale","shellTap","turtleCrush","strike"],
 };
 export const trueMartialRelics = { physical:"poJunLing", spell:"nineSkyTribulation", bleed:"asuraHeart", poison:"venomScripture", control:"chaosTreasure", shell:"turtleShell" };

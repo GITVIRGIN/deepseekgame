@@ -77,6 +77,16 @@ if (fileExists("scripts/sim-ai.mjs")) commands.push("node scripts/sim-ai.mjs");
 if (npmScriptExists("ai:rc-check")) commands.push("npm run ai:rc-check");
 if (npmScriptExists("ai:sim-consistency")) commands.push("npm run ai:sim-consistency");
 
+const fullBalance = process.env.AI_REVIEW_FULL_BALANCE === "1";
+if (fullBalance && npmScriptExists("ai:v076-balance-check")) {
+  commands.push("npm run ai:v076-balance-check");
+}
+
+const skippedCommands = [];
+if (!fullBalance && npmScriptExists("ai:v076-balance-check")) {
+  skippedCommands.push("npm run ai:v076-balance-check");
+}
+
 const commandResults = commands.map((command) => {
   const timeout = command.includes("simulate-runs") || command.includes("sim-ai") || command.includes("ai:rc-check")
     ? 30 * 60 * 1000
@@ -226,6 +236,12 @@ writeReviewFile("REVIEW_SUMMARY.md", [
   "## Command Summary",
   "",
   ...commandResults.map((item) => `- ${item.ok ? "✅" : "❌"} \`${item.command}\` status=${item.status}`),
+  "",
+  "## Skipped Commands",
+  "",
+  skippedCommands.length
+    ? skippedCommands.map((c) => "- `" + c + "` (set AI_REVIEW_FULL_BALANCE=1 to include)").join("\n")
+    : "None.",
   "",
   "## Failed Commands",
   "",

@@ -5,6 +5,8 @@ const STATUS_CAPS = {
   battleIntent: 36,
   bind: 18,
   brittle: 6,
+  controlResist: 2,
+  clearMind: 1,
 };
 
 export function statusLabel(statusId) {

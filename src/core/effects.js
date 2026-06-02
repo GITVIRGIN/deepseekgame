@@ -7,10 +7,79 @@ import { addStatus, reduceConsumableDebuff, reduceStatus, statusLabel, statusSta
 const SPIRIT_BONUS_PER_COST = 4;
 const PHYSICAL_INTENT_GAIN = 7;
 const THUNDER_TRIBULATION_THRESHOLD = 8;
-const THUNDER_TRIBULATION_DAMAGE = 32;
+const THUNDER_TRIBULATION_DAMAGE = 60;
 const CONTROL_BREAK_THRESHOLD = 6;
+const CONTROL_BREAK_MIN_TYPES = 2;
+const CONTROL_BREAK_SINGLE_TYPE_THRESHOLD = 8;
 const BRITTLE_STACKS = 2;
 const BRITTLE_MULTIPLIER = 1.5;
+const CONTROL_STATUS_IDS = new Set(["chaos", "bind", "stun"]);
+const CONTROL_RESIST_STATUS = "controlResist";
+const CONTROL_RESIST_MAX = 2;
+
+function applyControlStatus(state, target, statusId, stacks) {
+  if (!CONTROL_STATUS_IDS.has(statusId)) return stacks;
+  if (!target || target.uid === "player") return stacks;
+  if (!target.statuses) target.statuses = [];
+
+  const resist = statusStacks(target, CONTROL_RESIST_STATUS);
+  if (resist <= 0) return stacks;
+
+  const reduced = Math.min(resist, stacks);
+  if (reduced > 0) {
+    reduceStatus(target, CONTROL_RESIST_STATUS, reduced);
+    if (reduced >= stacks) {
+      combatLog(state, `${target.name} 凭定力抵消了控制。`);
+    } else {
+      combatLog(state, `${target.name} 凭定力抵消 ${reduced} 层控制。`);
+    }
+  }
+  return Math.max(0, stacks - reduced);
+}
+
+// Track control stacks applied per target within a single card effect batch
+const _cardControlTracker = new WeakMap();
+export function beginCardControlBatch(state) {
+  _cardControlTracker.set(state, new Map());
+}
+export function endCardControlBatch(state) {
+  const map = _cardControlTracker.get(state);
+  if (!map) return;
+  _cardControlTracker.delete(state);
+  for (const [target, stacks] of map) {
+    if (stacks > 0) {
+      gainControlResist(target, Math.min(CONTROL_RESIST_MAX, stacks));
+    }
+  }
+}
+export function trackControlApplied(state, target, stacks) {
+  const map = _cardControlTracker.get(state);
+  if (!map || !target || target.uid === "player") return;
+  const prev = map.get(target) || 0;
+  map.set(target, prev + stacks);
+}
+
+export function gainControlResist(fighter, amount = 1) {
+  if (!fighter || fighter.uid === "player" || fighter.hp <= 0) return;
+  if (!fighter.statuses) fighter.statuses = [];
+  addStatus(fighter, CONTROL_RESIST_STATUS, amount);
+}
+
+export function grantClearMind(fighter) {
+  if (!fighter || fighter.uid === "player" || fighter.hp <= 0) return;
+  if (!fighter.statuses) fighter.statuses = [];
+  addStatus(fighter, "clearMind", 1);
+}
+
+export function consumeAndCheckClearMind(state, enemy) {
+  if (!enemy || enemy.uid === "player" || enemy.hp <= 0) return false;
+  if (!enemy.statuses) return false;
+  const cm = enemy.statuses.find(s => s.id === "clearMind");
+  if (!cm || cm.stacks <= 0) return false;
+  reduceStatus(enemy, "clearMind", 1);
+  combatLog(state, `${enemy.name} 凭醒神挣脱控制，强行行动。`);
+  return true;
+}
 
 function combatLog(state, text) {
   state.run?.combat?.log.push(text);
@@ -119,9 +188,13 @@ export function applyEffect(state, effect, targetUid) {
     }
 
     if (effect.type === "status" && effect.status) {
-      const stacks = boostedStacks(effect);
-      addStatus(target, effect.status, stacks);
-      combatLog(state, `${target.uid === "player" ? "你" : target.name} 获得 ${statusLabel(effect.status)} ${stacks}。`);
+      let stacks = boostedStacks(effect);
+      stacks = applyControlStatus(state, target, effect.status, stacks);
+      if (stacks > 0) {
+        addStatus(target, effect.status, stacks);
+        combatLog(state, `${target.uid === "player" ? "你" : target.name} 获得 ${statusLabel(effect.status)} ${stacks}。`);
+        trackControlApplied(state, target, stacks);
+      }
       triggerControlBreak(state, target);
     }
 
@@ -196,8 +269,8 @@ export function applyCardDamage(state, target, baseDamage, cardCost = 1, cardSty
   }
 
   if (run.relics.includes("poJunLing") && cardStyle === "physical") {
-    target.hp = Math.max(0, target.hp - 9);
-    combatLog(state, "破军令追加 9 点真伤。");
+    target.hp = Math.max(0, target.hp - 10);
+    combatLog(state, "破军令追加 10 点真伤。");
     if (target.hp <= 0) onEnemyKilled(state, target);
   }
 
@@ -318,22 +391,25 @@ export function applyCardEffects(state, cardInstance, targetUid) {
   if (mythBoost.active) {
     combatLog(state, `${mythBoost.tag}箓印 ${mythBoost.level} 生效。`);
   }
-  for (const effect of card.effects) {
-    applyEffect(
-      state,
-      {
-        ...effect,
-        sourceUid: cardInstance.uid,
-        cardCost: card.cost,
-        cardStyle: card.style,
-        cardMythBonus: mythBoost.numericBonus,
-        cardMythStatusBonus: mythBoost.statusBonus,
-      },
-      targetUid,
-    );
-    if (state.phase !== "combat") {
-      break;
+  beginCardControlBatch(state);
+  try {
+    for (const effect of card.effects) {
+      applyEffect(
+        state,
+        {
+          ...effect,
+          sourceUid: cardInstance.uid,
+          cardCost: card.cost,
+          cardStyle: card.style,
+          cardMythBonus: mythBoost.numericBonus,
+          cardMythStatusBonus: mythBoost.statusBonus,
+        },
+        targetUid,
+      );
+      if (state.phase !== "combat") break;
     }
+  } finally {
+    endCardControlBatch(state);
   }
 
   if (state.phase === "combat" && growsBattleIntent && statusStacks(playerFighter(state.run), "battleIntent") > 0) {
@@ -459,17 +535,15 @@ function triggerThunderTribulations(state, target, effect = {}) {
   const threshold = effect.threshold ?? THUNDER_TRIBULATION_THRESHOLD;
   const baseDamage = effect.damage ?? THUNDER_TRIBULATION_DAMAGE;
   const nineSky = run.relics.includes("nineSkyTribulation");
-  const damage = nineSky ? baseDamage + 25 : baseDamage;
-  const stun = nineSky ? 2 : 1;
-  if (nineSky) combatLog(state, "九天雷劫强化天劫，雷伤+25，眩晕+1。");
+  const damage = nineSky ? baseDamage + 60 : baseDamage;
+  if (nineSky) combatLog(state, "九天雷劫爆发，雷伤 +60。");
 
   while (target.hp > 0 && statusStacks(target, "thunderMark") >= threshold) {
     reduceStatus(target, "thunderMark", threshold);
     const finalDamage = damage + statusStacks(target, "curse");
     target.hp = Math.max(0, target.hp - finalDamage);
-    addStatus(target, "stun", stun);
-    triggerControlBreak(state, target);
-    combatLog(state, `天劫降下，${target.name} 无视格挡受到 ${finalDamage} 点雷伤，并眩晕 ${stun} 次。`);
+    // v0.7.6: tribulation is pure burst damage, no stun
+    combatLog(state, `天劫降下，${target.name} 无视格挡受到 ${finalDamage} 点雷伤。`);
     if (target.hp <= 0) {
       onEnemyKilled(state, target);
     }
@@ -592,21 +666,48 @@ function applyBrittleDamage(state, target, rawDamage) {
   return amplified;
 }
 
+function controlStacks(target) {
+  return {
+    chaos: statusStacks(target, "chaos"),
+    bind: statusStacks(target, "bind"),
+    stun: statusStacks(target, "stun"),
+  };
+}
+
+function controlTypeCount(stacks) {
+  return Object.values(stacks).filter(v => v > 0).length;
+}
+
+function shouldTriggerControlBreak(target) {
+  const stacks = controlStacks(target);
+  const total = stacks.chaos + stacks.bind + stacks.stun;
+  const typeCount = controlTypeCount(stacks);
+  const maxSingle = Math.max(stacks.chaos, stacks.bind, stacks.stun);
+  return (
+    (typeCount >= CONTROL_BREAK_MIN_TYPES && total >= CONTROL_BREAK_THRESHOLD) ||
+    (typeCount === 1 && maxSingle >= CONTROL_BREAK_SINGLE_TYPE_THRESHOLD)
+  );
+}
+
+function controlBreakConsumeAmount(target) {
+  const stacks = controlStacks(target);
+  return controlTypeCount(stacks) >= CONTROL_BREAK_MIN_TYPES
+    ? CONTROL_BREAK_THRESHOLD
+    : CONTROL_BREAK_SINGLE_TYPE_THRESHOLD;
+}
+
 function triggerControlBreak(state, target) {
   const combat = state.run?.combat;
   if (!combat || target.uid === "player" || target.hp <= 0) return;
 
-  while (controlPressure(target) >= CONTROL_BREAK_THRESHOLD) {
-    consumeControlPressure(target, CONTROL_BREAK_THRESHOLD);
+  while (shouldTriggerControlBreak(target)) {
+    const amount = controlBreakConsumeAmount(target);
+    consumeControlPressure(target, amount);
     const clearedBlock = target.block ?? 0;
     target.block = 0;
     addStatus(target, "brittle", BRITTLE_STACKS);
     combatLog(state, `${target.name} 心防崩裂，清空 ${clearedBlock} 点格挡，获得脆化 ${BRITTLE_STACKS}。`);
   }
-}
-
-function controlPressure(target) {
-  return statusStacks(target, "chaos") + statusStacks(target, "bind") + statusStacks(target, "stun");
 }
 
 function consumeControlPressure(target, amount) {

@@ -454,6 +454,7 @@ function renderCloudOverlay() {
 
 function renderRunPanel(run) {
   const panel = el("aside", "run-panel");
+  const pChips = formatPlayerStatusChips(run, 3);
   panel.append(
     el("div", "floor-head", [
       el("h2", "", `第 ${run.floor}/${MAX_FLOOR} 层`),
@@ -462,16 +463,33 @@ function renderRunPanel(run) {
         button("放弃", "danger micro", () => dispatch({ type: "abandonRun" })),
       ]),
     ]),
-    renderPlayerVitals(run),
-    renderStatusLine("自身", run.statuses),
-    el("div", "stat-grid", [
+    el("div", "stat-grid player-vitals-row", [
       stat("生命", `${run.hp}/${run.maxHp}`),
       stat("格挡", run.combat?.block ?? 0),
-      stat("受伤加成", `+${statusValue(run, "curse")}`),
-      stat("金", run.gold),
+      el("div", "player-status-chip-row", pChips),
+      el("div", "player-gold-slot", stat("金", run.gold)),
     ]),
   );
   return panel;
+}
+
+export function formatPlayerStatusChips(run, limit = 3) {
+  const statuses = (run?.statuses || []).filter(s => s.stacks > 0);
+  if (statuses.length === 0) return [];
+  const shown = statuses.slice(0, limit);
+  const allNames = statuses.map(s => `${statusInfo[s.id]?.label ?? s.id} ${s.stacks}`).join(", ");
+  const chips = shown.map(s => {
+    const label = `${statusInfo[s.id]?.label ?? s.id} ${s.stacks}`;
+    const node = el("span", `status-chip-inline status-${s.id}`, label);
+    node.title = allNames;
+    return node;
+  });
+  if (statuses.length > limit) {
+    const overflow = el("span", "status-chip-inline status-overflow", `+${statuses.length - limit}`);
+    overflow.title = allNames;
+    chips.push(overflow);
+  }
+  return chips;
 }
 
 function renderArchetypePanel(run) {
@@ -625,7 +643,7 @@ function renderMobilePlayerStrip(run) {
       el("span", "", `挡 ${run.combat?.block ?? 0}`),
       el("span", "", `气 ${run.energy}/${run.maxEnergy}`),
     ]),
-    el("div", "mobile-status-line", [el("span", "muted", "自身"), renderStatusChips(run.statuses)]),
+    el("div", "player-status-chip-row", formatPlayerStatusChips(run, 3)),
   ]);
 }
 
@@ -773,7 +791,6 @@ function renderPlayerVitals(run) {
     el("div", "vital-head", [el("strong", "", "自身"), el("span", "", `${run.hp}/${run.maxHp}`)]),
     meter(hpPercent, `${run.hp}/${run.maxHp}`, "hp-meter"),
     blockMeter(run.combat?.block ?? 0),
-    renderBarImpacts(run.statuses, "player"),
   ]);
 }
 

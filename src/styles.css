@@ -1400,3 +1400,44 @@ p {
 .reward-view .game-card .card-cost { font-size: 12px; }
 .reward-view .game-card .card-rarity { font-size: 10px; }
 .reward-view .game-card .effect-badges span, .reward-view .game-card .style-badges span { font-size: 10px; }
+
+/* v0.7.6: player status chips in top bar */
+.player-vitals-row {
+  display: grid;
+  grid-template-columns: auto auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 6px;
+}
+
+.player-status-chip-row {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.status-chip-inline {
+  flex: 0 1 auto;
+  max-width: 80px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 2px 6px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(255,250,240,0.9);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.status-overflow {
+  flex: 0 0 auto;
+  font-size: 10px;
+  border: 1px dashed var(--line);
+}
+
+.player-gold-slot {
+  justify-self: end;
+  white-space: nowrap;
+}
