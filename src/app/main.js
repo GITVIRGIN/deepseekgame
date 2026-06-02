@@ -1355,6 +1355,10 @@ function el(tag, className = "", children = []) {
     return node;
   }
 
+  // Normalize: single node / null → array
+  if (children == null) children = [];
+  if (!Array.isArray(children)) children = [children];
+
   for (const child of children) {
     node.append(child);
   }
