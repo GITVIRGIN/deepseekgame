@@ -93,11 +93,10 @@ export function startCombat(state) {
     combat.flags.chaosTreasureApplied = true;
     for (const enemy of (combat.enemies ?? [])) {
       if (enemy.hp > 0) {
-        addStatus(enemy, "chaos", 1);
         addStatus(enemy, "controlResist", 1);
       }
     }
-    combat.log.push("混沌灵宝震动，敌方陷入离间与禁锢。");
+    combat.log.push("混沌灵宝震动，敌方心神自守，获得定力。");
   }
   if (run.relics.includes("asuraHeart") && !combat.flags.asuraBleedApplied) {
     combat.flags.asuraBleedApplied = true;

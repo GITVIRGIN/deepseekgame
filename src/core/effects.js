@@ -193,8 +193,9 @@ export function applyEffect(state, effect, targetUid) {
       if (stacks > 0) {
         addStatus(target, effect.status, stacks);
         combatLog(state, `${target.uid === "player" ? "你" : target.name} 获得 ${statusLabel(effect.status)} ${stacks}。`);
-        trackControlApplied(state, target, stacks);
+        if (CONTROL_STATUS_IDS.has(effect.status)) trackControlApplied(state, target, stacks);
       }
+      if (effect.status === "thunderMark" && effect.cardStyle !== "spell") triggerThunderTribulations(state, target, effect);
       triggerControlBreak(state, target);
     }
 
@@ -203,14 +204,14 @@ export function applyEffect(state, effect, targetUid) {
       if (added > 0) {
         combatLog(state, `${target.uid === "player" ? "你" : target.name} 的负面状态增长 ${added} 层。`);
       }
-      triggerThunderTribulations(state, target, effect);
+      if (effect.cardStyle !== "spell") triggerThunderTribulations(state, target, effect);
       triggerControlBreak(state, target);
     }
 
     if (effect.type === "poisonBurst") {
       applyPoisonBurst(state, targets, effect);
       finishCombatIfWon(state);
-      triggerThunderTribulations(state, target, effect);
+      if (effect.cardStyle !== "spell") triggerThunderTribulations(state, target, effect);
       triggerControlBreak(state, target);
     }
 
@@ -474,6 +475,16 @@ export function applyCardEffects(state, cardInstance, targetUid) {
     addStatus({ statuses: state.run.statuses }, "battleIntent", PHYSICAL_INTENT_GAIN);
     combatLog(state, `物理攻势推进，战意 +${PHYSICAL_INTENT_GAIN}。`);
   }
+
+  // v0.7.7: Universal tribulation check for all enemies
+  if (state.phase === "combat") {
+    const cbt = state.run?.combat;
+    if (cbt) {
+      for (const enemy of (cbt.enemies || [])) {
+        if (enemy.hp > 0) triggerThunderTribulations(state, enemy);
+      }
+    }
+  }
 }
 
 export function pickDiscardCard(state, cardUid) {
@@ -582,7 +593,7 @@ function applyThunderMark(state, target, effect) {
 
   addStatus(target, "thunderMark", stacks);
   combatLog(state, `${target.name} 雷痕 +${stacks}。`);
-  triggerThunderTribulations(state, target, effect);
+  if (effect.cardStyle !== "spell") triggerThunderTribulations(state, target, effect);
 }
 
 function triggerThunderTribulations(state, target, effect = {}) {

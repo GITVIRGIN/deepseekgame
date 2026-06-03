@@ -136,7 +136,7 @@ test("混沌灵宝只一次", () => {
   let s = enterCombat("control");
   assert(s.run.relics.includes("chaosTreasure"));
   let c0 = enemy(s)?.statuses?.find(x => x.id === "chaos")?.stacks ?? 0;
-  assert(c0 >= 1, `chaos=${c0}`);
+  assert(c0 === 0, `chaos=${c0}`);
   let b0 = enemy(s)?.statuses?.find(x => x.id === "bind")?.stacks ?? 0;
   assert(b0 === 0, "bind should not exist from chaosTreasure");
 });
@@ -558,6 +558,118 @@ test("trueMartial spell不触发雷火引", () => {
   let s = enterCombat("spell");
   assert(s.run.trueMartial);
   assert(!s.run.combat?.flags?.travelSpellCharge);
+});
+
+
+
+// === v0.7.7 雷痕立即结算测试 ===
+test("雷痕达到8立即触发天劫", () => {
+  let s = enterCombat();
+  enemy(s).hp = 100; enemy(s).block = 99;
+  enemy(s).statuses = [{ id: "thunderMark", stacks: 8 }];
+  forceCard(s, "thunderCharm");
+  s = reduceGame(s, { type: "playCard", cardUid: s.run.combat.hand[0].uid, targetUid: enemy(s).uid });
+  let tm = enemy(s)?.statuses?.find(x => x.id === "thunderMark")?.stacks ?? 0;
+  let stun = enemy(s)?.statuses?.find(x => x.id === "stun")?.stacks ?? 0;
+  let cr = enemy(s)?.statuses?.find(x => x.id === "controlResist")?.stacks ?? 0;
+  assert(enemy(s).hp <= 40, "tribulation should deal 60+ dmg"); /* 60 trib + card dmg */
+  assert(tm < 8, "thunderMark should be below 8 after tribulation");
+  assert(stun === 0); assert(cr === 0);
+  assert(s.run.combat.log.join(" ").includes("天劫"));
+});
+
+test("雷痕10会触发天劫并剩余2", () => {
+  let s = enterCombat();
+  enemy(s).hp = 100; enemy(s).block = 99;
+  enemy(s).statuses = [{ id: "thunderMark", stacks: 10 }];
+  forceCard(s, "flameTalisman");
+  s = reduceGame(s, { type: "playCard", cardUid: s.run.combat.hand[0].uid, targetUid: enemy(s).uid });
+  let tm = enemy(s)?.statuses?.find(x => x.id === "thunderMark")?.stacks ?? 0;
+  assert(enemy(s).hp <= 40, "tribulation 60 dmg should apply");
+  assert(tm === 2, "10 - 8 = 2 remaining, got " + tm);
+  assert(tm < 8, "must not show 10/8 stable"); /* This is the user screenshot bug */
+});
+
+test("雷痕16会连续触发两次天劫", () => {
+  let s = enterCombat();
+  enemy(s).hp = 200; enemy(s).block = 99;
+  enemy(s).statuses = [{ id: "thunderMark", stacks: 16 }];
+  // Use a non-spell card to avoid 雷火引/共鸣 interference
+  forceCard(s, "strike");
+  s = reduceGame(s, { type: "playCard", cardUid: s.run.combat.hand[0].uid, targetUid: enemy(s).uid });
+  // strike does not add thunderMark, so tribulation triggers from existing 16
+  let tm = enemy(s)?.statuses?.find(x => x.id === "thunderMark")?.stacks ?? 0;
+  let stun = enemy(s)?.statuses?.find(x => x.id === "stun")?.stacks ?? 0;
+  let cr = enemy(s)?.statuses?.find(x => x.id === "controlResist")?.stacks ?? 0;
+  assert(enemy(s).hp <= 90, "two tribulations = 120 dmg + strike dmg"); // 200-120=80 + strike ~6 = ~74
+  assert(tm === 0, "16 - 2*8 = 0, got " + tm);
+  assert(stun === 0); assert(cr === 0);
+  // Log should contain tribulation twice
+  let tribCount = s.run.combat.log.filter(l => l.includes("天劫")).length;
+  assert(tribCount >= 2, "should trigger at least 2 tribulations");
+});
+
+test("雷火引推过阈值会当次触发天劫", () => {
+  let s = enterCombat();
+  s.run.trueMartial = false;
+  enemy(s).hp = 100; enemy(s).block = 99;
+  enemy(s).statuses = [{ id: "thunderMark", stacks: 3 }];
+  s.run.combat.flags = { travelSpellCharge: 3 };
+  forceCard(s, "foxFire");
+  s = reduceGame(s, { type: "playCard", cardUid: s.run.combat.hand[0].uid, targetUid: enemy(s).uid });
+  let tm = enemy(s)?.statuses?.find(x => x.id === "thunderMark")?.stacks ?? 0;
+  assert(enemy(s).hp <= 40, "tribulation should trigger in same resolution");
+  assert(tm === 3, "3+2+6-8=3 remaining");
+  assert(tm < 8, "must not show >=8 stable");
+});
+
+test("雷火共鸣后同次天劫消耗雷火烙印", () => {
+  let s = enterCombat();
+  s.run.trueMartial = false;
+  enemy(s).hp = 200; enemy(s).block = 99;
+  enemy(s).statuses = [{ id: "burn", stacks: 4 }, { id: "thunderMark", stacks: 4 }];
+  s.run.combat.flags = { travelSpellCharge: 3 };
+  // foxFire: burn+5, thunderMark+2. 雷火引: burn+7, thunderMark+6. Total: burn>=4, thunderMark=12.
+  forceCard(s, "foxFire");
+  s = reduceGame(s, { type: "playCard", cardUid: s.run.combat.hand[0].uid, targetUid: enemy(s).uid });
+  let tfm = enemy(s)?.statuses?.find(x => x.id === "thunderFireMark")?.stacks ?? 0;
+  let stun = enemy(s)?.statuses?.find(x => x.id === "stun")?.stacks ?? 0;
+  let cr = enemy(s)?.statuses?.find(x => x.id === "controlResist")?.stacks ?? 0;
+  assert(enemy(s).hp <= 110, "tribulation 60 + resonance 40 + foxFire 4 = 104 dmg, hp <= 96"); // 200-104=96
+  assert(tfm === 0, "thunderFireMark must be consumed by same-resolution tribulation, got " + tfm);
+  assert(stun === 0); assert(cr === 0);
+  assert(s.run.combat.log.join(" ").includes("雷火烙印爆发"), "log must mention thunderFireMark burst");
+});
+
+test("九天雷劫雷痕达到8立即触发120伤", () => {
+  let s = enterCombat("spell");
+  enemy(s).hp = 200; enemy(s).block = 99;
+  enemy(s).statuses = [{ id: "thunderMark", stacks: 8 }];
+  forceCard(s, "thunderCharm");
+  s = reduceGame(s, { type: "playCard", cardUid: s.run.combat.hand[0].uid, targetUid: enemy(s).uid });
+  let tm = enemy(s)?.statuses?.find(x => x.id === "thunderMark")?.stacks ?? 0;
+  let stun = enemy(s)?.statuses?.find(x => x.id === "stun")?.stacks ?? 0;
+  let cr = enemy(s)?.statuses?.find(x => x.id === "controlResist")?.stacks ?? 0;
+  assert(enemy(s).hp <= 80, "nineSky tribulation 120 dmg, expected HP <= 80"); /* 200 - 120 = 80 */
+  assert(tm < 8, "thunderMark should be consumed");
+  assert(stun === 0); assert(cr === 0);
+});
+
+
+
+test("spell放大雷痕不提前天劫", () => {
+  let s = enterCombat();
+  s.run.trueMartial = false;
+  enemy(s).hp = 200; enemy(s).block = 99;
+  enemy(s).statuses = [{ id: "burn", stacks: 4 }, { id: "thunderMark", stacks: 4 }];
+  s.run.combat.flags = { travelSpellCharge: 3 };
+  forceCard(s, "doomSutra");
+  s = reduceGame(s, { type: "playCard", cardUid: s.run.combat.hand[0].uid, targetUid: enemy(s).uid });
+  let tfm = enemy(s)?.statuses?.find(x => x.id === "thunderFireMark")?.stacks ?? 0;
+  let stun = enemy(s)?.statuses?.find(x => x.id === "stun")?.stacks ?? 0;
+  assert(s.run.combat.log.join(" ").includes("雷火共鸣"), "should trigger resonance same-turn");
+  assert(s.run.combat.log.join(" ").includes("天劫"), "should trigger tribulation same-turn");
+  assert(tfm <= 1); assert(stun === 0);
 });
 
 

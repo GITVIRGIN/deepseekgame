@@ -993,7 +993,7 @@ export const relics = {
   nineSkyTribulation: { id: "nineSkyTribulation", name: "九天雷劫", rarity: "legendary", text: "天劫总伤 120；每场战斗开局敌方 3 层雷印。真武专属。" },
   asuraHeart: { id: "asuraHeart", name: "修罗心", rarity: "legendary", text: "每场战斗开局敌方获得 4 层流血；血魔吸血倍率翻倍。真武专属。" },
   venomScripture: { id: "venomScripture", name: "万毒真经", rarity: "legendary", text: "毒瘴每回合伤害翻倍，开局敌人中毒+8。真武专属。" },
-  chaosTreasure: { id: "chaosTreasure", name: "混沌灵宝", rarity: "legendary", text: "开局敌方 1 层离间和 1 层定力。真武专属。" },
+  chaosTreasure: { id: "chaosTreasure", name: "混沌灵宝", rarity: "legendary", text: "开局敌方获得 1 层定力。真武专属。" },
   turtleShell: { id: "turtleShell", name: "玄龟甲", rarity: "legendary", text: "每场战斗开局格挡+30，反射伤害+25%。真武专属。" },
   bloodGourd: {
     id: "bloodGourd",
