@@ -1,4 +1,4 @@
-import { cards, startingDeck, trueMartialDecks, trueMartialRelics } from "./data.js";
+import { cards, startingDeck, relics, trueMartialDecks, trueMartialRelics } from "./data.js";
 import { createArchetypeAffinity } from "./archetypes.js";
 import { createRunGoal, markSpecialGoalBaseline } from "./goals.js";
 import { prepareRouteChoice } from "./nodes.js";
@@ -146,4 +146,18 @@ function startNormalRun(next, seed) {
   next.message = "你携一卷残箓入山。";
 
   return prepareRouteChoice(next);
+}
+
+export function isTrueMartialUnlocked(meta) {
+  const mastery = meta?.mythMastery ?? {};
+  const normalRelicIds = Object.values(relics).filter(r => !r.text?.includes("真武专属")).map(r => r.id);
+  const allNormalRelics = normalRelicIds.every(id => (meta.collectedRelics || []).includes(id));
+  const threeAtThree = Object.values(mastery).filter(v => v >= 3).length >= 3;
+  return allNormalRelics && threeAtThree;
+}
+
+export function canShowTrueMartialEntry(state) {
+  if (!state || !state.meta) return false;
+  if (state.phase !== "home" && state.phase !== "gameOver") return false;
+  return isTrueMartialUnlocked(state.meta);
 }

@@ -47,12 +47,12 @@ export function startCombat(state) {
 
   const combat = run.combat;
 
-  // v0.7.6: 行旅护持 — normal mode archetype-aware survival buff
+  // v0.7.6: 行旅符 — normal mode travel blessing
   if (!run.trueMartial && !combat.flags.travelBlessingApplied) {
     combat.flags.travelBlessingApplied = true;
     combat.block = (combat.block ?? 0) + 10;
     const drawn = drawCards(state, 1);
-    const msgs = [`行旅护持，获得 10 点格挡`];
+    const msgs = [`行旅符微光护身，获得 10 点格挡`];
     if (drawn > 0) msgs.push(`多抽 ${drawn} 张`);
 
     // Archetype bonus (based on deck composition)
@@ -60,30 +60,31 @@ export function startCombat(state) {
     if (dom === "physical") {
       addStatus(run, "battleIntent", 3);
       combat.block = (combat.block ?? 0) + 4;
-      msgs.push("武行气势初成");
+      msgs.push("行旅符感应武道，战意初燃");
     } else if (dom === "bleed") {
       for (const enemy of (combat.enemies ?? [])) {
         if (enemy.hp > 0) addStatus(enemy, "bleed", 3);
       }
-      msgs.push("血路牵引");
+      msgs.push("行旅符感应血路，敌方气血翻涌");
     } else if (dom === "shell") {
+      combat.block = (combat.block ?? 0) + 18;
+      addStatus(run, "spikes", 3);
+      msgs.push("行旅符感应守御，格挡之势更稳");
       combat.block = (combat.block ?? 0) + 10;
       addStatus(run, "spikes", 2);
-      msgs.push("龟甲固守");
+      msgs.push("行旅符感应守御，格挡之势更稳");
     } else if (dom === "spell") {
-      for (const enemy of (combat.enemies ?? [])) {
-        if (enemy.hp > 0) addStatus(enemy, "thunderMark", 8);
-      }
-      msgs.push("雷云聚势");
+      // v0.7.7: 雷火引 — player-side buff, not enemy thunderMark
+      combat.flags.travelSpellCharge = 3;
+      msgs.push("行旅符感应雷法，三缕雷火引随身流转");
     } else if (dom === "poison") {
       for (const enemy of (combat.enemies ?? [])) {
         if (enemy.hp > 0) addStatus(enemy, "poison", 2);
       }
-      msgs.push("毒瘴随行");
+      msgs.push("行旅符感应毒瘴，敌方沾染毒息");
     } else if (dom === "control") {
-      // Draw 1 extra card instead of applying control pressure
       const drawn = drawCards(state, 1);
-      if (drawn > 0) msgs.push("心机流转");
+      if (drawn > 0) msgs.push("行旅符感应心机，手牌流转更顺");
     }
     combat.log.push(msgs.join("，") + "。");
   }
@@ -106,8 +107,8 @@ export function startCombat(state) {
     combat.log.push("修罗心鼓动，敌方气血翻涌。");
   }
   if (run.relics.includes("turtleShell")) {
-    combat.block = (combat.block ?? 0) + 18;
-    combat.log.push("玄龟甲护身，开局格挡 +18。");
+    combat.block = (combat.block ?? 0) + 30;
+    combat.log.push("玄龟甲护身，开局格挡 +30。");
   }
   if (run.relics.includes("poJunLing")) {
     combat.block = (combat.block ?? 0) + 22;

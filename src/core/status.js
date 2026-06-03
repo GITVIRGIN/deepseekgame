@@ -3,6 +3,7 @@ import { statusInfo } from "./data.js";
 const STATUS_CAPS = {
   spirit: 12,
   battleIntent: 36,
+  thunderFireMark: 3,
   bind: 18,
   brittle: 6,
   controlResist: 2,

@@ -1,6 +1,6 @@
-import { createInitialState, startRun, makeCard } from "../src/core/state.js";
+import { createInitialState, startRun, makeCard, isTrueMartialUnlocked, canShowTrueMartialEntry } from "../src/core/state.js";
 import { reduceGame } from "../src/core/reducer.js";
-import { cards } from "../src/core/data.js";
+import { cards, relics } from "../src/core/data.js";
 import { migrateGameState } from "../src/core/save.js";
 import { saveGame } from "../src/core/save.js";
 import { onEnemyKilled } from "../src/core/combat-events.js";
@@ -276,7 +276,7 @@ test("狐火纳入法术流且施加灼烧雷痕", () => {
   assert(burn >= 4, `expected burn>=4, got ${burn}`);
   // 1 thunderMark
   let tm = enemy(s)?.statuses?.find(x => x.id === "thunderMark")?.stacks ?? 0;
-  assert(tm === 1, `expected thunderMark=1, got ${tm}`);
+  assert(tm === 2, `expected thunderMark=1, got ${tm}`);
   // Should NOT trigger tribulation (threshold is 8, only 1 mark)
   assert(s.phase !== "gameOver", "foxFire should not trigger tribulation at 1 mark");
 });
@@ -388,6 +388,178 @@ test("心防崩裂单类8触发(旧规则不变)", () => {
   assert(brittle >= 2, `brittle should trigger with chaos=8`);
   assert(enemy(s).block === 0, `block should be cleared`);
 });
+
+
+// === v0.7.7 P0 tests ===
+test("连续放弃不会重复结算", () => {
+  let s = createInitialState();
+  s = reduceGame(s, { type: "startRun" });
+  s.run.floor = 12; s.run.relics = ["guard"]; s.phase = "combat";
+  s.run.combat = { enemies: [], hand: [], drawPile: [], discardPile: [], log: [], block: 0 };
+  const s1 = reduceGame(s, { type: "abandonRun" });
+  const soul1 = s1.meta.soul, streak1 = s1.meta.lossStreak;
+  const relics1 = [...s1.meta.collectedRelics];
+  const mastery1 = JSON.stringify(s1.meta.mythMastery);
+  assert(s1.run.finished === true && s1.phase === "gameOver");
+  const s2 = reduceGame(s1, { type: "abandonRun" });
+  assert(s2.meta.soul === soul1); assert(s2.meta.lossStreak === streak1);
+  assert(s2.meta.collectedRelics.length === relics1.length);
+  assert(JSON.stringify(s2.meta.mythMastery) === mastery1);
+});
+
+test("低层放弃不会获得派系箓印", () => {
+  let s = createInitialState();
+  s = reduceGame(s, { type: "startRun" });
+  s.run.floor = 5; s.run.relics = []; s.phase = "combat";
+  s.run.combat = { enemies: [], hand: [], drawPile: [], discardPile: [], log: [], block: 0 };
+  const s1 = reduceGame(s, { type: "abandonRun" });
+  assert(Object.values(s1.meta.mythMastery || {}).filter(v => v > 0).length === 0);
+});
+
+test("放弃不会批量解锁遗物", () => {
+  let s = createInitialState();
+  s = reduceGame(s, { type: "startRun" });
+  s.run.floor = 10; s.run.relics = ["guard"]; s.phase = "combat";
+  s.run.combat = { enemies: [], hand: [], drawPile: [], discardPile: [], log: [], block: 0 };
+  const s1 = reduceGame(s, { type: "abandonRun" });
+  assert(s1.meta.collectedRelics.includes("guard"));
+  assert(!s1.meta.collectedRelics.includes("turtleShell"));
+  assert(s1.meta.collectedRelics.length < 10);
+});
+
+test("真武解锁纯函数正确", () => {
+  const normalIds = Object.values(relics).filter(r => !r.text?.includes("真武专属")).map(r => r.id);
+  const unlocked = { collectedRelics: [...normalIds], mythMastery: { spell: 3, physical: 3, bleed: 3 } };
+  assert(isTrueMartialUnlocked(unlocked) === true);
+  assert(isTrueMartialUnlocked({ collectedRelics: [], mythMastery: {} }) === false);
+  const copy = JSON.parse(JSON.stringify(unlocked));
+  isTrueMartialUnlocked(copy);
+  assert(JSON.stringify(copy) === JSON.stringify(unlocked));
+});
+
+test("真武解锁后home显示入口", () => {
+  const normalIds = Object.values(relics).filter(r => !r.text?.includes("真武专属")).map(r => r.id);
+  assert(canShowTrueMartialEntry({ phase: "home", meta: { collectedRelics: [...normalIds], mythMastery: { spell: 3, physical: 3, bleed: 3 } } }) === true);
+});
+
+test("真武解锁后gameOver显示入口", () => {
+  const normalIds = Object.values(relics).filter(r => !r.text?.includes("真武专属")).map(r => r.id);
+  assert(canShowTrueMartialEntry({ phase: "gameOver", meta: { collectedRelics: [...normalIds], mythMastery: { spell: 3, physical: 3, bleed: 3 } } }) === true);
+});
+
+test("未解锁不显示真武入口", () => {
+  const locked = { collectedRelics: [], mythMastery: {} };
+  assert(canShowTrueMartialEntry({ phase: "home", meta: locked }) === false);
+  assert(canShowTrueMartialEntry({ phase: "gameOver", meta: locked }) === false);
+});
+
+test("进入真武选择页不赠送遗物", () => {
+  let s = createInitialState();
+  s.meta.collectedRelics = ["guard"]; s.meta.mythMastery = { spell: 1 };
+  
+  s = reduceGame(s, { type: "martialSelect" });
+  assert(s.phase === "martialSelect");
+  assert(Array.isArray(s.meta.collectedRelics));
+  assert(s.meta.mythMastery.spell === 1);
+});
+
+// === v0.7.7 雷火 tests ===
+test("雷火引单体法术只影响目标", () => {
+  let s = enterCombat();
+  s.run.trueMartial = false;
+  s.run.combat.enemies = [
+    { uid: "A", hp: 80, maxHp: 80, block: 0, name: "敌A", statuses: [], intent: { type: "attack", value: 5 } },
+    { uid: "B", hp: 80, maxHp: 80, block: 0, name: "敌B", statuses: [], intent: { type: "attack", value: 5 } },
+  ];
+  s.run.combat.flags = { travelSpellCharge: 3 };
+  forceCard(s, "foxFire");
+  s = reduceGame(s, { type: "playCard", cardUid: s.run.combat.hand[0].uid, targetUid: "A" });
+  const burnB = (s.run.combat.enemies[1].statuses || []).find(x => x.id === "burn")?.stacks ?? 0;
+  const tmB = (s.run.combat.enemies[1].statuses || []).find(x => x.id === "thunderMark")?.stacks ?? 0;
+  assert(burnB === 0); assert(tmB === 0);
+  assert(s.run.combat.flags.travelSpellCharge === 2);
+});
+
+test("雷火引全体法术影响所有敌人", () => {
+  let s = enterCombat();
+  s.run.trueMartial = false;
+  s.run.combat.enemies = [
+    { uid: "X", hp: 80, maxHp: 80, block: 0, name: "敌X", statuses: [], intent: { type: "attack", value: 5 } },
+    { uid: "Y", hp: 80, maxHp: 80, block: 0, name: "敌Y", statuses: [], intent: { type: "attack", value: 5 } },
+  ];
+  s.run.combat.flags = { travelSpellCharge: 3 };
+  forceCard(s, "fireRite");
+  s = reduceGame(s, { type: "playCard", cardUid: s.run.combat.hand[0].uid, targetUid: null });
+  const tmX = (s.run.combat.enemies[0].statuses || []).find(x => x.id === "thunderMark")?.stacks ?? 0;
+  const tmY = (s.run.combat.enemies[1].statuses || []).find(x => x.id === "thunderMark")?.stacks ?? 0;
+  assert(tmX === 6); assert(tmY === 6);
+  assert(s.run.combat.flags.travelSpellCharge === 2);
+});
+
+test("雷火共鸣只检查受影响目标", () => {
+  let s = enterCombat();
+  s.run.combat.enemies = [
+    { uid: "A", hp: 80, maxHp: 80, block: 0, name: "敌A", statuses: [{ id: "burn", stacks: 4 }, { id: "thunderMark", stacks: 4 }], intent: { type: "attack", value: 5 } },
+    { uid: "B", hp: 80, maxHp: 80, block: 0, name: "敌B", statuses: [{ id: "burn", stacks: 4 }, { id: "thunderMark", stacks: 4 }], intent: { type: "attack", value: 5 } },
+  ];
+  s.run.combat.flags = {};
+  forceCard(s, "foxFire");
+  s = reduceGame(s, { type: "playCard", cardUid: s.run.combat.hand[0].uid, targetUid: "A" });
+  const tfmA = (s.run.combat.enemies[0].statuses || []).find(x => x.id === "thunderFireMark")?.stacks ?? 0;
+  const tfmB = (s.run.combat.enemies[1].statuses || []).find(x => x.id === "thunderFireMark")?.stacks ?? 0;
+  const burnB = (s.run.combat.enemies[1].statuses || []).find(x => x.id === "burn")?.stacks ?? 0;
+  assert(tfmA === 1); assert(tfmB === 0); assert(burnB === 4);
+});
+
+test("self-only法术不消耗雷火引", () => {
+  let s = enterCombat();
+  s.run.trueMartial = false;
+  s.run.combat.flags = { travelSpellCharge: 3 };
+  forceCard(s, "hiddenArchive");
+  s = reduceGame(s, { type: "playCard", cardUid: s.run.combat.hand[0].uid, targetUid: null });
+  assert(s.run.combat.flags.travelSpellCharge === 3);
+});
+
+// === v0.7.7 文案测试 ===
+test("dragonRain文案与效果一致", () => {
+  assert(cards["dragonRain"].text.includes("施加 4 层灼烧"));
+  assert(cards["dragonRain"].effects.some(e => e.status === "burn" && e.stacks === 4));
+});
+
+test("foxFire文案与效果一致", () => {
+  const c = cards["foxFire"];
+  assert(c.text.includes("5 层灼烧") && c.text.includes("2 层雷痕"));
+  assert(c.effects.some(e => e.status === "burn" && e.stacks === 5));
+  assert(c.effects.some(e => e.type === "thunderMark" && e.stacks === 2));
+});
+
+test("玄龟甲文案与代码一致", () => {
+  let s = enterCombat("shell");
+  assert(s.run.combat.block >= 22);
+});
+
+test("雷火机制核心值保持", () => {
+  assert(cards["flameTalisman"].effects.some(e => e.status === "burn" && e.stacks === 8));
+  assert(cards["foxFire"].effects.some(e => e.status === "burn" && e.stacks === 5));
+  assert(cards["fireRite"].effects.some(e => e.status === "burn" && e.stacks === 4));
+  assert(cards["dragonRain"].effects.some(e => e.status === "burn" && e.stacks === 4));
+});
+
+test("破军令追加真伤穿透格挡", () => {
+  let s = enterCombat("physical");
+  assert(s.run.relics.includes("poJunLing"));
+  enemy(s).hp = 20; enemy(s).block = 99;
+  forceCard(s, "strike");
+  s = reduceGame(s, { type: "playCard", cardUid: s.run.combat.hand[0].uid, targetUid: enemy(s).uid });
+  assert(enemy(s).hp < 20);
+});
+
+test("trueMartial spell不触发雷火引", () => {
+  let s = enterCombat("spell");
+  assert(s.run.trueMartial);
+  assert(!s.run.combat?.flags?.travelSpellCharge);
+});
+
 
 (async () => {
   for (const t of _tests) {

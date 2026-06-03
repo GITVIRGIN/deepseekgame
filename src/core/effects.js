@@ -408,6 +408,64 @@ export function applyCardEffects(state, cardInstance, targetUid) {
       );
       if (state.phase !== "combat") break;
     }
+
+    // v0.7.7: 雷火引 — normal spell travel blessing buff
+    const combat = state.run?.combat;
+    const charge = combat?.flags?.travelSpellCharge ?? 0;
+    if (charge > 0 && state.phase === "combat" && card.style === "spell" && combat) {
+      const resolvedTargets = new Set();
+      for (const effect of card.effects) {
+        if (effect.type === "damage" || effect.type === "status" || effect.type === "thunderMark" || effect.type === "amplifyDebuffs" || effect.type === "poisonBurst") {
+          if (effect.target === "allEnemies") {
+            for (const e of (combat.enemies || [])) {
+              if (e.hp > 0) resolvedTargets.add(e);
+            }
+          } else if (effect.target === "enemy") {
+            const t = (combat.enemies || []).find(e => e.uid === targetUid && e.hp > 0);
+            if (t) resolvedTargets.add(t);
+          }
+        }
+      }
+      if (resolvedTargets.size > 0) {
+        combat.flags.travelSpellCharge = charge - 1;
+        for (const t of resolvedTargets) {
+          addStatus(t, "burn", 7);
+          addStatus(t, "thunderMark", 6);
+        }
+        addStatus(state.run, "spirit", 1);
+        combatLog(state, "雷火引发动，法术牵动灼烧、雷痕与灵气。");
+      }
+    }
+
+    // v0.7.7: Compute affected enemies for this spell card
+    const affectedEnemies = new Set();
+    if (state.phase === "combat" && card.style === "spell") {
+      const combat = state.run?.combat;
+      if (combat) {
+        for (const effect of card.effects) {
+          if (effect.target === "allEnemies") {
+            for (const e of (combat.enemies || [])) {
+              if (e.hp > 0) affectedEnemies.add(e);
+            }
+          } else if (effect.target === "enemy") {
+            const t = (combat.enemies || []).find(e => e.uid === targetUid && e.hp > 0);
+            if (t) affectedEnemies.add(t);
+          }
+        }
+      }
+    }
+
+    // v0.7.7: 雷火共鸣 — spell cards trigger burn+thunderMark → thunderFireMark
+    for (const enemy of affectedEnemies) {
+      const burnStacks = statusStacks(enemy, "burn");
+      const tmStacks = statusStacks(enemy, "thunderMark");
+      if (burnStacks >= 4 && tmStacks >= 4) {
+        reduceStatus(enemy, "burn", 4);
+        // thunderMark is catalyst, not consumed
+        addStatus(enemy, "thunderFireMark", 1);
+        combatLog(state, "雷火共鸣，灼烧附着雷痕凝成雷火烙印。");
+      }
+    }
   } finally {
     endCardControlBatch(state);
   }
@@ -540,7 +598,14 @@ function triggerThunderTribulations(state, target, effect = {}) {
 
   while (target.hp > 0 && statusStacks(target, "thunderMark") >= threshold) {
     reduceStatus(target, "thunderMark", threshold);
-    const finalDamage = damage + statusStacks(target, "curse");
+    // v0.7.7: thunderFireMark bonus damage
+    const fireMark = statusStacks(target, "thunderFireMark");
+    const fireBonus = fireMark > 0 ? fireMark * 40 : 0;
+    if (fireMark > 0) {
+      reduceStatus(target, "thunderFireMark", fireMark);
+      combatLog(state, `雷火烙印爆发，天劫追加 ${fireBonus} 点雷火伤害。`);
+    }
+    const finalDamage = damage + fireBonus + statusStacks(target, "curse");
     target.hp = Math.max(0, target.hp - finalDamage);
     // v0.7.6: tribulation is pure burst damage, no stun
     combatLog(state, `天劫降下，${target.name} 无视格挡受到 ${finalDamage} 点雷伤。`);

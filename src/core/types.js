@@ -7,7 +7,7 @@
  * @typedef {"home" | "route" | "combat" | "reward" | "shop" | "gameOver"} Phase
  * @typedef {"common" | "rare" | "epic" | "legendary"} Rarity
  * @typedef {"self" | "enemy" | "allEnemies"} Target
- * @typedef {"burn" | "bleed" | "poison" | "curse" | "spirit" | "battleIntent" | "chaos" | "bind" | "brittle" | "stasis" | "ward" | "thunderMark" | "stun" | "controlResist" | "clearMind"} StatusId
+ * @typedef {"burn" | "bleed" | "poison" | "curse" | "spirit" | "battleIntent" | "chaos" | "bind" | "brittle" | "stasis" | "ward" | "thunderMark" | "stun" | "controlResist" | "clearMind" | "thunderFireMark"} StatusId
  *
  * @typedef {object} Effect
  * @property {"damage" | "execute" | "block" | "heal" | "loseHp" | "draw" | "gainEnergy" | "status" | "amplifyDebuffs" | "poisonBurst" | "thunderMark" | "bleedSiphon" | "shellReflect" | "recoverDiscard" | "maxEnergy" | "maxHp" | "cleanse" | "rareCard" | "handLimit" | "deckLimit" | "gold" | "relic"} type

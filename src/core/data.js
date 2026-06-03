@@ -7,7 +7,7 @@ export const rarityInfo = {
 
 export const styleInfo = {
   physical: { label: "物理", text: "直接伤害、连击、破防，成型后靠大数字爽杀。" },
-  spell: { label: "法术", text: "雷法、灵气、抽牌联动；反复施加雷痕后降下天劫，爆发并眩晕敌人。" },
+  spell: { label: "法术", text: "雷法、灼烧、灵气联动；通过雷痕蓄力降下天劫，雷火烙印强化爆发。" },
   bleed: { label: "流血", text: "中期转为血魔流：自损换流血，再按敌人流血层数回血，成型后高爆发高回复。" },
   shell: { label: "龟壳", text: "通过格挡蓄势，再按当前格挡反震敌人；成型慢但稳，适合作为奖励流派。" },
   poison: { label: "中毒", text: "毒瘴会让敌人回合掉血，并按层数削弱敌人攻击；成型后靠虚弱拖垮强敌。" },
@@ -33,6 +33,7 @@ export const statusInfo = {
   blockShield: { label: "格挡锁定", text: "格挡值不会被攻击消耗。回合结束时移除。" },
   spikes: { label: "荆棘" },
   controlResist: { label: "定力", text: "抵消即将施加的离间、禁锢、眩晕层数；每抵消 1 层消耗 1 层定力。敌人被控制影响行动后获得，正常行动后减少。" },
+  thunderFireMark: { label: "雷火烙印", text: "由灼烧与雷痕共鸣形成。目标触发天劫时，每层雷火烙印使本次天劫额外造成 40 点无视格挡雷火伤害，然后消耗。" },
   clearMind: { label: "醒神", text: "下一次自身行动时，无视控制造成的行动跳过或转向。当前仅用于特殊机制。" },
   chaos: { label: "离间", text: "敌人行动前触发：攻击会优先打同伴，非攻击或没有同伴则空过，然后减少 1 层。" },
   bind: { label: "禁锢", text: "敌人行动前触发：攻击和施法会空过，格挡仍可执行，然后减少 1 层。" },
@@ -97,19 +98,20 @@ export const cards = {
       { type: "status", target: "enemy", status: "curse", stacks: 2 },
     ],
   },
+  flameTalisman: { id: "flameTalisman", name: "火符", rarity: "common", cost: 1, text: "施加 8 层灼烧，获得 1 点灵气。", mythTags: ["天庭"], style: "spell", grade: 1, effects: [{ type: "status", target: "enemy", status: "burn", stacks: 8 },{ type: "status", target: "self", status: "spirit", stacks: 1 }]},
   foxFire: {
     id: "foxFire",
     name: "狐火",
     rarity: "rare",
     cost: 1,
-    text: "造成 4 点伤害，施加 4 层灼烧和 1 层雷痕。",
+    text: "造成 4 点伤害，施加 5 层灼烧和 2 层雷痕。",
     mythTags: ["妖", "天庭"],
     style: "spell",
     grade: 1,
     effects: [
       { type: "damage", target: "enemy", value: 4 },
-      { type: "status", target: "enemy", status: "burn", stacks: 4 },
-      { type: "thunderMark", target: "enemy", stacks: 1 },
+      { type: "status", target: "enemy", status: "burn", stacks: 5 },
+      { type: "thunderMark", target: "enemy", stacks: 2 },
     ],
   },
   ghostNeedle: {
@@ -464,13 +466,13 @@ export const cards = {
     name: "火德小祭",
     rarity: "rare",
     cost: 1,
-    text: "对所有敌人造成 5 点伤害，施加 5 层灼烧。",
+    text: "对所有敌人造成 5 点伤害，施加 4 层灼烧。",
     mythTags: ["天庭"],
     style: "spell",
     grade: 2,
     effects: [
       { type: "damage", target: "allEnemies", value: 5 },
-      { type: "status", target: "allEnemies", status: "burn", stacks: 5 },
+      { type: "status", target: "allEnemies", status: "burn", stacks: 4 },
     ],
   },
   fiveThunder: {
@@ -992,7 +994,7 @@ export const relics = {
   asuraHeart: { id: "asuraHeart", name: "修罗心", rarity: "legendary", text: "每场战斗开局敌方获得 4 层流血；血魔吸血倍率翻倍。真武专属。" },
   venomScripture: { id: "venomScripture", name: "万毒真经", rarity: "legendary", text: "毒瘴每回合伤害翻倍，开局敌人中毒+8。真武专属。" },
   chaosTreasure: { id: "chaosTreasure", name: "混沌灵宝", rarity: "legendary", text: "开局敌方 1 层离间和 1 层定力。真武专属。" },
-  turtleShell: { id: "turtleShell", name: "玄龟甲", rarity: "legendary", text: "每场战斗开局格挡+18，反射伤害+25%。真武专属。" },
+  turtleShell: { id: "turtleShell", name: "玄龟甲", rarity: "legendary", text: "每场战斗开局格挡+30，反射伤害+25%。真武专属。" },
   bloodGourd: {
     id: "bloodGourd",
     name: "血葫芦",
@@ -1107,7 +1109,7 @@ export const shopItems = {
 
 export const trueMartialDecks = {
   physical: ["strike","strike","heavySlash","chainBlade","traceCutter","readyStance","armorBreaker","killingIntent","furySlash","furySlash","warGodStrike","guard"],
-  spell: ["strike","foxFire","thunderCharm","thunderCharm","attractThunder","thunderCall","thunderArmy","thunderBurst","guard","guard"],
+  spell: ["foxFire","flameTalisman","thunderCharm","thunderCharm","attractThunder","thunderCall","thunderArmy","thunderBurst","guard","guard"],
   bleed: ["strike","strike","bloodNeedle","bloodNeedle","ghostNeedle","bloodNet","bloodSurge","bloodRecycle","bloodFang","bloodFang","guard"],
   poison: ["strike","strike","poisonPowder","poisonPowder","miasma","centipedeJar","poisonBurst","boneDust","venomFang","venomFang","guard"],
   control: ["strike","strike","strike","discordCharm","bindingRope","echoBell","stasisCharm","curseKill","guard","guard"],

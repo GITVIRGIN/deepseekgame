@@ -2,6 +2,7 @@ import { cards, gradeInfo, rarityInfo, relics, shopItems, statusInfo, styleInfo 
 import { archetypeRanking, dominantArchetype, styleLabel } from "../core/archetypes.js";
 import { previewEnemyIntent } from "../core/combat.js";
 import { reduceGame } from "../core/reducer.js";
+import { canShowTrueMartialEntry } from "../core/state.js";
 import { clearSave, loadGame, migrateGameState, saveGame } from "../core/save.js";
 import { MAX_FLOOR } from "../core/types.js";
 import { gameVersion } from "../core/version.js";
@@ -139,7 +140,7 @@ function renderHome() {
         el("h2", "", "携残箓入山"),
         el("p", "", "先做能爽起来的第一版：抽牌、叠状态、拿遗物、一路打到黑山。"),
         button("开始一局", "primary", () => dispatch({ type: "startRun" })),
-        isTrueMartialUnlocked(state.meta) ? button("真武模式", "danger", () => dispatch({ type: "martialSelect" })) : "",
+        canShowTrueMartialEntry(state) ? button("真武模式", "danger", () => dispatch({ type: "martialSelect" })) : "",
       ]),
       renderCloudPanel(),
       renderProgression(),
@@ -150,18 +151,11 @@ function renderHome() {
 }
 
 
-function isTrueMartialUnlocked(meta) {
-  const mastery = meta?.mythMastery ?? {};
-  const normalRelicIds = Object.values(relics).filter(r => !r.text?.includes("真武专属")).map(r => r.id);
-  const allNormalRelics = normalRelicIds.every(id => (meta.collectedRelics || []).includes(id));
-  const threeAtThree = Object.values(mastery).filter(v => v >= 3).length >= 3;
-  return allNormalRelics && threeAtThree;
-}
 
 function renderMartialSelect() {
   const styles = [
     { id: "physical", name: "物理", desc: "杀意叠伤·斩杀", relic: "破军令" },
-    { id: "spell", name: "法术", desc: "雷印天劫·眩晕", relic: "九天雷劫" },
+    { id: "spell", name: "法术", desc: "雷印天劫·爆发", relic: "九天雷劫" },
     { id: "bleed", name: "流血", desc: "血魔自残·吸血", relic: "修罗心" },
     { id: "poison", name: "中毒", desc: "毒瘴虚弱·消耗", relic: "万毒真经" },
     { id: "control", name: "控制", desc: "离间禁锢·脆化", relic: "混沌灵宝" },
@@ -312,6 +306,7 @@ function renderGameOver() {
     state.run ? renderRunSummary(state.run) : el("p", "", "旧梦已散。"),
     el("div", "actions", [
       button("再开一局", "primary", () => dispatch({ type: "startRun" })),
+      canShowTrueMartialEntry(state) ? button("真武模式", "danger", () => dispatch({ type: "martialSelect" })) : "",
       button("清除存档", "ghost", () => {
         clearSave();
         state = reduceGame(state, { type: "reset" });
@@ -455,6 +450,13 @@ function renderCloudOverlay() {
 function renderRunPanel(run) {
   const panel = el("aside", "run-panel");
   const pChips = formatPlayerStatusChips(run, 3);
+
+  // 行旅符 virtual relic for normal mode
+  const travelBadge = !run.trueMartial
+    ? el("span", "relic-badge travel-talisman", "行旅符")
+    : null;
+  if (travelBadge) travelBadge.title = "普通模式专属。每场战斗开始时触发行旅护持，并根据牌组倾向提供小幅扶助。";
+
   panel.append(
     el("div", "floor-head", [
       el("h2", "", `第 ${run.floor}/${MAX_FLOOR} 层`),
@@ -467,6 +469,7 @@ function renderRunPanel(run) {
       stat("生命", `${run.hp}/${run.maxHp}`),
       stat("格挡", run.combat?.block ?? 0),
       el("div", "player-status-chip-row", pChips),
+      travelBadge,
       el("div", "player-gold-slot", stat("金", run.gold)),
     ]),
   );

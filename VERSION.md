@@ -2,6 +2,68 @@
 
 ## 当前版本
 
+- 总版本：v0.7.7
+- core：0.7.7
+- ui：0.1.0
+- data：0.1.0
+- save：0.7.7
+
+## v0.7.7 Release Candidate
+
+长模拟原始输出：`reports/v0.7.7-balance-check.txt`
+
+### P0 修复
+
+- 连续放弃不会重复结算（reducer 幂等 guard）。
+- 低层放弃不会获得派系箓印。
+- 放弃不会批量解锁遗物。
+- 真武解锁后 home 和 gameOver 均显示入口。
+- martialSelect 不再赠送遗物。
+- isTrueMartialUnlocked 抽入 core/state.js 纯函数，home/gameOver 共享 canShowTrueMartialEntry。
+
+### 法术机制：雷火引 + 雷火共鸣
+
+- normal 法术新增雷火引：玩家打出 spell 牌触发，每场战斗 3 次。
+- 每次触发额外施加 burn +7、thunderMark +6、spirit +1。
+- 单体 spell 只影响目标；allEnemies 才影响全体；self-only 不消耗。
+- 雷火共鸣：spell 牌命中后 burn≥4 + thunderMark≥4 生成雷火烙印（只消耗 burn）。
+- 雷火烙印目标触发天劫时每层追加 +40 无视格挡伤害（上限 3）。
+- 基础天劫 60；九天雷劫 120，开局 3 雷印。
+- 天劫无眩晕、不加定力、不参与心防崩裂。
+
+### 卡牌与遗物一致性
+
+- dragonRain 文案/效果同步为 8 伤、4 灼烧。
+- foxFire 文案/效果同步为 4 伤、5 灼烧、2 雷痕。
+- 玄龟甲文案/效果同步为开局格挡 +30、反射 +25%。
+- fireRite 保持 5 伤、4 灼烧。
+- 火符 8 灼烧 +1 灵气。
+- 破军令 +22 格挡 +10 真伤不变。
+
+### 当前长模拟结果（300局/3seed, seedBase=2026052700）
+
+normal / styleAware：
+
+| 物理 | 法术 | 流血 | 龟壳 | 中毒 | 控制 |
+|------|------|------|------|------|------|
+| 17.0% | 18.0% | 24.7% | 25.3% | 24.7% | 28.7% |
+
+trueMartial / styleAware：
+
+| 物理 | 法术 | 流血 | 龟壳 | 中毒 | 控制 |
+|------|------|------|------|------|------|
+| 10.7% | 11.3% | 14.0% | 13.3% | 11.0% | 16.3% |
+
+- normal 法术 18.0%，偏低观察项。
+- trueMartial 控制 16.3%，作为强势流派保留。
+- normal 龟壳 25.3%，已回到较强但可接受区间。
+
+### 质量闸门
+
+- smoke ✅ | check ✅ | build ✅
+- ai:sim-consistency ✅ | ai:rc-check ✅
+- ai:v076-balance-check ✅ 手动运行
+
 - 总版本：v0.7.6
 - core：0.7.6
 - ui：0.1.0

@@ -18,19 +18,6 @@ export function reduceGame(state, action) {
 
   if (action.type === "martialSelect") {
     next.phase = "martialSelect";
-    // 首次进入真武选择页赠送一个真武专属遗物收藏记录（仅 meta.collectedRelics）。
-    // 不影响真武开局按流派获得专属遗物（startRun 在 startTrueMartial 中按 style 写入 run.relics）。
-    // 条件保证玩家已拥有任一真武遗物后不会再触发，不会重复刷奖励。
-    const owned = (next.meta.collectedRelics ?? []);
-    const tmRelicIds = ["poJunLing","nineSkyTribulation","asuraHeart","venomScripture","chaosTreasure","turtleShell"];
-    if (!tmRelicIds.some(id => owned.includes(id))) {
-      const avail = tmRelicIds.filter(id => !owned.includes(id));
-      if (avail.length > 0) {
-        const pick = avail[Math.floor(Math.abs((next.run?.seed ?? 1) * 7 + (next.meta.wins ?? 0) * 13) % avail.length)];
-        next.meta.collectedRelics = [...owned, pick];
-        next.message = `真武初现！获得专属遗物「${pick}」。`;
-      }
-    }
     return next;
   }
 
@@ -44,8 +31,9 @@ export function reduceGame(state, action) {
   }
 
   if (action.type === "abandonRun") {
-    if (!next.run || next.run.finished) return next;
+    if (!next.run || next.run.finished || next.run.endHandled) return next;
 
+    next.run.endHandled = true;
     const soulGain = Math.max(3, next.run.floor * 2);
     const mythAward = awardMythMasteryForRunEnd(next, "abandon");
     next.run.finished = true;
