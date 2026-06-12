@@ -383,6 +383,8 @@ p {
   grid-template-columns: 260px minmax(0, 1fr) 300px;
   gap: 14px;
   align-items: start;
+  max-width: 1440px;
+  margin: 0 auto;
 }
 
 .route-layout {
@@ -390,6 +392,8 @@ p {
   grid-template-columns: 280px minmax(0, 1fr);
   gap: 14px;
   align-items: start;
+  max-width: 1440px;
+  margin: 0 auto;
 }
 
 .route-view {
