@@ -514,14 +514,21 @@ function renderRunPanel(run) {
         button("放弃", "danger micro", () => dispatch({ type: "abandonRun" })),
       ]),
     ]),
-    el("div", "stat-grid player-vitals-row", [
-      diffBadge,
+    // HF3: mode row — difficulty + travel badge on their own line
+    el("div", "run-mode-row", [diffBadge, travelBadge].filter(Boolean)),
+    // HF3: core stat grid — 2 columns, aligned
+    el("div", "run-stats-grid", [
       stat("生命", `${run.hp}/${run.maxHp}`),
       stat("格挡", run.combat?.block ?? 0),
-      el("div", "player-status-chip-row", pChips),
-      travelBadge,
-      el("div", "player-gold-slot", stat("金", run.gold)),
+      stat("金", run.gold),
     ]),
+    // HF3: status row — "状态" label + chips, flex-wrap
+    pChips.length > 0
+      ? el("div", "run-status-row", [
+          el("span", "run-status-label", "状态"),
+          el("div", "player-status-chip-row", pChips),
+        ])
+      : null,
     el("div", "roll-info", [
       el("span", "", `刷新次数：${run.rollsUsed ?? 0} / ${run.rollsMax ?? 3}`),
     ]),
