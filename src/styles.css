@@ -1410,10 +1410,20 @@ p {
   .combat-layout .enemy .meter em { font-size: 12px; font-weight: 700; }
   .combat-layout .enemy button { font-size: 7px; padding: 0px 2px; min-height: 16px; }
 
-  /* 手牌 3列 */
-  .combat-layout .hand { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 3px; }
-  .combat-layout .hand .game-card { padding: 4px; font-size: 10px; min-height: 60px; }
-  .combat-layout .hand .game-card strong { font-size: 11px; }
+  /* 手牌 — HF8: carousel override, must not revert to 3-col grid */
+  .combat-layout .hand {
+    grid-auto-flow: column;
+    grid-template-columns: none;
+    grid-template-rows: repeat(2, 148px);
+    grid-auto-columns: 116px;
+    gap: 6px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    max-height: 310px;
+  }
+  .combat-layout .hand .game-card { padding: 5px; font-size: 9px; min-height: 148px; overflow: hidden; }
+  .combat-layout .hand .game-card strong { font-size: 10px; }
+  .combat-layout .hand .game-card .card-body { display: none; }
 
   /* 战斗横幅 */
   .combat-layout .action-banner { padding: 4px 6px; border-left-width: 3px; }
