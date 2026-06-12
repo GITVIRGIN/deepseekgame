@@ -224,6 +224,7 @@ function renderCombat() {
 
   view.append(
     renderRunPanel(run),
+    renderMobileRunSummary(run),  // HF5: mobile-only horizontal player summary
     renderTrueMartialFormationPanel(run),
     el("section", "battlefield", [
       renderActionBanner(combat.log),
@@ -534,6 +535,30 @@ function renderRunPanel(run) {
     ]),
   );
   return panel;
+}
+
+// HF5: mobile-only compact horizontal player summary
+function renderMobileRunSummary(run) {
+  const maxFloor = run.trueMartial ? TRUE_MARTIAL_MAX_FLOOR : MAX_FLOOR;
+  const diffLabel = DIFFICULTY_LABELS[run.difficulty] || "未知";
+  const pChips = formatPlayerStatusChips(run, 2);
+  return el("div", "mobile-run-summary", [
+    el("div", "ms-top", [
+      el("span", "ms-floor", `第${run.floor}/${maxFloor}层`),
+      el("span", "difficulty-badge", diffLabel),
+    ]),
+    el("div", "ms-stats", [
+      el("span", "ms-stat", `❤${run.hp}/${run.maxHp}`),
+      el("span", "ms-stat", `🛡${run.combat?.block ?? 0}`),
+      el("span", "ms-stat", `💰${run.gold}`),
+    ]),
+    pChips.length > 0 ? el("div", "ms-status", pChips) : null,
+    el("div", "ms-actions", [
+      el("span", "ms-roll", `刷新${run.rollsUsed ?? 0}/${run.rollsMax ?? 3}`),
+      button("修行", "ghost micro", () => { progressionOpen = true; render(); }),
+      button("放弃", "danger micro", () => dispatch({ type: "abandonRun" })),
+    ]),
+  ].filter(Boolean));
 }
 
 export function formatPlayerStatusChips(run, limit = 3) {
@@ -1427,11 +1452,12 @@ function renderRunSummary(run) {
 }
 
 function stat(label, value, onClick = null) {
+  const text = (value != null) ? String(value) : "--";
   if (!onClick) {
-    return el("div", "stat", [el("span", "", label), el("strong", "", String(value))]);
+    return el("div", "stat", [el("span", "", label), el("strong", "", text)]);
   }
 
-  const node = el("button", "stat stat-action", [el("span", "", label), el("strong", "", String(value))]);
+  const node = el("button", "stat stat-action", [el("span", "", label), el("strong", "", text)]);
   node.type = "button";
   node.onclick = onClick;
   return node;

@@ -400,6 +400,8 @@ p {
   grid-column: 2;
   grid-row: 2;
 }
+/* HF5: mobile summary hidden on desktop */
+.mobile-run-summary { display: none; }
 
 .route-layout {
   display: grid;
@@ -1293,42 +1295,46 @@ p {
 }
 
 @media (max-width: 768px) {
-  /* HF4: mobile combat — compact horizontal player summary, one-screen target */
+  /* HF5: mobile combat — real mobile summary block, horizontal hand strip */
   .combat-layout {
     gap: 3px; grid-template-columns: 1fr;
     max-width: 100%; margin: 0;
   }
-  /* Override HF3 desktop grid placement */
-  .combat-layout .run-panel {
-    grid-column: 1; grid-row: auto;
-    display: flex; flex-wrap: wrap; gap: 3px; padding: 4px 6px;
-    align-items: center; position: static; max-height: 100px; overflow: hidden;
+  /* HF5: hide desktop run-panel on mobile, use mobile-run-summary instead */
+  .combat-layout .run-panel { display: none; }
+  .mobile-run-summary {
+    display: flex; flex-wrap: wrap; gap: 2px 6px;
+    padding: 4px 6px; align-items: center;
+    background: rgba(255,250,240,.92); border: 1px solid var(--line);
+    border-radius: 6px; font-size: 11px;
   }
-  .combat-layout .run-panel .floor-head { flex-basis: 100%; display: flex; align-items: center; gap: 4px; }
-  .combat-layout .run-panel .floor-head h2 { font-size: 12px; }
-  .combat-layout .run-panel .run-mode-row { margin: 0; flex: 0 0 auto; }
-  .combat-layout .run-panel .run-stats-grid { display: flex; gap: 3px; margin: 0; }
-  .combat-layout .run-panel .run-stats-grid .stat-card { padding: 1px 4px; min-width: 32px; }
-  .combat-layout .run-panel .run-stats-grid .stat-card span { font-size: 7px; }
-  .combat-layout .run-panel .run-stats-grid .stat-card strong { font-size: 10px; }
-  .combat-layout .run-panel .run-status-row { display: none; }
-  .combat-layout .run-panel .roll-info { display: none; }
-  .combat-layout .battlefield { grid-column: 1; grid-row: auto; }
-  .combat-layout .log { display: block; grid-column: 1; grid-row: auto; position: static; max-height: 60px; overflow: hidden; font-size: 11px; }
+  .ms-top { flex-basis: 100%; display: flex; gap: 6px; align-items: center; }
+  .ms-floor { font-weight: 700; font-size: 12px; }
+  .ms-stats { display: flex; gap: 4px; }
+  .ms-stat { padding: 1px 4px; border: 1px solid var(--line); border-radius: 4px; font-size: 11px; white-space: nowrap; }
+  .ms-status { display: flex; gap: 2px; }
+  .ms-actions { display: flex; gap: 3px; align-items: center; margin-left: auto; }
+  .ms-actions .ms-roll { font-size: 10px; color: var(--muted); white-space: nowrap; }
+  .ms-actions button { font-size: 9px; padding: 1px 5px; min-height: 20px; }
+  
+  .combat-layout .battlefield { grid-column: 1; grid-row: auto; display: flex; flex-direction: column; gap: 3px; }
+  .combat-layout .log { display: block; grid-column: 1; grid-row: auto; position: static; max-height: 48px; overflow: hidden; font-size: 11px; }
   .combat-layout .log p { font-size: 10px; margin: 1px 0; }
+  
   /* compact enemies */
   .combat-layout .enemy-row { grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); gap: 2px; }
-  .combat-layout .enemy { min-height: 56px; gap: 1px; padding: 3px; }
+  .combat-layout .enemy { min-height: 52px; gap: 1px; padding: 3px; }
   .combat-layout .enemy h3 { font-size: 11px; }
   .combat-layout .enemy .meter { height: 18px; }
   .combat-layout .enemy .meter em { font-size: 10px; }
-  /* compact hand */
-  .combat-layout .hand { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2px; max-height: 180px; overflow-y: auto; }
-  .combat-layout .hand .game-card { padding: 3px; font-size: 9px; min-height: 50px; }
+  
+  /* HF5: horizontal scroll hand strip — NOT 3-col grid */
+  .combat-layout .hand { display: flex; flex-wrap: nowrap; overflow-x: auto; gap: 4px; padding: 3px 0; max-height: 150px; }
+  .combat-layout .hand .game-card { flex: 0 0 120px; padding: 4px; font-size: 9px; min-height: 80px; }
   .combat-layout .hand .game-card strong { font-size: 10px; }
-  /* action bar */
-  .combat-layout .battlefield { display: flex; flex-direction: column; gap: 3px; }
+  
   .combat-layout .action-banner { padding: 3px 5px; font-size: 11px; }
+  .combat-layout .hand-head { display: flex; align-items: center; gap: 4px; font-size: 10px; }
 }
 
 @media (max-width: 720px) {
