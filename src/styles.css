@@ -1328,10 +1328,30 @@ p {
   .combat-layout .enemy .meter { height: 18px; }
   .combat-layout .enemy .meter em { font-size: 10px; }
   
-  /* HF5: horizontal scroll hand strip — NOT 3-col grid */
-  .combat-layout .hand { display: flex; flex-wrap: nowrap; overflow-x: auto; gap: 4px; padding: 3px 0; max-height: 150px; }
-  .combat-layout .hand .game-card { flex: 0 0 120px; padding: 4px; font-size: 9px; min-height: 80px; }
-  .combat-layout .hand .game-card strong { font-size: 10px; }
+  /* HF7: mobile hand — 2-row carousel, fixed card sizes, no overlap */
+  .combat-layout .hand {
+    display: grid;
+    grid-auto-flow: column;
+    grid-template-rows: repeat(2, 148px);
+    grid-auto-columns: 116px;
+    gap: 6px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    max-height: 310px;
+    padding: 2px 0 6px;
+    scroll-snap-type: x proximity;
+    -webkit-overflow-scrolling: touch;
+  }
+  .combat-layout .hand .game-card {
+    width: 116px; min-width: 116px; max-width: 116px;
+    height: 148px; min-height: 148px;
+    padding: 5px; font-size: 9px;
+    overflow: hidden;
+    scroll-snap-align: start;
+  }
+  .combat-layout .hand .game-card strong { font-size: 10px; line-height: 1.2; }
+  .combat-layout .hand .game-card .card-body { display: none; }
+  .combat-layout .hand .game-card .card-tags { font-size: 7px; line-height: 1.1; }
   
   .combat-layout .action-banner { padding: 3px 5px; font-size: 11px; }
   .combat-layout .hand-head { display: flex; align-items: center; gap: 4px; font-size: 10px; }
