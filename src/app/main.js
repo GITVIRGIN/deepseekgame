@@ -230,6 +230,7 @@ function renderCombat() {
       renderActionBanner(combat.log),
       el("div", "enemy-row", combat.enemies.map(renderEnemy)),
       renderHand(run, combat),
+      el("div", "hand-swipe-hint", "← 左右滑动查看更多手牌 →"),  // HF10: mobile scroll hint
     ]),
     renderLog(combat.log),
   );
