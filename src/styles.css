@@ -380,11 +380,25 @@ p {
 
 .combat-layout {
   display: grid;
-  grid-template-columns: 260px minmax(0, 1fr) 300px;
+  grid-template-columns: 260px minmax(620px, 760px);
   gap: 14px;
   align-items: start;
-  max-width: 1440px;
+  max-width: 1040px;
   margin: 0 auto;
+  justify-content: center;
+}
+/* HF2: explicit grid placement to prevent 1fr gap on widescreen */
+.combat-layout .run-panel {
+  grid-column: 1;
+  grid-row: 1 / 4;
+}
+.combat-layout .battlefield {
+  grid-column: 2;
+  grid-row: 1;
+}
+.combat-layout .log {
+  grid-column: 2;
+  grid-row: 2;
 }
 
 .route-layout {
