@@ -507,7 +507,8 @@ function renderRunPanel(run) {
 
   const maxFloor = run.trueMartial ? TRUE_MARTIAL_MAX_FLOOR : MAX_FLOOR;
 
-  panel.append(
+  // HF6: filter nulls before native DOM append — prevents "null" text
+  panel.append(...[
     el("div", "floor-head", [
       el("h2", "", `第 ${run.floor}/${maxFloor} 层`),
       el("div", "floor-actions", [
@@ -515,15 +516,12 @@ function renderRunPanel(run) {
         button("放弃", "danger micro", () => dispatch({ type: "abandonRun" })),
       ]),
     ]),
-    // HF3: mode row — difficulty + travel badge on their own line
     el("div", "run-mode-row", [diffBadge, travelBadge].filter(Boolean)),
-    // HF3: core stat grid — 2 columns, aligned
     el("div", "run-stats-grid", [
       stat("生命", `${run.hp}/${run.maxHp}`),
       stat("格挡", run.combat?.block ?? 0),
       stat("金", run.gold),
     ]),
-    // HF3: status row — "状态" label + chips, flex-wrap
     pChips.length > 0
       ? el("div", "run-status-row", [
           el("span", "run-status-label", "状态"),
@@ -533,7 +531,7 @@ function renderRunPanel(run) {
     el("div", "roll-info", [
       el("span", "", `刷新次数：${run.rollsUsed ?? 0} / ${run.rollsMax ?? 3}`),
     ]),
-  );
+  ].filter(Boolean));
   return panel;
 }
 
@@ -623,8 +621,9 @@ function renderEnemy(enemy) {
   const hpPercent = Math.max(0, Math.round((enemy.hp / enemy.maxHp) * 100));
 
   const isAnchor = state.run?.combat?.flags?.trueMartialFormation?.anchorUid === enemy.uid && enemy.hp > 0;
-  card.append(
-    el("div", "enemy-title", [el("h3", "", enemy.name), isAnchor ? el("span", "tm-anchor-badge", "阵眼") : null, renderIntentButton(enemy)]),
+  // HF6: filter nulls
+  card.append(...[
+    el("div", "enemy-title", [el("h3", "", enemy.name), isAnchor ? el("span", "tm-anchor-badge", "阵眼") : null, renderIntentButton(enemy)].filter(Boolean)),
     meter(hpPercent, `${enemy.hp}/${enemy.maxHp}`, "hp-meter"),
     blockMeter(enemy.block),
     renderBarImpacts(enemy.statuses, "enemy"),
@@ -633,7 +632,7 @@ function renderEnemy(enemy) {
       selectedTargetUid = enemy.uid;
       render();
     }),
-  );
+  ].filter(Boolean));
 
   if (enemy.hp <= 0) {
     card.classList.add("defeated");
