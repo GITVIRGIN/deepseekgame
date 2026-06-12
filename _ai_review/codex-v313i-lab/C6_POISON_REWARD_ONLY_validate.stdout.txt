@@ -1,0 +1,21 @@
+
+> validate:data
+> node scripts/validate-data.mjs
+
+✅ Card effect types validated
+✅ Shop item effects validated
+✅ Starting deck validated
+✅ True Martial decks validated
+✅ True Martial relics validated
+✅ TM UI styles consistent with decks
+✅ VERSION.md matches code version
+✅ Enemies validated
+✅ Status info validated
+✅ Purge item filter validated
+✅ Curse card exclusion validated
+✅ True martial relic filtering validated
+✅ Undeletable card rules validated
+✅ True Martial unlock relic requirements validated
+✅ True Martial relic implemented effects validated
+
+🎉 All checks passed!

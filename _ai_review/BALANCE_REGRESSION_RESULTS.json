@@ -1,0 +1,98 @@
+{
+  "summary": {
+    "dataLooksReal": true,
+    "modeMappingOk": true,
+    "parserIssues": ["timeoutMap uses English key but sim-ai outputs Chinese style names — timeout column always 0"],
+    "recommendedNextStage": "V3.13C",
+    "conclusion": "A — data is real, normal/regular win rates have genuinely regressed below targets"
+  },
+  "commands": [
+    {"id": "01", "cmd": "npm run validate:data", "exit": 0, "status": "PASS"},
+    {"id": "02", "cmd": "npm run smoke", "exit": 0, "status": "PASS"},
+    {"id": "03", "cmd": "npm run player:flow", "exit": 0, "status": "PASS"},
+    {"id": "04", "cmd": "npm run check", "exit": 0, "status": "PASS"},
+    {"id": "05", "cmd": "balance-check 80x1", "exit": 1, "status": "FAIL (hard FAIL gate)"},
+    {"id": "06", "cmd": "balance-check 40x2", "exit": 1, "status": "FAIL (hard FAIL gate)"},
+    {"id": "07", "cmd": "sim-ai normal 30x1", "exit": 0, "status": "PASS"},
+    {"id": "08", "cmd": "sim-ai regular 30x1", "exit": 0, "status": "PASS"},
+    {"id": "09", "cmd": "sim-ai trueMartial 30x1", "exit": 0, "status": "PASS"}
+  ],
+  "balance80x1": [
+    {"mode":"normal","style":"physical","winRate":7.6,"avgFloor":13.5,"timeouts":0,"status":"FAIL"},
+    {"mode":"normal","style":"spell","winRate":7.5,"avgFloor":13.9,"timeouts":0,"status":"FAIL"},
+    {"mode":"normal","style":"bleed","winRate":13.9,"avgFloor":13.4,"timeouts":0,"status":"FAIL"},
+    {"mode":"normal","style":"shell","winRate":2.5,"avgFloor":13.3,"timeouts":0,"status":"FAIL"},
+    {"mode":"normal","style":"poison","winRate":5.1,"avgFloor":13.6,"timeouts":0,"status":"FAIL"},
+    {"mode":"normal","style":"control","winRate":4.7,"avgFloor":12.5,"timeouts":0,"status":"FAIL"},
+    {"mode":"regular","style":"physical","winRate":0.0,"avgFloor":10.5,"timeouts":0,"status":"FAIL"},
+    {"mode":"regular","style":"spell","winRate":0.0,"avgFloor":12.6,"timeouts":0,"status":"FAIL"},
+    {"mode":"regular","style":"bleed","winRate":0.0,"avgFloor":11.0,"timeouts":0,"status":"FAIL"},
+    {"mode":"regular","style":"shell","winRate":0.0,"avgFloor":11.0,"timeouts":0,"status":"FAIL"},
+    {"mode":"regular","style":"poison","winRate":0.0,"avgFloor":10.9,"timeouts":0,"status":"FAIL"},
+    {"mode":"regular","style":"control","winRate":0.0,"avgFloor":11.2,"timeouts":0,"status":"FAIL"},
+    {"mode":"trueMartial","style":"physical","winRate":0.0,"avgFloor":12.9,"timeouts":0,"status":"PASS"},
+    {"mode":"trueMartial","style":"spell","winRate":0.0,"avgFloor":14.2,"timeouts":0,"status":"PASS"},
+    {"mode":"trueMartial","style":"bleed","winRate":0.0,"avgFloor":11.3,"timeouts":0,"status":"PASS"},
+    {"mode":"trueMartial","style":"shell","winRate":0.0,"avgFloor":11.9,"timeouts":0,"status":"PASS"},
+    {"mode":"trueMartial","style":"poison","winRate":0.0,"avgFloor":9.6,"timeouts":0,"status":"PASS"},
+    {"mode":"trueMartial","style":"control","winRate":1.4,"avgFloor":11.6,"timeouts":0,"status":"PASS"}
+  ],
+  "balance40x2": [
+    {"mode":"normal","style":"physical","winRate":10.0,"avgFloor":13.4,"timeouts":0,"status":"FAIL"},
+    {"mode":"normal","style":"spell","winRate":5.0,"avgFloor":13.7,"timeouts":0,"status":"FAIL"},
+    {"mode":"normal","style":"bleed","winRate":10.3,"avgFloor":12.9,"timeouts":0,"status":"FAIL"},
+    {"mode":"normal","style":"shell","winRate":5.0,"avgFloor":12.8,"timeouts":0,"status":"FAIL"},
+    {"mode":"normal","style":"poison","winRate":5.3,"avgFloor":13.4,"timeouts":0,"status":"FAIL"},
+    {"mode":"normal","style":"control","winRate":3.2,"avgFloor":12.2,"timeouts":0,"status":"FAIL"},
+    {"mode":"regular","style":"physical","winRate":0.0,"avgFloor":10.4,"timeouts":0,"status":"FAIL"},
+    {"mode":"regular","style":"spell","winRate":0.0,"avgFloor":13.0,"timeouts":0,"status":"FAIL"},
+    {"mode":"regular","style":"bleed","winRate":0.0,"avgFloor":10.4,"timeouts":0,"status":"FAIL"},
+    {"mode":"regular","style":"shell","winRate":0.0,"avgFloor":11.2,"timeouts":0,"status":"FAIL"},
+    {"mode":"regular","style":"poison","winRate":0.0,"avgFloor":10.8,"timeouts":0,"status":"FAIL"},
+    {"mode":"regular","style":"control","winRate":0.0,"avgFloor":11.7,"timeouts":0,"status":"FAIL"},
+    {"mode":"trueMartial","style":"physical","winRate":0.0,"avgFloor":13.0,"timeouts":0,"status":"PASS"},
+    {"mode":"trueMartial","style":"spell","winRate":0.0,"avgFloor":13.8,"timeouts":0,"status":"PASS"},
+    {"mode":"trueMartial","style":"bleed","winRate":0.0,"avgFloor":11.1,"timeouts":0,"status":"PASS"},
+    {"mode":"trueMartial","style":"shell","winRate":0.0,"avgFloor":12.5,"timeouts":0,"status":"PASS"},
+    {"mode":"trueMartial","style":"poison","winRate":0.0,"avgFloor":9.2,"timeouts":0,"status":"PASS"},
+    {"mode":"trueMartial","style":"control","winRate":0.0,"avgFloor":10.7,"timeouts":0,"status":"PASS"}
+  ],
+  "directSim30x1": [
+    {"mode":"normal","style":"physical","winRate":13.8,"timeouts":1},
+    {"mode":"normal","style":"spell","winRate":6.7,"timeouts":0},
+    {"mode":"normal","style":"bleed","winRate":20.0,"timeouts":0},
+    {"mode":"normal","style":"shell","winRate":3.3,"timeouts":0},
+    {"mode":"normal","style":"poison","winRate":3.4,"timeouts":1},
+    {"mode":"normal","style":"control","winRate":0.0,"timeouts":8},
+    {"mode":"regular","style":"physical","winRate":0.0,"timeouts":0},
+    {"mode":"regular","style":"spell","winRate":0.0,"timeouts":1},
+    {"mode":"regular","style":"bleed","winRate":0.0,"timeouts":0},
+    {"mode":"regular","style":"shell","winRate":0.0,"timeouts":0},
+    {"mode":"regular","style":"poison","winRate":0.0,"timeouts":1},
+    {"mode":"regular","style":"control","winRate":0.0,"timeouts":2},
+    {"mode":"trueMartial","style":"physical","winRate":0.0,"timeouts":0},
+    {"mode":"trueMartial","style":"spell","winRate":0.0,"timeouts":1},
+    {"mode":"trueMartial","style":"bleed","winRate":0.0,"timeouts":0},
+    {"mode":"trueMartial","style":"shell","winRate":0.0,"timeouts":1},
+    {"mode":"trueMartial","style":"poison","winRate":0.0,"timeouts":0},
+    {"mode":"trueMartial","style":"control","winRate":0.0,"timeouts":5}
+  ],
+  "modeMapping": {
+    "normal": {"sim": "beginner", "projectLabel": "入门", "difficulty": "beginner", "trueMartial": false},
+    "regular": {"sim": "regular", "projectLabel": "常规", "difficulty": "regular", "trueMartial": false},
+    "trueMartial": {"sim": "trueMartial", "projectLabel": "真武", "difficulty": "trueMartial", "trueMartial": true}
+  },
+  "parserAudit": {
+    "winRate": {"reliable": true, "method": "parts[1] from sim-ai table"},
+    "avgFloor": {"reliable": true, "method": "parts[2] from sim-ai table"},
+    "timeout": {"reliable": false, "issue": "timeoutMap uses English keys but sim-ai outputs Chinese style names", "impact": "display only, winRate unaffected"},
+    "effectiveRuns": {"reliable": false, "issue": "timeouts reported as 0 → effectiveRuns = RUNS", "impact": "cosmetic, winRate calc correct in sim-ai"}
+  },
+  "trueMartialIsolationAudit": {
+    "relicsTagged": true,
+    "effectsGuarded": true,
+    "rewardPoolExcluded": true,
+    "canHistoricalLeakBeProven": false,
+    "note": "V3.12.1 isolation prevents future leaks; historical impact cannot be proven from current code"
+  }
+}

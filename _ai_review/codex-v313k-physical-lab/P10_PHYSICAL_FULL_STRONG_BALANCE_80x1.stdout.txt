@@ -1,0 +1,29 @@
+
+入门 / normal:
+  ❌ 物理 9.6% avgFloor=15.0 timeout=7 (target: 15%-30%) FAIL
+  ✅ 法术 22.7% avgFloor=15.7 timeout=5 (target: 15%-30%) PASS
+  ✅ 流血 19.0% avgFloor=15.2 timeout=1 (target: 15%-30%) PASS
+  ✅ 龟壳 15.4% avgFloor=14.9 timeout=2 (target: 15%-30%) PASS
+  ✅ 中毒 26.3% avgFloor=15.5 timeout=0 (target: 15%-30%) PASS
+  ❌ 控制 13.1% avgFloor=14.1 timeout=19 (target: 15%-30%) FAIL
+
+常规 / regular:
+  ❌ 物理 1.3% avgFloor=13.5 timeout=0 (target: 5%-10%) FAIL
+  ✅ 法术 5.2% avgFloor=14.3 timeout=3 (target: 5%-10%) PASS
+  ❌ 流血 3.8% avgFloor=13.8 timeout=2 (target: 5%-10%) FAIL
+  ✅ 龟壳 9.6% avgFloor=13.8 timeout=7 (target: 5%-10%) PASS
+  ✅ 中毒 8.9% avgFloor=14.5 timeout=1 (target: 5%-10%) PASS
+  ✅ 控制 6.6% avgFloor=12.9 timeout=19 (target: 5%-10%) PASS
+
+真武 / trueMartial:
+  ✅ 物理 0.0% avgFloor=13.2 timeout=2 (target: 0%-2%) PASS
+  ✅ 法术 0.0% avgFloor=13.8 timeout=1 (target: 0%-2%) PASS
+  ✅ 流血 0.0% avgFloor=11.9 timeout=1 (target: 0%-2%) PASS
+  ✅ 龟壳 0.0% avgFloor=13.1 timeout=1 (target: 0%-2%) PASS
+  ✅ 中毒 0.0% avgFloor=10.3 timeout=0 (target: 0%-2%) PASS
+  ✅ 控制 0.0% avgFloor=11.3 timeout=6 (target: 0%-2%) PASS
+
+❌ Some targets failed — review above.
+
+Wrote D:\workspace\deepseekgame\_ai_review\codex-v313k-physical-lab\P10_PHYSICAL_FULL_STRONG_BALANCE_80x1.md
+Wrote D:\workspace\deepseekgame\_ai_review\codex-v313k-physical-lab\P10_PHYSICAL_FULL_STRONG_BALANCE_80x1.json

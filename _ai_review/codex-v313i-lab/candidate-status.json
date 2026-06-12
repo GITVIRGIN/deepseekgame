@@ -1,0 +1,515 @@
+[
+  {
+    "id": "C0_BASELINE",
+    "note": "R4A baseline",
+    "changes": [],
+    "valid": true,
+    "eliminated": false,
+    "commands": {
+      "validate": {
+        "exitCode": 0,
+        "error": null
+      },
+      "smoke": {
+        "exitCode": 0,
+        "error": null
+      },
+      "balance80": {
+        "exitCode": 1,
+        "error": null,
+        "report": "D:\\workspace\\deepseekgame\\_ai_review\\codex-v313i-lab\\C0_BASELINE_80x1.md",
+        "json": "D:\\workspace\\deepseekgame\\_ai_review\\codex-v313i-lab\\C0_BASELINE_80x1.json"
+      },
+      "balance40": {
+        "exitCode": 1,
+        "error": null,
+        "report": "D:\\workspace\\deepseekgame\\_ai_review\\codex-v313i-lab\\C0_BASELINE_40x2.md",
+        "json": "D:\\workspace\\deepseekgame\\_ai_review\\codex-v313i-lab\\C0_BASELINE_40x2.json"
+      }
+    },
+    "has80Json": true,
+    "has40Json": true
+  },
+  {
+    "id": "C1_SHELL_CARDS_LIGHT",
+    "note": "Light shell card buffs",
+    "changes": [
+      "shellLight"
+    ],
+    "valid": true,
+    "eliminated": false,
+    "commands": {
+      "validate": {
+        "exitCode": 0,
+        "error": null
+      },
+      "smoke": {
+        "exitCode": 0,
+        "error": null
+      },
+      "balance80": {
+        "exitCode": 1,
+        "error": null,
+        "report": "D:\\workspace\\deepseekgame\\_ai_review\\codex-v313i-lab\\C1_SHELL_CARDS_LIGHT_80x1.md",
+        "json": "D:\\workspace\\deepseekgame\\_ai_review\\codex-v313i-lab\\C1_SHELL_CARDS_LIGHT_80x1.json"
+      },
+      "balance40": {
+        "exitCode": 1,
+        "error": null,
+        "report": "D:\\workspace\\deepseekgame\\_ai_review\\codex-v313i-lab\\C1_SHELL_CARDS_LIGHT_40x2.md",
+        "json": "D:\\workspace\\deepseekgame\\_ai_review\\codex-v313i-lab\\C1_SHELL_CARDS_LIGHT_40x2.json"
+      }
+    },
+    "has80Json": true,
+    "has40Json": true
+  },
+  {
+    "id": "C2_SHELL_CARDS_STRONG",
+    "note": "Strong shell card buffs",
+    "changes": [
+      "shellStrong"
+    ],
+    "valid": true,
+    "eliminated": false,
+    "commands": {
+      "validate": {
+        "exitCode": 0,
+        "error": null
+      },
+      "smoke": {
+        "exitCode": 0,
+        "error": null
+      },
+      "balance80": {
+        "exitCode": 1,
+        "error": null,
+        "report": "D:\\workspace\\deepseekgame\\_ai_review\\codex-v313i-lab\\C2_SHELL_CARDS_STRONG_80x1.md",
+        "json": "D:\\workspace\\deepseekgame\\_ai_review\\codex-v313i-lab\\C2_SHELL_CARDS_STRONG_80x1.json"
+      },
+      "balance40": {
+        "exitCode": 1,
+        "error": null,
+        "report": "D:\\workspace\\deepseekgame\\_ai_review\\codex-v313i-lab\\C2_SHELL_CARDS_STRONG_40x2.md",
+        "json": "D:\\workspace\\deepseekgame\\_ai_review\\codex-v313i-lab\\C2_SHELL_CARDS_STRONG_40x2.json"
+      }
+    },
+    "has80Json": true,
+    "has40Json": true
+  },
+  {
+    "id": "C3_SHELL_REWARD_ONLY",
+    "note": "Shell reward only",
+    "changes": [
+      "shellRewardOnly"
+    ],
+    "valid": true,
+    "eliminated": false,
+    "commands": {
+      "validate": {
+        "exitCode": 0,
+        "error": null
+      },
+      "smoke": {
+        "exitCode": 0,
+        "error": null
+      },
+      "balance80": {
+        "exitCode": 1,
+        "error": null,
+        "report": "D:\\workspace\\deepseekgame\\_ai_review\\codex-v313i-lab\\C3_SHELL_REWARD_ONLY_80x1.md",
+        "json": "D:\\workspace\\deepseekgame\\_ai_review\\codex-v313i-lab\\C3_SHELL_REWARD_ONLY_80x1.json"
+      },
+      "balance40": {
+        "exitCode": 1,
+        "error": null,
+        "report": "D:\\workspace\\deepseekgame\\_ai_review\\codex-v313i-lab\\C3_SHELL_REWARD_ONLY_40x2.md",
+        "json": "D:\\workspace\\deepseekgame\\_ai_review\\codex-v313i-lab\\C3_SHELL_REWARD_ONLY_40x2.json"
+      }
+    },
+    "has80Json": true,
+    "has40Json": true
+  },
+  {
+    "id": "C4_SHELL_CARDS_LIGHT_PLUS_REWARD",
+    "note": "Light shell cards plus shell reward",
+    "changes": [
+      "shellLight",
+      "shellRewardLight",
+      "beginnerShell136"
+    ],
+    "valid": true,
+    "eliminated": false,
+    "commands": {
+      "validate": {
+        "exitCode": 0,
+        "error": null
+      },
+      "smoke": {
+        "exitCode": 0,
+        "error": null
+      },
+      "balance80": {
+        "exitCode": 1,
+        "error": null,
+        "report": "D:\\workspace\\deepseekgame\\_ai_review\\codex-v313i-lab\\C4_SHELL_CARDS_LIGHT_PLUS_REWARD_80x1.md",
+        "json": "D:\\workspace\\deepseekgame\\_ai_review\\codex-v313i-lab\\C4_SHELL_CARDS_LIGHT_PLUS_REWARD_80x1.json"
+      },
+      "balance40": {
+        "exitCode": 1,
+        "error": null,
+        "report": "D:\\workspace\\deepseekgame\\_ai_review\\codex-v313i-lab\\C4_SHELL_CARDS_LIGHT_PLUS_REWARD_40x2.md",
+        "json": "D:\\workspace\\deepseekgame\\_ai_review\\codex-v313i-lab\\C4_SHELL_CARDS_LIGHT_PLUS_REWARD_40x2.json"
+      }
+    },
+    "has80Json": true,
+    "has40Json": true
+  },
+  {
+    "id": "C5_POISON_CARDS",
+    "note": "Poison card buffs",
+    "changes": [
+      "poisonCards"
+    ],
+    "valid": true,
+    "eliminated": false,
+    "commands": {
+      "validate": {
+        "exitCode": 0,
+        "error": null
+      },
+      "smoke": {
+        "exitCode": 0,
+        "error": null
+      },
+      "balance80": {
+        "exitCode": 1,
+        "error": null,
+        "report": "D:\\workspace\\deepseekgame\\_ai_review\\codex-v313i-lab\\C5_POISON_CARDS_80x1.md",
+        "json": "D:\\workspace\\deepseekgame\\_ai_review\\codex-v313i-lab\\C5_POISON_CARDS_80x1.json"
+      },
+      "balance40": {
+        "exitCode": 1,
+        "error": null,
+        "report": "D:\\workspace\\deepseekgame\\_ai_review\\codex-v313i-lab\\C5_POISON_CARDS_40x2.md",
+        "json": "D:\\workspace\\deepseekgame\\_ai_review\\codex-v313i-lab\\C5_POISON_CARDS_40x2.json"
+      }
+    },
+    "has80Json": true,
+    "has40Json": true
+  },
+  {
+    "id": "C6_POISON_REWARD_ONLY",
+    "note": "Poison reward only",
+    "changes": [
+      "poisonRewardOnly"
+    ],
+    "valid": true,
+    "eliminated": false,
+    "commands": {
+      "validate": {
+        "exitCode": 0,
+        "error": null
+      },
+      "smoke": {
+        "exitCode": 0,
+        "error": null
+      },
+      "balance80": {
+        "exitCode": 1,
+        "error": null,
+        "report": "D:\\workspace\\deepseekgame\\_ai_review\\codex-v313i-lab\\C6_POISON_REWARD_ONLY_80x1.md",
+        "json": "D:\\workspace\\deepseekgame\\_ai_review\\codex-v313i-lab\\C6_POISON_REWARD_ONLY_80x1.json"
+      },
+      "balance40": {
+        "exitCode": 1,
+        "error": null,
+        "report": "D:\\workspace\\deepseekgame\\_ai_review\\codex-v313i-lab\\C6_POISON_REWARD_ONLY_40x2.md",
+        "json": "D:\\workspace\\deepseekgame\\_ai_review\\codex-v313i-lab\\C6_POISON_REWARD_ONLY_40x2.json"
+      }
+    },
+    "has80Json": true,
+    "has40Json": true
+  },
+  {
+    "id": "C7_POISON_CARDS_PLUS_REWARD",
+    "note": "Poison cards plus reward",
+    "changes": [
+      "poisonCards",
+      "poisonRewardLight"
+    ],
+    "valid": true,
+    "eliminated": false,
+    "commands": {
+      "validate": {
+        "exitCode": 0,
+        "error": null
+      },
+      "smoke": {
+        "exitCode": 0,
+        "error": null
+      },
+      "balance80": {
+        "exitCode": 1,
+        "error": null,
+        "report": "D:\\workspace\\deepseekgame\\_ai_review\\codex-v313i-lab\\C7_POISON_CARDS_PLUS_REWARD_80x1.md",
+        "json": "D:\\workspace\\deepseekgame\\_ai_review\\codex-v313i-lab\\C7_POISON_CARDS_PLUS_REWARD_80x1.json"
+      },
+      "balance40": {
+        "exitCode": 1,
+        "error": null,
+        "report": "D:\\workspace\\deepseekgame\\_ai_review\\codex-v313i-lab\\C7_POISON_CARDS_PLUS_REWARD_40x2.md",
+        "json": "D:\\workspace\\deepseekgame\\_ai_review\\codex-v313i-lab\\C7_POISON_CARDS_PLUS_REWARD_40x2.json"
+      }
+    },
+    "has80Json": true,
+    "has40Json": true
+  },
+  {
+    "id": "C8_CONTROL_REWARD_042",
+    "note": "Control reward 0.42",
+    "changes": [
+      "controlReward042"
+    ],
+    "valid": true,
+    "eliminated": false,
+    "commands": {
+      "validate": {
+        "exitCode": 0,
+        "error": null
+      },
+      "smoke": {
+        "exitCode": 0,
+        "error": null
+      },
+      "balance80": {
+        "exitCode": 1,
+        "error": null,
+        "report": "D:\\workspace\\deepseekgame\\_ai_review\\codex-v313i-lab\\C8_CONTROL_REWARD_042_80x1.md",
+        "json": "D:\\workspace\\deepseekgame\\_ai_review\\codex-v313i-lab\\C8_CONTROL_REWARD_042_80x1.json"
+      },
+      "balance40": {
+        "exitCode": 1,
+        "error": null,
+        "report": "D:\\workspace\\deepseekgame\\_ai_review\\codex-v313i-lab\\C8_CONTROL_REWARD_042_40x2.md",
+        "json": "D:\\workspace\\deepseekgame\\_ai_review\\codex-v313i-lab\\C8_CONTROL_REWARD_042_40x2.json"
+      }
+    },
+    "has80Json": true,
+    "has40Json": true
+  },
+  {
+    "id": "C9_CONTROL_REWARD_050",
+    "note": "Control reward 0.50",
+    "changes": [
+      "controlReward050"
+    ],
+    "valid": true,
+    "eliminated": false,
+    "commands": {
+      "validate": {
+        "exitCode": 0,
+        "error": null
+      },
+      "smoke": {
+        "exitCode": 0,
+        "error": null
+      },
+      "balance80": {
+        "exitCode": 1,
+        "error": null,
+        "report": "D:\\workspace\\deepseekgame\\_ai_review\\codex-v313i-lab\\C9_CONTROL_REWARD_050_80x1.md",
+        "json": "D:\\workspace\\deepseekgame\\_ai_review\\codex-v313i-lab\\C9_CONTROL_REWARD_050_80x1.json"
+      },
+      "balance40": {
+        "exitCode": 1,
+        "error": null,
+        "report": "D:\\workspace\\deepseekgame\\_ai_review\\codex-v313i-lab\\C9_CONTROL_REWARD_050_40x2.md",
+        "json": "D:\\workspace\\deepseekgame\\_ai_review\\codex-v313i-lab\\C9_CONTROL_REWARD_050_40x2.json"
+      }
+    },
+    "has80Json": true,
+    "has40Json": true
+  },
+  {
+    "id": "C10_PHYSICAL_TINY",
+    "note": "BattleCry tiny buff",
+    "changes": [
+      "physicalTiny"
+    ],
+    "valid": true,
+    "eliminated": false,
+    "commands": {
+      "validate": {
+        "exitCode": 0,
+        "error": null
+      },
+      "smoke": {
+        "exitCode": 0,
+        "error": null
+      },
+      "balance80": {
+        "exitCode": 1,
+        "error": null,
+        "report": "D:\\workspace\\deepseekgame\\_ai_review\\codex-v313i-lab\\C10_PHYSICAL_TINY_80x1.md",
+        "json": "D:\\workspace\\deepseekgame\\_ai_review\\codex-v313i-lab\\C10_PHYSICAL_TINY_80x1.json"
+      },
+      "balance40": {
+        "exitCode": 1,
+        "error": null,
+        "report": "D:\\workspace\\deepseekgame\\_ai_review\\codex-v313i-lab\\C10_PHYSICAL_TINY_40x2.md",
+        "json": "D:\\workspace\\deepseekgame\\_ai_review\\codex-v313i-lab\\C10_PHYSICAL_TINY_40x2.json"
+      }
+    },
+    "has80Json": true,
+    "has40Json": true
+  },
+  {
+    "id": "C11_PHYSICAL_REWARD_ONLY",
+    "note": "Physical reward only",
+    "changes": [
+      "physicalRewardOnly"
+    ],
+    "valid": true,
+    "eliminated": false,
+    "commands": {
+      "validate": {
+        "exitCode": 0,
+        "error": null
+      },
+      "smoke": {
+        "exitCode": 0,
+        "error": null
+      },
+      "balance80": {
+        "exitCode": 1,
+        "error": null,
+        "report": "D:\\workspace\\deepseekgame\\_ai_review\\codex-v313i-lab\\C11_PHYSICAL_REWARD_ONLY_80x1.md",
+        "json": "D:\\workspace\\deepseekgame\\_ai_review\\codex-v313i-lab\\C11_PHYSICAL_REWARD_ONLY_80x1.json"
+      },
+      "balance40": {
+        "exitCode": 1,
+        "error": null,
+        "report": "D:\\workspace\\deepseekgame\\_ai_review\\codex-v313i-lab\\C11_PHYSICAL_REWARD_ONLY_40x2.md",
+        "json": "D:\\workspace\\deepseekgame\\_ai_review\\codex-v313i-lab\\C11_PHYSICAL_REWARD_ONLY_40x2.json"
+      }
+    },
+    "has80Json": true,
+    "has40Json": true
+  },
+  {
+    "id": "C12_COMBO_SAFE",
+    "note": "Combo safe",
+    "changes": [
+      "shellLight",
+      "poisonCards",
+      "physicalTiny",
+      "controlReward042",
+      "physicalReward132",
+      "poisonRewardLight",
+      "shellRewardLight",
+      "beginnerShell134"
+    ],
+    "valid": true,
+    "eliminated": false,
+    "commands": {
+      "validate": {
+        "exitCode": 0,
+        "error": null
+      },
+      "smoke": {
+        "exitCode": 0,
+        "error": null
+      },
+      "balance80": {
+        "exitCode": 1,
+        "error": null,
+        "report": "D:\\workspace\\deepseekgame\\_ai_review\\codex-v313i-lab\\C12_COMBO_SAFE_80x1.md",
+        "json": "D:\\workspace\\deepseekgame\\_ai_review\\codex-v313i-lab\\C12_COMBO_SAFE_80x1.json"
+      },
+      "balance40": {
+        "exitCode": 1,
+        "error": null,
+        "report": "D:\\workspace\\deepseekgame\\_ai_review\\codex-v313i-lab\\C12_COMBO_SAFE_40x2.md",
+        "json": "D:\\workspace\\deepseekgame\\_ai_review\\codex-v313i-lab\\C12_COMBO_SAFE_40x2.json"
+      }
+    },
+    "has80Json": true,
+    "has40Json": true
+  },
+  {
+    "id": "C13_COMBO_NO_CONTROL",
+    "note": "Combo without control",
+    "changes": [
+      "shellLight",
+      "poisonCards",
+      "physicalTiny",
+      "physicalReward132",
+      "poisonRewardLight",
+      "shellRewardLight",
+      "beginnerShell134"
+    ],
+    "valid": true,
+    "eliminated": false,
+    "commands": {
+      "validate": {
+        "exitCode": 0,
+        "error": null
+      },
+      "smoke": {
+        "exitCode": 0,
+        "error": null
+      },
+      "balance80": {
+        "exitCode": 1,
+        "error": null,
+        "report": "D:\\workspace\\deepseekgame\\_ai_review\\codex-v313i-lab\\C13_COMBO_NO_CONTROL_80x1.md",
+        "json": "D:\\workspace\\deepseekgame\\_ai_review\\codex-v313i-lab\\C13_COMBO_NO_CONTROL_80x1.json"
+      },
+      "balance40": {
+        "exitCode": 1,
+        "error": null,
+        "report": "D:\\workspace\\deepseekgame\\_ai_review\\codex-v313i-lab\\C13_COMBO_NO_CONTROL_40x2.md",
+        "json": "D:\\workspace\\deepseekgame\\_ai_review\\codex-v313i-lab\\C13_COMBO_NO_CONTROL_40x2.json"
+      }
+    },
+    "has80Json": true,
+    "has40Json": true
+  },
+  {
+    "id": "C14_COMBO_SHELL_POISON_ONLY",
+    "note": "Shell and poison only",
+    "changes": [
+      "shellLight",
+      "poisonCards",
+      "poisonRewardLight",
+      "shellRewardLight",
+      "beginnerShell134"
+    ],
+    "valid": true,
+    "eliminated": false,
+    "commands": {
+      "validate": {
+        "exitCode": 0,
+        "error": null
+      },
+      "smoke": {
+        "exitCode": 0,
+        "error": null
+      },
+      "balance80": {
+        "exitCode": 1,
+        "error": null,
+        "report": "D:\\workspace\\deepseekgame\\_ai_review\\codex-v313i-lab\\C14_COMBO_SHELL_POISON_ONLY_80x1.md",
+        "json": "D:\\workspace\\deepseekgame\\_ai_review\\codex-v313i-lab\\C14_COMBO_SHELL_POISON_ONLY_80x1.json"
+      },
+      "balance40": {
+        "exitCode": 1,
+        "error": null,
+        "report": "D:\\workspace\\deepseekgame\\_ai_review\\codex-v313i-lab\\C14_COMBO_SHELL_POISON_ONLY_40x2.md",
+        "json": "D:\\workspace\\deepseekgame\\_ai_review\\codex-v313i-lab\\C14_COMBO_SHELL_POISON_ONLY_40x2.json"
+      }
+    },
+    "has80Json": true,
+    "has40Json": true
+  }
+]

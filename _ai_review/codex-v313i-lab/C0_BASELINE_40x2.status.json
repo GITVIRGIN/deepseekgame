@@ -1,0 +1,10 @@
+{
+  "name": "balance 40x2",
+  "command": "node scripts/balance-check.mjs --runs=40 --seeds=2 --seedBase=2026052700 --reportOut=D:\\workspace\\deepseekgame\\_ai_review\\codex-v313i-lab\\C0_BASELINE_40x2.md --jsonOut=D:\\workspace\\deepseekgame\\_ai_review\\codex-v313i-lab\\C0_BASELINE_40x2.json",
+  "exitCode": 1,
+  "error": null,
+  "stdout": "C0_BASELINE_40x2.stdout.txt",
+  "stderr": "C0_BASELINE_40x2.stderr.txt",
+  "startedAt": "2026-06-10T07:03:35.141Z",
+  "finishedAt": "2026-06-10T07:04:28.048Z"
+}

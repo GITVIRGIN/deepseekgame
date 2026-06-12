@@ -1,0 +1,10 @@
+{
+  "label": "normal40",
+  "command": "node scripts/sim-ai.mjs --mode=normal --profile=physical --strategy=styleAware --runs=40 --seeds=2 --seedBase=2026052700",
+  "exitCode": 0,
+  "error": null,
+  "stdout": "P4_PHYSICAL_CARDS_LIGHT_normal_physical_40x2.txt",
+  "stderr": "P4_PHYSICAL_CARDS_LIGHT_normal_physical_40x2.stderr.txt",
+  "startedAt": "2026-06-10T08:50:52.984Z",
+  "finishedAt": "2026-06-10T08:50:56.582Z"
+}

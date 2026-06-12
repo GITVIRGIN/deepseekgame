@@ -1,0 +1,8 @@
+{
+  "selected": "L2_TARGETED_PHYSICAL_AI_PLUS_TARGET",
+  "selectionReason": "safe Stage2 candidate selected by priority",
+  "stage2Candidates": [
+    "L2_TARGETED_PHYSICAL_AI_PLUS_TARGET"
+  ],
+  "baselineSimHash": "9E69BBF77DF405E8CE0441BB4B29719D35BC91C6225CF2A58005EA294FF139A2"
+}

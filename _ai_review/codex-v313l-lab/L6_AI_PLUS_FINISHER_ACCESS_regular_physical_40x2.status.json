@@ -1,0 +1,10 @@
+{
+  "label": "regular40",
+  "command": "node scripts/sim-ai.mjs --mode=regular --profile=physical --strategy=styleAware --runs=40 --seeds=2 --seedBase=2026052700 --json",
+  "exitCode": 0,
+  "error": null,
+  "stdout": "L6_AI_PLUS_FINISHER_ACCESS_regular_physical_40x2.json",
+  "stderr": "L6_AI_PLUS_FINISHER_ACCESS_regular_physical_40x2.stderr.txt",
+  "startedAt": "2026-06-10T10:04:42.804Z",
+  "finishedAt": "2026-06-10T10:04:45.095Z"
+}

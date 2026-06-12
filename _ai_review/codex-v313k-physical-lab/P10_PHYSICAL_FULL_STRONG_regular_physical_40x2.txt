@@ -1,0 +1,7 @@
+
+=== regular / strategy=styleAware ===  (40局/流派, 2 seed, seedBase=2026052700)
+⚠  timeouts detected (excluded from win-rate denominator)
+   物理: 1 timeouts (seed=2028259356 floor=11)
+流派      通关%   均层   均牌组  均遗物  均能量  失败分布(早/中/晚)
+─────────────────────────────────────────────────────────────────
+物理       5.1%  13.3    16   4.3   3.5   早0中12晚25

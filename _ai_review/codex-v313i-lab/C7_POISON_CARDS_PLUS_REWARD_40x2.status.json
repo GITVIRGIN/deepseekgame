@@ -1,0 +1,10 @@
+{
+  "name": "balance 40x2",
+  "command": "node scripts/balance-check.mjs --runs=40 --seeds=2 --seedBase=2026052700 --reportOut=D:\\workspace\\deepseekgame\\_ai_review\\codex-v313i-lab\\C7_POISON_CARDS_PLUS_REWARD_40x2.md --jsonOut=D:\\workspace\\deepseekgame\\_ai_review\\codex-v313i-lab\\C7_POISON_CARDS_PLUS_REWARD_40x2.json",
+  "exitCode": 1,
+  "error": null,
+  "stdout": "C7_POISON_CARDS_PLUS_REWARD_40x2.stdout.txt",
+  "stderr": "C7_POISON_CARDS_PLUS_REWARD_40x2.stderr.txt",
+  "startedAt": "2026-06-10T07:19:25.865Z",
+  "finishedAt": "2026-06-10T07:20:15.099Z"
+}

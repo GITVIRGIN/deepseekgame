@@ -1,0 +1,10 @@
+{
+  "label": "smoke",
+  "command": "npm run smoke",
+  "exitCode": 0,
+  "error": null,
+  "stdout": "P6_ARCHETYPE_PLUS_REWARD_MED_smoke.stdout.txt",
+  "stderr": "P6_ARCHETYPE_PLUS_REWARD_MED_smoke.stderr.txt",
+  "startedAt": "2026-06-10T08:51:08.618Z",
+  "finishedAt": "2026-06-10T08:51:08.946Z"
+}

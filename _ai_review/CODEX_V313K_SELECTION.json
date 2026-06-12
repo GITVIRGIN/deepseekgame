@@ -1,0 +1,7 @@
+{
+  "selected": "P0_BASELINE",
+  "selectionReason": "no safe Stage2 candidate; restored baseline",
+  "stage2Candidates": [
+    "P10_PHYSICAL_FULL_STRONG"
+  ]
+}

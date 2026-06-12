@@ -1,0 +1,193 @@
+
+> check
+> npm run validate:data && npm run smoke && npm run player:flow && node --check src/core/data.js && node --check src/core/effects.js && node --check src/core/combat.js && node --check src/core/state.js && node --check src/core/reducer.js && node --check src/app/main.js && node --check src/core/save.js && node --check src/core/goals.js && node --check src/core/rewards.js && node --check src/core/shop.js && echo 'All syntax OK'
+
+
+> validate:data
+> node scripts/validate-data.mjs
+
+✅ Card effect types validated
+✅ Shop item effects validated
+✅ Starting deck validated
+✅ True Martial decks validated
+✅ True Martial relics validated
+✅ TM UI styles consistent with decks
+✅ VERSION.md matches code version
+✅ Enemies validated
+✅ Status info validated
+✅ Purge item filter validated
+✅ Curse card exclusion validated
+✅ True martial relic filtering validated
+✅ Undeletable card rules validated
+✅ True Martial unlock relic requirements validated
+✅ True Martial relic implemented effects validated
+
+🎉 All checks passed!
+
+> smoke
+> node scripts/smoke-tests.mjs
+
+✅ 普通模式不崩溃
+✅ 真武physical启动
+✅ 真武spell启动
+✅ 真武bleed启动
+✅ 真武shell启动
+✅ 真武poison启动
+✅ 真武control启动
+✅ 破军令+10真伤穿99格挡
+✅ 九天雷劫120伤无眩晕
+✅ 九天雷劫开局敌人雷印3
+✅ 修罗心回血8(12层流血)
+✅ 血牙回复6
+✅ 血涌消耗2生命
+✅ 万毒真经敌毒12伤
+✅ 万毒真经玩家毒不翻倍
+✅ 混沌灵宝只一次
+✅ 玄龟甲反射+25%击杀
+✅ 荆棘反震击杀不崩溃
+✅ 存档迁移完整
+存档写入失败: q
+✅ saveGame容错
+✅ combat-events模块
+✅ 破军令开局格挡+22
+✅ 万毒真经开局敌毒+8
+✅ 毒牙格挡+5
+✅ 毒爆伤害12不消耗6格挡
+✅ 反震不消耗格挡但不锁定敌方攻击
+✅ 狐火纳入法术流且施加灼烧雷痕
+✅ 心防崩裂单类6不触发
+✅ 心防崩裂单类8触发
+✅ 定力抵消离间禁锢眩晕
+✅ 定力上限2
+✅ 敌人正常行动后定力减少
+✅ 敌人眩晕跳过后获得定力不获得醒神
+✅ 心防崩裂单类8触发(旧规则不变)
+✅ 连续放弃不会重复结算
+✅ 低层放弃不会获得派系箓印
+✅ 放弃不会批量解锁遗物
+✅ 真武解锁纯函数正确
+✅ 真武解锁后home显示入口
+✅ 真武解锁后gameOver显示入口
+✅ 未解锁不显示真武入口
+✅ 进入真武选择页不赠送遗物
+✅ 雷火引单体法术只影响目标
+✅ 雷火引全体法术影响所有敌人
+✅ 雷火共鸣只检查受影响目标
+✅ self-only法术不消耗雷火引
+✅ dragonRain文案与效果一致
+✅ foxFire文案与效果一致
+✅ 玄龟甲文案与代码一致
+✅ 雷火机制核心值保持
+✅ 破军令追加真伤穿透格挡
+✅ trueMartial spell不触发雷火引
+✅ 雷痕达到8立即触发天劫
+✅ 雷痕10会触发天劫并剩余2
+✅ 雷痕16会连续触发两次天劫
+✅ 雷火引推过阈值会当次触发天劫
+✅ 雷火共鸣后同次天劫消耗雷火烙印
+✅ 九天雷劫雷痕达到8立即触发120伤
+✅ spell放大雷痕不提前天劫
+✅ 入门difficulty正确
+✅ 入门rollsMax=3
+✅ 入门开战有行旅护持
+✅ 常规difficulty正确
+✅ 常规rollsMax=3
+✅ 常规开战无行旅护持
+✅ 真武maxFloor=25
+✅ 真武rollsMax=5
+✅ 真武目标包含虚渊主宰
+✅ roll只刷新card奖励
+✅ roll后非card奖励保持不变
+✅ 无card奖励时不能roll且不消耗次数
+✅ 到上限后不能继续roll
+✅ 散功符只能删基础牌
+✅ 斩念符能删普通可删牌
+✅ 不能低于最小牌组数量
+✅ 普通删牌不能删业障
+✅ 洗髓令能连续删两张并加入业障
+✅ bloodContract获得时最大生命降低20%
+✅ bloodContract战斗胜利后回血15
+✅ cursedMirror回合开始额外抽1
+✅ cursedMirror回合结束给玩家2层诅咒
+✅ soulFurnace开战本场能量+1
+✅ soulFurnace开战扣8血且最低保留1
+✅ 支线删牌奖励能进入pendingPurge
+✅ 支线删牌完成后能继续路线
+✅ 洗髓令不能删除业障/诅咒牌
+✅ roll不能刷新遗物奖励
+✅ roll不能刷新删牌奖励
+✅ soulFurnace战斗结束后maxEnergy恢复
+✅ soulFurnace连续两场不会叠加永久能量
+✅ 商店删牌购买前会二次校验
+✅ 删牌物品不可在无可删牌时扣费
+✅ pendingPurge未完成时不能离开商店
+✅ 入门最终Boss击败后自动gameOver
+✅ 常规最终Boss击败后自动gameOver
+✅ 真武最终Boss击败后自动gameOver
+✅ 最终Boss胜利不进入reward阶段
+✅ 玄箓特殊通关自动gameOver
+✅ 终局支线完成后仍可挑战最终Boss
+✅ 终局商店离开后仍可挑战最终Boss
+✅ gameOver后confirmPurge不会改牌组
+✅ 玄箓残片奖励触发特殊通关真实路径
+✅ 最终Boss从路线选择进入并击败后自动gameOver
+✅ 真武最终Boss从路线选择进入并击败后自动gameOver
+✅ 终局支线完成后路线仍包含最终Boss
+✅ 真武终局支线完成后路线仍包含虚渊主宰
+✅ 终局商店离开后路线仍包含最终Boss
+✅ 真武终局商店离开后路线仍包含虚渊主宰
+✅ 普通战斗不会生成真武阵势
+✅ 真武试锋阶段生成真武共鸣
+✅ 真武破阵阶段生成阵眼
+✅ 阵眼存活时非阵眼敌人获得攻击加成
+✅ 魔化倒计时第4回合增强阵势
+✅ 破法轮转只净化部分负面状态
+✅ 虚渊领域会随回合加压
+✅ 真武阵势信息可供UI展示
+✅ infernoLotus开战自身获得灼烧
+✅ infernoLotus增强玩家施加的灼烧
+✅ inverseScaleArmor每回合首次格挡增强
+✅ inverseScaleArmor回合结束有格挡会失血
+✅ chaosBell控制附加伤害并给目标定力
+✅ 咒杀术真武费用为1
+✅ 血祭悟道只在真武支线出现
+✅ 血祭悟道扣最大生命33%
+✅ 血祭悟道高生命时扣当前生命50%
+✅ 血祭悟道不会给未实现真武遗物
+✅ 血祭悟道选择后保留代价提示
+✅ berserkBrand物理牌伤害翻倍且失血
+✅ bloodPrisonOath增强流血并自损
+✅ venomousCauldron增强毒瘴并自染毒
+✅ 血祭悟道可获得已实现三流派真武遗物
+✅ 真武遗物池覆盖所有已实现真武遗物
+✅ 血祭悟道授予六流派升华遗物时保留代价提示
+✅ 真武起始遗物不会进入普通遗物池
+✅ 阵眼死亡后非阵眼攻击加成消失
+✅ 魔化触发回合攻击预览包含即将增加的阵势压力
+✅ 旧真武存档迁移补齐difficulty和roll上限
+✅ tickDamageStatus不引用未定义run
+✅ 普通模式错误持有破军令不会触发真武真伤
+✅ 普通模式错误持有万毒真经不会翻倍毒瘴
+✅ 普通模式错误持有玄龟甲不增强格挡
+✅ 真武模式破军令仍触发真伤
+
+142 passed, 0 failed
+
+> player:flow
+> node scripts/player-flow-tests.mjs
+
+✅ 玩家未解锁时不能通过 martialSelect 进入真武选择
+✅ 玩家未解锁时不能直接 startTrueMartial
+✅ 非法真武流派不会 fallback 启动
+✅ 结算页进入真武选择后返回仍回到结算页
+✅ 玩家连点放弃不会重复结算
+✅ 结算页点击新开局不会污染上一局状态
+✅ 旧真武存档迁移后仍是 25 层虚渊主宰
+✅ 真武通关馈赠不会给未实现遗物
+✅ 结算页残留 pendingPurge 时 confirmPurge 不会改牌组
+✅ 真实普通遗物全收集后可以解锁真武
+✅ 真武专属遗物不是解锁前置
+✅ 直接调用 startRun 的非法真武流派不会 fallback
+
+12 total, 12 passed, 0 failed
+'All syntax OK'

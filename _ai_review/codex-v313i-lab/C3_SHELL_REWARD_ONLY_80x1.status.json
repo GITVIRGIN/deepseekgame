@@ -1,0 +1,10 @@
+{
+  "name": "balance 80x1",
+  "command": "node scripts/balance-check.mjs --runs=80 --seeds=1 --seedBase=2026052700 --reportOut=D:\\workspace\\deepseekgame\\_ai_review\\codex-v313i-lab\\C3_SHELL_REWARD_ONLY_80x1.md --jsonOut=D:\\workspace\\deepseekgame\\_ai_review\\codex-v313i-lab\\C3_SHELL_REWARD_ONLY_80x1.json",
+  "exitCode": 1,
+  "error": null,
+  "stdout": "C3_SHELL_REWARD_ONLY_80x1.stdout.txt",
+  "stderr": "C3_SHELL_REWARD_ONLY_80x1.stderr.txt",
+  "startedAt": "2026-06-10T07:09:00.939Z",
+  "finishedAt": "2026-06-10T07:10:25.774Z"
+}

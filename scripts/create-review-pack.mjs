@@ -4,6 +4,7 @@ import os from "node:os";
 import { spawnSync } from "node:child_process";
 
 const root = process.cwd();
+const projectName = path.basename(root);
 const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
 const reviewRoot = path.join(root, "ai-review");
 const latestDir = path.join(reviewRoot, "latest");
@@ -70,12 +71,14 @@ const commands = [
 
 if (npmScriptExists("validate:data")) commands.push("npm run validate:data");
 if (npmScriptExists("smoke")) commands.push("npm run smoke");
+if (npmScriptExists("player:flow")) commands.push("npm run player:flow");
 if (npmScriptExists("check")) commands.push("npm run check");
 if (npmScriptExists("build:release")) commands.push("npm run build:release");
 if (fileExists("scripts/simulate-runs.mjs")) commands.push("node scripts/simulate-runs.mjs --runs=50 --json");
 if (fileExists("scripts/sim-ai.mjs")) commands.push("node scripts/sim-ai.mjs");
 if (npmScriptExists("ai:rc-check")) commands.push("npm run ai:rc-check");
 if (npmScriptExists("ai:sim-consistency")) commands.push("npm run ai:sim-consistency");
+if (npmScriptExists("balance:check")) commands.push("npm run balance:check -- --runs=80 --seeds=1");
 
 const fullBalance = process.env.AI_REVIEW_FULL_BALANCE === "1";
 if (fullBalance && npmScriptExists("ai:v076-balance-check")) {
@@ -158,6 +161,7 @@ const ignoredDirs = new Set([
   ".cache",
   "logs",
   "ai-review",
+  "deepseekgame-review",
 ]);
 
 function shouldIgnore(relativePath, dirent) {
@@ -208,6 +212,7 @@ const importantFiles = [
   "src/app/main.js",
   "scripts/validate-data.mjs",
   "scripts/smoke-tests.mjs",
+  "scripts/player-flow-tests.mjs",
   "scripts/simulate-runs.mjs",
   "scripts/sim-ai.mjs",
 ];
@@ -284,8 +289,11 @@ function copyProject(src, dest, prefix = "") {
 
 const stageDir = path.join(os.tmpdir(), `deepseekgame-review-${timestamp}`);
 fs.rmSync(stageDir, { recursive: true, force: true });
-copyProject(root, stageDir);
-fs.cpSync(latestDir, path.join(stageDir, "_ai_review"), { recursive: true });
+// Wrap in project-name root directory
+const stageWrapped = path.join(stageDir, projectName);
+fs.mkdirSync(stageWrapped, { recursive: true });
+copyProject(root, stageWrapped);
+fs.cpSync(latestDir, path.join(stageWrapped, "_ai_review"), { recursive: true });
 
 const zipPath = path.join(reviewRoot, `deepseekgame-review-${timestamp}.zip`);
 fs.rmSync(zipPath, { force: true });
@@ -297,7 +305,7 @@ function psQuote(value) {
 if (process.platform === "win32") {
   const zipCommand = [
     "if (Test-Path", psQuote(zipPath), ") { Remove-Item", psQuote(zipPath), "-Force } ;",
-    "Compress-Archive -Path", psQuote(path.join(stageDir, "*")),
+    "Compress-Archive -Path", psQuote(stageWrapped),
     "-DestinationPath", psQuote(zipPath),
     "-Force",
   ].join(" ");

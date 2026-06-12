@@ -1,0 +1,24 @@
+﻿[
+    {
+        "command":  "npm run validate:data",
+        "exitCode":  0
+    },
+    {
+        "command":  "npm run smoke",
+        "exitCode":  0
+    },
+    {
+        "command":  "npm run player:flow",
+        "exitCode":  0
+    },
+    {
+        "command":  "npm run check",
+        "exitCode":  0
+    },
+    {
+        "command":  "npm run build:release",
+        "exitCode":  null,
+        "skipped":  true,
+        "reason":  "writes dist, outside V3.13I allowed outputs"
+    }
+]

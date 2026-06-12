@@ -1,0 +1,40 @@
+﻿[
+    {
+        "command":  "npm run validate:data",
+        "exitCode":  0,
+        "startedAt":  "2026-06-10T16:59:04.1919441+08:00",
+        "finishedAt":  "2026-06-10T16:59:05.2492655+08:00",
+        "stdout":  "_ai_review\\codex-v313k-physical-lab\\final_validate_data.stdout.txt",
+        "stderr":  "_ai_review\\codex-v313k-physical-lab\\final_validate_data.stderr.txt"
+    },
+    {
+        "command":  "npm run smoke",
+        "exitCode":  0,
+        "startedAt":  "2026-06-10T16:59:05.2578297+08:00",
+        "finishedAt":  "2026-06-10T16:59:06.2801952+08:00",
+        "stdout":  "_ai_review\\codex-v313k-physical-lab\\final_smoke.stdout.txt",
+        "stderr":  "_ai_review\\codex-v313k-physical-lab\\final_smoke.stderr.txt"
+    },
+    {
+        "command":  "npm run player:flow",
+        "exitCode":  0,
+        "startedAt":  "2026-06-10T16:59:06.2812302+08:00",
+        "finishedAt":  "2026-06-10T16:59:07.3030821+08:00",
+        "stdout":  "_ai_review\\codex-v313k-physical-lab\\final_player_flow.stdout.txt",
+        "stderr":  "_ai_review\\codex-v313k-physical-lab\\final_player_flow.stderr.txt"
+    },
+    {
+        "command":  "npm run check",
+        "exitCode":  0,
+        "startedAt":  "2026-06-10T16:59:07.3030821+08:00",
+        "finishedAt":  "2026-06-10T16:59:09.3171182+08:00",
+        "stdout":  "_ai_review\\codex-v313k-physical-lab\\final_check.stdout.txt",
+        "stderr":  "_ai_review\\codex-v313k-physical-lab\\final_check.stderr.txt"
+    },
+    {
+        "command":  "npm run build:release",
+        "exitCode":  null,
+        "skipped":  true,
+        "reason":  "Skipped because build:release writes dist/build artifacts outside the V3.13K allowed output scope."
+    }
+]

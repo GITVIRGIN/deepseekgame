@@ -11,9 +11,12 @@
     "ai:v076-normal-balance": "node scripts/sim-ai.mjs --mode=normal --strategy=styleAware --runs=300 --seeds=3 --seedBase=2026052700",
     "ai:v076-tm-balance": "node scripts/sim-ai.mjs --mode=trueMartial --strategy=styleAware --runs=300 --seeds=3 --seedBase=2026052700",
     "ai:v076-balance-check": "npm run ai:v076-normal-balance && npm run ai:v076-tm-balance",
+    "balance:check": "node scripts/balance-check.mjs",
+    "player:flow": "node scripts/player-flow-tests.mjs",
     "serve": "node scripts/serve.mjs 5173",
     "build:release": "node scripts/build-release.mjs",
-    "check": "npm run validate:data && npm run smoke && node --check src/core/data.js && node --check src/core/effects.js && node --check src/core/combat.js && node --check src/core/state.js && node --check src/core/reducer.js && node --check src/app/main.js && node --check src/core/save.js && node --check src/core/goals.js && node --check src/core/rewards.js && node --check src/core/shop.js && echo 'All syntax OK'",
+    "codex:harness": "node scripts/harness-check.mjs",
+    "check": "npm run validate:data && npm run smoke && npm run player:flow && node --check src/core/data.js && node --check src/core/effects.js && node --check src/core/combat.js && node --check src/core/state.js && node --check src/core/reducer.js && node --check src/app/main.js && node --check src/core/save.js && node --check src/core/goals.js && node --check src/core/rewards.js && node --check src/core/shop.js && echo 'All syntax OK'",
     "validate:data": "node scripts/validate-data.mjs",
     "sim:100": "node scripts/simulate-runs.mjs --runs=100",
     "sim:bleed": "node scripts/simulate-runs.mjs --runs=100 --profile=bleed",
@@ -23,5 +26,8 @@
     "sim:poison": "node scripts/simulate-runs.mjs --runs=100 --profile=poison",
     "smoke": "node scripts/smoke-tests.mjs",
     "sim:control": "node scripts/simulate-runs.mjs --runs=100 --profile=control"
+  },
+  "devDependencies": {
+    "playwright": "^1.60.0"
   }
 }

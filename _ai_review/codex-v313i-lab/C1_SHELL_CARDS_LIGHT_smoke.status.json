@@ -1,0 +1,10 @@
+{
+  "name": "smoke",
+  "command": "npm run smoke",
+  "exitCode": 0,
+  "error": null,
+  "stdout": "C1_SHELL_CARDS_LIGHT_smoke.stdout.txt",
+  "stderr": "C1_SHELL_CARDS_LIGHT_smoke.stderr.txt",
+  "startedAt": "2026-06-10T07:04:28.355Z",
+  "finishedAt": "2026-06-10T07:04:28.683Z"
+}

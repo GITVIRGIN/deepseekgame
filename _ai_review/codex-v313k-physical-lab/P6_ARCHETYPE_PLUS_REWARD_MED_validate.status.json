@@ -1,0 +1,10 @@
+{
+  "label": "validate:data",
+  "command": "npm run validate:data",
+  "exitCode": 0,
+  "error": null,
+  "stdout": "P6_ARCHETYPE_PLUS_REWARD_MED_validate.stdout.txt",
+  "stderr": "P6_ARCHETYPE_PLUS_REWARD_MED_validate.stderr.txt",
+  "startedAt": "2026-06-10T08:51:08.315Z",
+  "finishedAt": "2026-06-10T08:51:08.617Z"
+}

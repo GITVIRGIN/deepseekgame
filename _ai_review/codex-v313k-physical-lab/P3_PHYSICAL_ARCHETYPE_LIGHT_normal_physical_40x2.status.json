@@ -1,0 +1,10 @@
+{
+  "label": "normal40",
+  "command": "node scripts/sim-ai.mjs --mode=normal --profile=physical --strategy=styleAware --runs=40 --seeds=2 --seedBase=2026052700",
+  "exitCode": 0,
+  "error": null,
+  "stdout": "P3_PHYSICAL_ARCHETYPE_LIGHT_normal_physical_40x2.txt",
+  "stderr": "P3_PHYSICAL_ARCHETYPE_LIGHT_normal_physical_40x2.stderr.txt",
+  "startedAt": "2026-06-10T08:50:38.509Z",
+  "finishedAt": "2026-06-10T08:50:41.022Z"
+}

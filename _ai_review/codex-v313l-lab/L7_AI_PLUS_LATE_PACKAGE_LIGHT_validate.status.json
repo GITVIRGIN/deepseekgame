@@ -1,0 +1,10 @@
+{
+  "label": "validate:data",
+  "command": "npm run validate:data",
+  "exitCode": 0,
+  "error": null,
+  "stdout": "L7_AI_PLUS_LATE_PACKAGE_LIGHT_validate.stdout.txt",
+  "stderr": "L7_AI_PLUS_LATE_PACKAGE_LIGHT_validate.stderr.txt",
+  "startedAt": "2026-06-10T10:04:49.778Z",
+  "finishedAt": "2026-06-10T10:04:50.079Z"
+}

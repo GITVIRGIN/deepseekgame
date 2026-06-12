@@ -1,0 +1,10 @@
+{
+  "name": "validate:data",
+  "command": "npm run validate:data",
+  "exitCode": 0,
+  "error": null,
+  "stdout": "C9_CONTROL_REWARD_050_validate.stdout.txt",
+  "stderr": "C9_CONTROL_REWARD_050_validate.stderr.txt",
+  "startedAt": "2026-06-10T07:22:36.150Z",
+  "finishedAt": "2026-06-10T07:22:36.452Z"
+}

@@ -1,0 +1,10 @@
+{
+  "label": "balance80",
+  "command": "node scripts/balance-check.mjs --runs=80 --seeds=1 --seedBase=2026052700 --reportOut=D:\\workspace\\deepseekgame\\_ai_review\\codex-v313l-lab\\L2_TARGETED_PHYSICAL_AI_PLUS_TARGET_BALANCE_80x1.md --jsonOut=D:\\workspace\\deepseekgame\\_ai_review\\codex-v313l-lab\\L2_TARGETED_PHYSICAL_AI_PLUS_TARGET_BALANCE_80x1.json",
+  "exitCode": 1,
+  "error": null,
+  "stdout": "L2_TARGETED_PHYSICAL_AI_PLUS_TARGET_BALANCE_80x1.stdout.txt",
+  "stderr": "L2_TARGETED_PHYSICAL_AI_PLUS_TARGET_BALANCE_80x1.stderr.txt",
+  "startedAt": "2026-06-10T10:05:27.490Z",
+  "finishedAt": "2026-06-10T10:06:51.857Z"
+}

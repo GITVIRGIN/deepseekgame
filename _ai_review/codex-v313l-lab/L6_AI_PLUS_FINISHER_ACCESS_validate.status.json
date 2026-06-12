@@ -1,0 +1,10 @@
+{
+  "label": "validate:data",
+  "command": "npm run validate:data",
+  "exitCode": 0,
+  "error": null,
+  "stdout": "L6_AI_PLUS_FINISHER_ACCESS_validate.stdout.txt",
+  "stderr": "L6_AI_PLUS_FINISHER_ACCESS_validate.stderr.txt",
+  "startedAt": "2026-06-10T10:04:38.394Z",
+  "finishedAt": "2026-06-10T10:04:38.693Z"
+}

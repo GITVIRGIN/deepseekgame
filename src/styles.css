@@ -1402,9 +1402,10 @@ p {
 .reward-view .game-card .effect-badges span, .reward-view .game-card .style-badges span { font-size: 10px; }
 
 /* v0.7.6: player status chips in top bar */
+/* V3.13M-R1-HARNESS-UI: flex-wrap prevents overlap between stat/status/gold boxes */
 .player-vitals-row {
-  display: grid;
-  grid-template-columns: auto auto minmax(0, 1fr) auto;
+  display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 6px;
 }
@@ -1438,6 +1439,65 @@ p {
 }
 
 .player-gold-slot {
-  justify-self: end;
+  margin-left: auto;
   white-space: nowrap;
+}
+
+/* === V3.0: True Martial Formation UI === */
+
+.tm-formation-panel {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.8rem;
+  margin-bottom: 0.4rem;
+  background: var(--color-bg-secondary);
+  border-radius: var(--radius);
+  border: 1px solid var(--color-accent);
+  font-size: 0.85rem;
+}
+
+.tm-formation-title {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: 700;
+  color: var(--color-accent);
+}
+
+.tm-formation-chip {
+  display: inline-block;
+  padding: 0.15rem 0.5rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  border-radius: 0.3rem;
+  background: var(--color-accent);
+  color: var(--color-bg);
+}
+
+.tm-formation-summary {
+  flex: 1;
+  min-width: 8rem;
+  color: var(--color-text-secondary);
+  font-size: 0.8rem;
+}
+
+.tm-anchor-badge {
+  display: inline-block;
+  padding: 0.1rem 0.4rem;
+  margin-left: 0.3rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  border-radius: 0.25rem;
+  background: var(--color-danger);
+  color: var(--color-bg);
+  vertical-align: middle;
+}
+
+button.ghost-tiny {
+  padding: 0.15rem 0.5rem;
+  font-size: 0.75rem;
+  border-radius: var(--radius);
+  cursor: pointer;
 }

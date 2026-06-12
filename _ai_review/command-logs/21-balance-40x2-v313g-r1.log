@@ -1,0 +1,14 @@
+
+入门 / normal:
+sim-ai FAILED for normal: status=1, error=none
+file:///D:/workspace/deepseekgame/src/core/combat.js:1
+import { cards, enemies, relics, trueMartialEnemies } from "./data.js";
+                                 ^^^^^^^^^^^^^^^^^^
+SyntaxError: The requested module './data.js' does not provide an export named 'trueMartialEnemies'
+    at #asyncInstantiate (node:internal/modules/esm/module_job:326:21)
+    at async ModuleJob.run (node:internal/modules/esm/module_job:429:5)
+    at async node:internal/modules/esm/loader:639:26
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)
+
+Node.js v24.15.0
+

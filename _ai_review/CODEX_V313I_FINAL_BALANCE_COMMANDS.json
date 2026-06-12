@@ -1,0 +1,10 @@
+﻿[
+    {
+        "command":  "final balance 80x1",
+        "exitCode":  1
+    },
+    {
+        "command":  "final balance 40x2",
+        "exitCode":  1
+    }
+]

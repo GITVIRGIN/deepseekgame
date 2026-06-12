@@ -1,0 +1,10 @@
+{
+  "label": "smoke",
+  "command": "npm run smoke",
+  "exitCode": 0,
+  "error": null,
+  "stdout": "P10_PHYSICAL_FULL_STRONG_smoke.stdout.txt",
+  "stderr": "P10_PHYSICAL_FULL_STRONG_smoke.stderr.txt",
+  "startedAt": "2026-06-10T08:51:59.766Z",
+  "finishedAt": "2026-06-10T08:52:00.096Z"
+}

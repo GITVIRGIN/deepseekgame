@@ -1,0 +1,10 @@
+{
+  "label": "smoke",
+  "command": "npm run smoke",
+  "exitCode": 0,
+  "error": null,
+  "stdout": "L6_AI_PLUS_FINISHER_ACCESS_smoke.stdout.txt",
+  "stderr": "L6_AI_PLUS_FINISHER_ACCESS_smoke.stderr.txt",
+  "startedAt": "2026-06-10T10:04:38.695Z",
+  "finishedAt": "2026-06-10T10:04:39.031Z"
+}

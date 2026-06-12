@@ -1,0 +1,20 @@
+[
+  {
+    "profile": "physical",
+    "mode": "regular",
+    "strategy": "styleAware",
+    "runs": 80,
+    "seeds": 1,
+    "seedBase": 2026052700,
+    "winRate": 0,
+    "avgFloor": 13.1,
+    "avgDeckSize": 16.8,
+    "avgRelics": 4.5,
+    "avgEnergy": 3.3,
+    "deathFloorDistribution": {
+      "early": 0,
+      "mid": 30,
+      "late": 48
+    }
+  }
+]

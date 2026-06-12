@@ -1,0 +1,242 @@
+{
+  "pass": false,
+  "hasFail": true,
+  "hasWarn": false,
+  "runs": 80,
+  "seeds": 1,
+  "seedBase": 2026052700,
+  "targets": {
+    "normal": {
+      "min": 15,
+      "max": 30,
+      "warnMax": 32
+    },
+    "regular": {
+      "min": 5,
+      "max": 10,
+      "warnMax": 12
+    },
+    "trueMartial": {
+      "min": 0,
+      "max": 2
+    }
+  },
+  "results": [
+    {
+      "mode": "normal",
+      "label": "入门",
+      "style": "physical",
+      "styleName": "物理",
+      "winRate": 11.7,
+      "avgFloor": 15.1,
+      "timeouts": 3,
+      "effectiveRuns": 77,
+      "target": "15-30%",
+      "status": "FAIL"
+    },
+    {
+      "mode": "normal",
+      "label": "入门",
+      "style": "spell",
+      "styleName": "法术",
+      "winRate": 28,
+      "avgFloor": 15.6,
+      "timeouts": 5,
+      "effectiveRuns": 75,
+      "target": "15-30%",
+      "status": "PASS"
+    },
+    {
+      "mode": "normal",
+      "label": "入门",
+      "style": "bleed",
+      "styleName": "流血",
+      "winRate": 26.9,
+      "avgFloor": 15.4,
+      "timeouts": 2,
+      "effectiveRuns": 78,
+      "target": "15-30%",
+      "status": "PASS"
+    },
+    {
+      "mode": "normal",
+      "label": "入门",
+      "style": "shell",
+      "styleName": "龟壳",
+      "winRate": 7.7,
+      "avgFloor": 14.5,
+      "timeouts": 2,
+      "effectiveRuns": 78,
+      "target": "15-30%",
+      "status": "FAIL"
+    },
+    {
+      "mode": "normal",
+      "label": "入门",
+      "style": "poison",
+      "styleName": "中毒",
+      "winRate": 20.3,
+      "avgFloor": 15.5,
+      "timeouts": 1,
+      "effectiveRuns": 79,
+      "target": "15-30%",
+      "status": "PASS"
+    },
+    {
+      "mode": "normal",
+      "label": "入门",
+      "style": "control",
+      "styleName": "控制",
+      "winRate": 21.5,
+      "avgFloor": 14.2,
+      "timeouts": 15,
+      "effectiveRuns": 65,
+      "target": "15-30%",
+      "status": "PASS"
+    },
+    {
+      "mode": "regular",
+      "label": "常规",
+      "style": "physical",
+      "styleName": "物理",
+      "winRate": 1.3,
+      "avgFloor": 13.2,
+      "timeouts": 1,
+      "effectiveRuns": 79,
+      "target": "5-10%",
+      "status": "FAIL"
+    },
+    {
+      "mode": "regular",
+      "label": "常规",
+      "style": "spell",
+      "styleName": "法术",
+      "winRate": 5.6,
+      "avgFloor": 14.4,
+      "timeouts": 8,
+      "effectiveRuns": 72,
+      "target": "5-10%",
+      "status": "PASS"
+    },
+    {
+      "mode": "regular",
+      "label": "常规",
+      "style": "bleed",
+      "styleName": "流血",
+      "winRate": 7.6,
+      "avgFloor": 13.6,
+      "timeouts": 1,
+      "effectiveRuns": 79,
+      "target": "5-10%",
+      "status": "PASS"
+    },
+    {
+      "mode": "regular",
+      "label": "常规",
+      "style": "shell",
+      "styleName": "龟壳",
+      "winRate": 5.3,
+      "avgFloor": 14.1,
+      "timeouts": 4,
+      "effectiveRuns": 76,
+      "target": "5-10%",
+      "status": "PASS"
+    },
+    {
+      "mode": "regular",
+      "label": "常规",
+      "style": "poison",
+      "styleName": "中毒",
+      "winRate": 5.3,
+      "avgFloor": 13.9,
+      "timeouts": 4,
+      "effectiveRuns": 76,
+      "target": "5-10%",
+      "status": "PASS"
+    },
+    {
+      "mode": "regular",
+      "label": "常规",
+      "style": "control",
+      "styleName": "控制",
+      "winRate": 2.8,
+      "avgFloor": 13.6,
+      "timeouts": 9,
+      "effectiveRuns": 71,
+      "target": "5-10%",
+      "status": "FAIL"
+    },
+    {
+      "mode": "trueMartial",
+      "label": "真武",
+      "style": "physical",
+      "styleName": "物理",
+      "winRate": 0,
+      "avgFloor": 12.4,
+      "timeouts": 2,
+      "effectiveRuns": 78,
+      "target": "0-2%",
+      "status": "PASS"
+    },
+    {
+      "mode": "trueMartial",
+      "label": "真武",
+      "style": "spell",
+      "styleName": "法术",
+      "winRate": 0,
+      "avgFloor": 14.1,
+      "timeouts": 1,
+      "effectiveRuns": 79,
+      "target": "0-2%",
+      "status": "PASS"
+    },
+    {
+      "mode": "trueMartial",
+      "label": "真武",
+      "style": "bleed",
+      "styleName": "流血",
+      "winRate": 0,
+      "avgFloor": 12.1,
+      "timeouts": 0,
+      "effectiveRuns": 80,
+      "target": "0-2%",
+      "status": "PASS"
+    },
+    {
+      "mode": "trueMartial",
+      "label": "真武",
+      "style": "shell",
+      "styleName": "龟壳",
+      "winRate": 0,
+      "avgFloor": 12.7,
+      "timeouts": 1,
+      "effectiveRuns": 79,
+      "target": "0-2%",
+      "status": "PASS"
+    },
+    {
+      "mode": "trueMartial",
+      "label": "真武",
+      "style": "poison",
+      "styleName": "中毒",
+      "winRate": 0,
+      "avgFloor": 10,
+      "timeouts": 0,
+      "effectiveRuns": 80,
+      "target": "0-2%",
+      "status": "PASS"
+    },
+    {
+      "mode": "trueMartial",
+      "label": "真武",
+      "style": "control",
+      "styleName": "控制",
+      "winRate": 0,
+      "avgFloor": 11.6,
+      "timeouts": 6,
+      "effectiveRuns": 74,
+      "target": "0-2%",
+      "status": "PASS"
+    }
+  ]
+}

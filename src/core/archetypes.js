@@ -1,4 +1,5 @@
 import { styleInfo } from "./data.js";
+import { difficultyTuning } from "./types.js";
 
 export const STYLE_IDS = Object.keys(styleInfo);
 
@@ -57,7 +58,13 @@ export function archetypeRewardWeight(run, card) {
   const dominantBonus = dominant?.style === card.style ? (floor >= 13 ? 1.32 : floor >= 7 ? 1.16 : 1.04) : 1;
   const baseWeight = styleBaseRewardWeight(run, card.style, dominant, score, floor);
 
-  return Math.min(4.2, baseWeight * (1 + score * pressure) * dominantBonus);
+  // V1.3: Apply difficulty tuning multipliers
+  const tune = difficultyTuning[run.difficulty] || difficultyTuning.beginner;
+  const styleMultKey = card.style + "RewardMult";
+  const styleMult = tune[styleMultKey] ?? 1;
+  const focusMult = tune.rewardFocusMult ?? 1;
+
+  return Math.min(4.2, baseWeight * (1 + score * pressure) * dominantBonus * focusMult * styleMult);
 }
 
 export function shouldGuaranteeArchetype(run, tier) {
@@ -123,11 +130,11 @@ function styleBaseRewardWeight(run, styleId, dominant, score, floor) {
 
   if (styleId === "control") {
     if (dominant?.style === "control" && score >= 10) {
-      return floor >= 13 ? 1.08 : floor >= 7 ? 0.96 : 0.52;
+      return floor >= 13 ? 1.02 : floor >= 7 ? 0.88 : 0.48;
     }
 
-    if (score >= 5) return floor >= 7 ? 0.72 : 0.48;
-    return 0.45;
+    if (score >= 5) return floor >= 7 ? 0.66 : 0.42;
+    return 0.40;
   }
 
   if (styleId !== "bleed") return 1;

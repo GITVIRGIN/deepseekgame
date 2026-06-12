@@ -1,0 +1,10 @@
+{
+  "label": "validate:data",
+  "command": "npm run validate:data",
+  "exitCode": 0,
+  "error": null,
+  "stdout": "L1_TARGETED_PHYSICAL_AI_validate.stdout.txt",
+  "stderr": "L1_TARGETED_PHYSICAL_AI_validate.stderr.txt",
+  "startedAt": "2026-06-10T10:03:37.693Z",
+  "finishedAt": "2026-06-10T10:03:37.993Z"
+}

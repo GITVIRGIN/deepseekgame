@@ -1,0 +1,10 @@
+{
+  "label": "regular80",
+  "command": "node scripts/sim-ai.mjs --mode=regular --profile=physical --strategy=styleAware --runs=80 --seeds=1 --seedBase=2026052700",
+  "exitCode": 0,
+  "error": null,
+  "stdout": "P6_ARCHETYPE_PLUS_REWARD_MED_regular_physical_80x1.txt",
+  "stderr": "P6_ARCHETYPE_PLUS_REWARD_MED_regular_physical_80x1.stderr.txt",
+  "startedAt": "2026-06-10T08:51:08.947Z",
+  "finishedAt": "2026-06-10T08:51:10.793Z"
+}

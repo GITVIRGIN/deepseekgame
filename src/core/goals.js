@@ -1,18 +1,19 @@
-import { MAX_FLOOR, TARGET_MINUTES } from "./types.js";
+import { MAX_FLOOR, TARGET_MINUTES, TRUE_MARTIAL_MAX_FLOOR } from "./types.js";
 import { relics } from "./data.js";
 import { awardMythMasteryForRunEnd, mythAwardText } from "./myth.js";
 
 const SPECIAL_GOAL_CHANCE = 10;
 
-export function createRunGoal(seed = 0) {
+export function createRunGoal(seed = 0, isTM = false) {
   const specialActive = specialGoalRoll(seed) < SPECIAL_GOAL_CHANCE;
+  const maxFloor = isTM ? TRUE_MARTIAL_MAX_FLOOR : MAX_FLOOR;
 
   return {
     targetMinutes: TARGET_MINUTES,
     main: {
       id: "defeatFinalBoss",
       title: "击败关底 Boss",
-      text: `在 ${MAX_FLOOR} 层击败黑山老妖。`,
+      text: `在 ${maxFloor} 层击败${isTM ? "虚渊主宰" : "黑山老妖"}。`,
     },
     special: {
       id: "completeXuanlu",
@@ -29,12 +30,15 @@ export function createRunGoal(seed = 0) {
 }
 
 export function migrateRunGoal(run) {
-  run.goal = run.goal ?? createRunGoal(run.seed ?? 0);
-  const template = createRunGoal(run.seed ?? 0);
+  // V2.5: detect TM before creating default goal
+  const isTM = Boolean(run.trueMartial || run.difficulty === "trueMartial");
+  run.goal = run.goal ?? createRunGoal(run.seed ?? 0, isTM);
+  const template = createRunGoal(run.seed ?? 0, isTM);
   const previousSpecial = run.goal.special ?? {};
   const hasStartingRelicBaseline = Array.isArray(previousSpecial.startingRelics);
   run.goal.targetMinutes = run.goal.targetMinutes ?? template.targetMinutes;
-  run.goal.main = { ...template.main, ...(run.goal.main ?? {}) };
+  // V2.5: template wins over old stale values
+  run.goal.main = { ...(run.goal.main ?? {}), ...template.main };
   run.goal.special = {
     ...template.special,
     ...previousSpecial,
@@ -71,8 +75,9 @@ export function goalProgress(run) {
   const goal = migrateRunGoal(run);
   const requiredFragments = goal.special.requiredFragments ?? 2;
   const collectedFragments = specialFragmentCount(goal);
+  const maxFloor = run.trueMartial ? TRUE_MARTIAL_MAX_FLOOR : MAX_FLOOR;
   return {
-    floor: `${Math.min(run.floor, MAX_FLOOR)}/${MAX_FLOOR}`,
+    floor: `${Math.min(run.floor, maxFloor)}/${maxFloor}`,
     targetMinutes: goal.targetMinutes,
     special: `${collectedFragments}/${requiredFragments}`,
     specialActive: goal.special.active,
@@ -90,7 +95,10 @@ export function canOfferSpecialFragment(run) {
 
 function grantTrueMartialRelic(state) {
   if (!state.run?.trueMartial) return;
-  const allTM = Object.values(relics).filter(r => r.text?.includes("真武专属"));
+  // V2.5: exclude unimplemented relics
+  const allTM = Object.values(relics).filter(r =>
+    (r.trueMartialOnly || r.text?.includes("真武专属")) && r.implemented !== false
+  );
   const owned = state.meta.collectedRelics ?? [];
   const available = allTM.filter(r => !owned.includes(r.id));
   if (available.length === 0) return;
@@ -115,7 +123,11 @@ export function completeRunVictory(state, completedBy, message) {
   run.finished = true;
   migrateRunGoal(run);
   run.goal.completedBy = completedBy;
+  // Clean up all intermediate state
   run.combat = null;
+  run.rewards = [];
+  run.pendingPurge = null;
+  run.pendingChoice = null;
   state.phase = "gameOver";
   state.message = mythAward ? `${message} ${mythAwardText(mythAward)}` : message;
   state.meta.wins += 1;

@@ -1,0 +1,10 @@
+{
+  "name": "smoke",
+  "command": "npm run smoke",
+  "exitCode": 0,
+  "error": null,
+  "stdout": "C5_POISON_CARDS_smoke.stdout.txt",
+  "stderr": "C5_POISON_CARDS_smoke.stderr.txt",
+  "startedAt": "2026-06-10T07:13:44.416Z",
+  "finishedAt": "2026-06-10T07:13:44.742Z"
+}

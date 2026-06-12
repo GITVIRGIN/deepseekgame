@@ -1,0 +1,10 @@
+{
+  "label": "validate:data",
+  "command": "npm run validate:data",
+  "exitCode": 0,
+  "error": null,
+  "stdout": "P10_PHYSICAL_FULL_STRONG_validate.stdout.txt",
+  "stderr": "P10_PHYSICAL_FULL_STRONG_validate.stderr.txt",
+  "startedAt": "2026-06-10T08:51:59.466Z",
+  "finishedAt": "2026-06-10T08:51:59.765Z"
+}

@@ -1,0 +1,40 @@
+﻿[
+    {
+        "command":  "npm run validate:data",
+        "exitCode":  0,
+        "startedAt":  "2026-06-10T18:09:39.8679408+08:00",
+        "finishedAt":  "2026-06-10T18:09:40.9033556+08:00",
+        "stdout":  "_ai_review\\codex-v313l-lab\\final_validate_data.stdout.txt",
+        "stderr":  "_ai_review\\codex-v313l-lab\\final_validate_data.stderr.txt"
+    },
+    {
+        "command":  "npm run smoke",
+        "exitCode":  0,
+        "startedAt":  "2026-06-10T18:09:40.9130617+08:00",
+        "finishedAt":  "2026-06-10T18:09:41.9284584+08:00",
+        "stdout":  "_ai_review\\codex-v313l-lab\\final_smoke.stdout.txt",
+        "stderr":  "_ai_review\\codex-v313l-lab\\final_smoke.stderr.txt"
+    },
+    {
+        "command":  "npm run player:flow",
+        "exitCode":  0,
+        "startedAt":  "2026-06-10T18:09:41.9299651+08:00",
+        "finishedAt":  "2026-06-10T18:09:42.9508769+08:00",
+        "stdout":  "_ai_review\\codex-v313l-lab\\final_player_flow.stdout.txt",
+        "stderr":  "_ai_review\\codex-v313l-lab\\final_player_flow.stderr.txt"
+    },
+    {
+        "command":  "npm run check",
+        "exitCode":  0,
+        "startedAt":  "2026-06-10T18:09:42.9508769+08:00",
+        "finishedAt":  "2026-06-10T18:09:44.9775621+08:00",
+        "stdout":  "_ai_review\\codex-v313l-lab\\final_check.stdout.txt",
+        "stderr":  "_ai_review\\codex-v313l-lab\\final_check.stderr.txt"
+    },
+    {
+        "command":  "npm run build:release",
+        "exitCode":  null,
+        "skipped":  true,
+        "reason":  "Skipped because build:release writes dist/build artifacts outside the V3.13L allowed output scope."
+    }
+]

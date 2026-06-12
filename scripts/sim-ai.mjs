@@ -3,6 +3,7 @@ import { createRunGoal, markSpecialGoalBaseline } from "../src/core/goals.js";
 import { prepareRouteChoice } from "../src/core/nodes.js";
 import { reduceGame } from "../src/core/reducer.js";
 import { createInitialState, startRun } from "../src/core/state.js";
+import { DIFFICULTY_REGULAR } from "../src/core/types.js";
 
 // ============ GAME CONSTANTS (must match src/core/effects.js) ============
 const TM_POJUN_TRUE_DAMAGE = 9;
@@ -24,7 +25,7 @@ function parseArgs(argv) {
 const args = parseArgs(process.argv.slice(2));
 const RUNS = Math.max(1, Number(args.runs ?? 200));
 const SEED_COUNT = Math.max(1, Number(args.seeds ?? 2));
-const MODE = String(args.mode ?? "both");            // normal | trueMartial | both
+const MODE = String(args.mode ?? "both");            // normal | regular | trueMartial | both
 const STRATEGY = String(args.strategy ?? "styleAware"); // basic | styleAware
 const JSON_OUT = args.json !== undefined;
 const SINGLE_PROFILE = args.profile ?? null;         // optional single style
@@ -56,7 +57,7 @@ function mapHand(hand) { return hand.map(inst => ({ inst, card: cards[inst.cardI
 function statusStacks(fighter, id) { return fighter?.statuses?.find(s => s.id === id)?.stacks ?? 0; }
 
 // ============ SEEDED RUN SETUP ============
-function seededRun(seed, tmStyle = null) {
+function seededRun(seed, tmStyle = null, difficulty = null) {
   // startRun internally uses Date.now() for seed, which would make
   // shopTiers and other derived state non-deterministic. Override
   // Date.now to return a deterministic timestamp from our seed,
@@ -65,7 +66,7 @@ function seededRun(seed, tmStyle = null) {
   Date.now = () => (seed * 1000) >>> 0;
   try {
     const initial = createInitialState();
-    const s = startRun(initial, tmStyle);
+    const s = startRun(initial, tmStyle, difficulty);
     // Now restore Date.now and rebuild all seed-dependent state
     Date.now = origNow;
     s.run.seed = seed;
@@ -370,6 +371,7 @@ function poisonAI(run, hand) {
   return null;
 }
 
+
 function physicalAI(run, hand) {
   hand = mapHand(hand);
   const ok = h => run.energy >= h.card.cost;
@@ -608,15 +610,47 @@ function styleAwareCombatAct(s, stepC, profile = "balanced") {
 }
 
 // ============ MAIN RUN LOOP ============
-function runOne(seed, profile, trueMartial, strategy) {
-  let s = seededRun(seed, trueMartial ? profile : null);
+function pickPurgeCardAI(run) {
+  const purge = run.pendingPurge;
+  if (!purge) return null;
+  let filter = typeof purge === "object" ? (purge.filter || "any") : String(purge || "any");
+  const deck = run.deck;
+  if (deck.length <= 8) return null;
+  const basicIds = ["strike", "guard", "yellowCharm", "meditate"];
+  const purgeable = deck.filter(c => {
+    const def = cards[c.cardId];
+    if (!def) return false;
+    if (def.undeletable || def.isCurse) return false;
+    if (filter === "basic" && !basicIds.includes(c.cardId)) return false;
+    return true;
+  });
+  if (purgeable.length === 0) return null;
+  // Prioritize basic cards
+  purgeable.sort((a, b) => {
+    const aBasic = basicIds.includes(a.cardId) ? 0 : 1;
+    const bBasic = basicIds.includes(b.cardId) ? 0 : 1;
+    return aBasic - bBasic;
+  });
+  return purgeable[0].uid;
+}
+
+function runOne(seed, profile, trueMartial, strategy, difficulty = null) {
+  let s = seededRun(seed, trueMartial ? profile : null, difficulty);
   let steps = 0;
   let stepCombat = 0;
 
-  while (s.phase !== "gameOver" && steps < 4000) {
+  while (s.phase !== "gameOver" && steps < 5000) {
     steps++;
     if (s.phase === "combat") stepCombat++;
     else stepCombat = 0;
+
+    // Handle pendingPurge (blocks all other actions)
+    if (s.run?.pendingPurge) {
+      const cardUid = pickPurgeCardAI(s.run);
+      // CQA-P2-001: dispatch even when null — reducer handles safe exit
+      s = reduceGame(s, { type: "confirmPurge", cardUid: cardUid || null });
+      continue;
+    }
 
     if (s.phase === "route") {
       s = reduceGame(s, { type: "chooseNode", nodeId: pickRoute(s.run).id });
@@ -637,9 +671,28 @@ function runOne(seed, profile, trueMartial, strategy) {
       s = reduceGame(s, act);
     }
   }
+  // V1.8.2: timeout — return timedOut marker, don't pollute win rate
+  if (steps >= 5000 && s.phase !== "gameOver") {
+    return {
+      floor: s.run?.floor ?? 0,
+      won: false,
+      timedOut: true,
+      deck: s.run?.deck.length ?? 0,
+      relics: s.run?.relics.length ?? 0,
+      energy: s.run?.maxEnergy ?? 3,
+      hp: s.run?.hp ?? 0,
+      phase: s.phase,
+      pendingPurge: Boolean(s.run?.pendingPurge),
+      seed: s.run?.seed,
+      profile,
+    };
+  }
+  // V1.8: validate terminal state consistency (enhanced)
+  assertTerminalState(s, steps);
   return {
     floor: s.run?.floor ?? 0,
-    won: Boolean(s.run?.goal?.completedBy),
+    won: isVictory(s.run),
+    timedOut: false,
     deck: s.run?.deck.length ?? 0,
     relics: s.run?.relics.length ?? 0,
     energy: s.run?.maxEnergy ?? 3,
@@ -647,21 +700,57 @@ function runOne(seed, profile, trueMartial, strategy) {
   };
 }
 
+// V1.8: Only boss/special count as victory
+function isVictory(run) {
+  const cb = run?.goal?.completedBy;
+  return cb === "boss" || cb === "special";
+}
+
+// V1.8: Terminal state consistency check (enhanced)
+function assertTerminalState(state, steps) {
+  const run = state.run;
+  if (!run) return;
+  const completedBy = run.goal?.completedBy;
+  const hasCompletedBy = Boolean(completedBy);
+  const validVictory = completedBy === "boss" || completedBy === "special";
+
+  if (hasCompletedBy && !validVictory) {
+    throw new Error(`Terminal: invalid completedBy="${completedBy}" (steps=${steps})`);
+  }
+  if (state.phase === "gameOver" && run.finished !== true) {
+    throw new Error(`Terminal: phase=gameOver but run.finished is not true (steps=${steps})`);
+  }
+  if (validVictory && state.phase !== "gameOver") {
+    throw new Error(`Terminal: valid completedBy="${completedBy}" but phase="${state.phase}" (steps=${steps})`);
+  }
+  if (validVictory && run.finished !== true) {
+    throw new Error(`Terminal: valid completedBy exists but run.finished is not true (steps=${steps})`);
+  }
+}
+
 // ============ BATCH RUNNER ============
-function runBatch(profiles, trueMartial, strategy) {
-  const modeLabel = trueMartial ? "trueMartial" : "normal";
+function runBatch(profiles, trueMartial, strategy, difficulty = null) {
+  const modeLabel = trueMartial ? "trueMartial" : (difficulty === "regular" ? "regular" : "normal");
   // runsPerSeed removed; genSeeds now takes totalRuns directly
   const results = [];
 
   for (const profile of profiles) {
-    let wins = 0, floors = 0, decks = 0, relics = 0, energy = 0;
+    let wins = 0, losses = 0, timeouts = 0, floors = 0, decks = 0, relics = 0, energy = 0;
     const deathFloors = [];
+    const timeoutSamples = [];
     const seeds = genSeeds(STYLES.indexOf(profile), RUNS);
 
     for (const seed of seeds) {
-      const r = runOne(seed, profile, trueMartial, strategy);
-      if (r.won) wins++;
-      else deathFloors.push(r.floor);
+      const r = runOne(seed, profile, trueMartial, strategy, difficulty);
+      if (r.timedOut) {
+        timeouts++;
+        if (timeoutSamples.length < 3) timeoutSamples.push({ seed, floor: r.floor, phase: r.phase, pendingPurge: r.pendingPurge });
+      } else if (r.won) {
+        wins++;
+      } else {
+        losses++;
+        deathFloors.push(r.floor);
+      }
       floors += r.floor;
       decks += r.deck;
       relics += r.relics;
@@ -669,6 +758,7 @@ function runBatch(profiles, trueMartial, strategy) {
     }
 
     const total = seeds.length;
+    const effective = wins + losses;
     const early = deathFloors.filter(f => f <= 6).length;
     const mid = deathFloors.filter(f => f >= 7 && f <= 12).length;
     const late = deathFloors.filter(f => f >= 13).length;
@@ -678,9 +768,12 @@ function runBatch(profiles, trueMartial, strategy) {
       mode: modeLabel,
       strategy,
       runs: total,
+      effectiveRuns: effective,
+      timeouts,
+      timeoutSamples: timeoutSamples.length > 0 ? timeoutSamples : undefined,
       seeds: SEED_COUNT,
       seedBase: SEED_BASE,
-      winRate: wins / total,
+      winRate: effective > 0 ? wins / effective : 0,
       avgFloor: floors / total,
       avgDeckSize: decks / total,
       avgRelics: relics / total,
@@ -695,6 +788,17 @@ function runBatch(profiles, trueMartial, strategy) {
 function printTable(allResults) {
   for (const group of allResults) {
     console.log(`\n=== ${group.mode} / strategy=${group.strategy} ===  (${group.results[0].runs}局/流派, ${group.results[0].seeds} seed, seedBase=${SEED_BASE})`);
+    let hasTimeouts = false;
+    for (const r of group.results) { if (r.timeouts > 0) hasTimeouts = true; }
+    if (hasTimeouts) {
+      console.log("⚠  timeouts detected (excluded from win-rate denominator)");
+      for (const r of group.results) {
+        if (r.timeouts > 0) {
+          const samples = (r.timeoutSamples || []).map(s => `seed=${s.seed} floor=${s.floor}`).join(", ");
+          console.log(`   ${NAMES[r.profile]}: ${r.timeouts} timeouts (${samples})`);
+        }
+      }
+    }
     console.log("流派      通关%   均层   均牌组  均遗物  均能量  失败分布(早/中/晚)");
     console.log("─".repeat(65));
     for (const r of group.results) {
@@ -718,19 +822,28 @@ function printJSON(allResults) {
   const flat = [];
   for (const group of allResults) {
     for (const r of group.results) {
+      const wins = Math.round(r.winRate * r.effectiveRuns);
       flat.push({
         profile: r.profile,
         mode: r.mode,
         strategy: r.strategy,
         runs: r.runs,
+        totalRuns: r.runs,
+        effectiveRuns: r.effectiveRuns,
         seeds: r.seeds,
         seedBase: r.seedBase,
+        wins,
         winRate: Number(r.winRate.toFixed(4)),
         avgFloor: Number(r.avgFloor.toFixed(2)),
         avgDeckSize: Number(r.avgDeckSize.toFixed(1)),
         avgRelics: Number(r.avgRelics.toFixed(1)),
         avgEnergy: Number(r.avgEnergy.toFixed(1)),
         deathFloorDistribution: r.deathFloorDistribution,
+        timeouts: r.timeouts || 0,
+        timeoutRate: r.timeouts > 0 ? Number((r.timeouts / r.runs).toFixed(4)) : 0,
+        timeoutSamples: r.timeoutSamples || [],
+        errors: [],
+        simErrors: [],
       });
     }
   }
@@ -743,6 +856,9 @@ const allResults = [];
 
 if (MODE === "normal" || MODE === "both") {
   allResults.push({ mode: "normal", strategy: STRATEGY, results: runBatch(profiles, false, STRATEGY) });
+}
+if (MODE === "regular" || MODE === "both") {
+  allResults.push({ mode: "regular", strategy: STRATEGY, results: runBatch(profiles, false, STRATEGY, DIFFICULTY_REGULAR) });
 }
 if (MODE === "trueMartial" || MODE === "both") {
   allResults.push({ mode: "trueMartial", strategy: STRATEGY, results: runBatch(profiles, true, STRATEGY) });

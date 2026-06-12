@@ -1,0 +1,1189 @@
+{
+  "rows": [
+    {
+      "id": "L0_BASELINE",
+      "changes": [],
+      "modCount": 0,
+      "touchesSimAi": false,
+      "description": "baseline",
+      "baselineSimHash": "9E69BBF77DF405E8CE0441BB4B29719D35BC91C6225CF2A58005EA294FF139A2",
+      "validatePass": true,
+      "smokePass": true,
+      "regular80": {
+        "winRate": 0,
+        "avgFloor": 13.03,
+        "timeouts": 0,
+        "raw": {
+          "profile": "physical",
+          "mode": "regular",
+          "strategy": "styleAware",
+          "runs": 80,
+          "seeds": 1,
+          "seedBase": 2026052700,
+          "winRate": 0,
+          "avgFloor": 13.03,
+          "avgDeckSize": 16.7,
+          "avgRelics": 4.5,
+          "avgEnergy": 3.3,
+          "deathFloorDistribution": {
+            "early": 0,
+            "mid": 29,
+            "late": 48
+          }
+        },
+        "exitCode": 0
+      },
+      "regular40": {
+        "winRate": 0,
+        "avgFloor": 13.05,
+        "timeouts": 0,
+        "raw": {
+          "profile": "physical",
+          "mode": "regular",
+          "strategy": "styleAware",
+          "runs": 40,
+          "seeds": 2,
+          "seedBase": 2026052700,
+          "winRate": 0,
+          "avgFloor": 13.05,
+          "avgDeckSize": 16.7,
+          "avgRelics": 4.5,
+          "avgEnergy": 3.3,
+          "deathFloorDistribution": {
+            "early": 0,
+            "mid": 15,
+            "late": 23
+          }
+        },
+        "exitCode": 0
+      },
+      "normal80": {
+        "winRate": 13,
+        "avgFloor": 15.16,
+        "timeouts": 0,
+        "raw": {
+          "profile": "physical",
+          "mode": "normal",
+          "strategy": "styleAware",
+          "runs": 80,
+          "seeds": 1,
+          "seedBase": 2026052700,
+          "winRate": 0.1299,
+          "avgFloor": 15.16,
+          "avgDeckSize": 20.5,
+          "avgRelics": 4.9,
+          "avgEnergy": 3.4,
+          "deathFloorDistribution": {
+            "early": 0,
+            "mid": 7,
+            "late": 60
+          }
+        },
+        "exitCode": 0
+      },
+      "normal40": {
+        "winRate": 15.8,
+        "avgFloor": 14.7,
+        "timeouts": 0,
+        "raw": {
+          "profile": "physical",
+          "mode": "normal",
+          "strategy": "styleAware",
+          "runs": 40,
+          "seeds": 2,
+          "seedBase": 2026052700,
+          "winRate": 0.1579,
+          "avgFloor": 14.7,
+          "avgDeckSize": 20.1,
+          "avgRelics": 4.8,
+          "avgEnergy": 3.5,
+          "deathFloorDistribution": {
+            "early": 0,
+            "mid": 5,
+            "late": 27
+          }
+        },
+        "exitCode": 0
+      },
+      "eliminationReasons": [
+        "regular physical both < 3%"
+      ],
+      "eliminated": true,
+      "entersStage2": false,
+      "sort": {
+        "reg": 10,
+        "normal": 2,
+        "modCount": 0,
+        "sim": 0
+      }
+    },
+    {
+      "id": "L1_TARGETED_PHYSICAL_AI",
+      "changes": [
+        "ai"
+      ],
+      "modCount": 2,
+      "touchesSimAi": true,
+      "description": "targeted physicalAI in normal/regular",
+      "baselineSimHash": "9E69BBF77DF405E8CE0441BB4B29719D35BC91C6225CF2A58005EA294FF139A2",
+      "validatePass": true,
+      "smokePass": true,
+      "regular80": {
+        "winRate": 4,
+        "avgFloor": 12.97,
+        "timeouts": 0,
+        "raw": {
+          "profile": "physical",
+          "mode": "regular",
+          "strategy": "styleAware",
+          "runs": 80,
+          "seeds": 1,
+          "seedBase": 2026052700,
+          "winRate": 0.0395,
+          "avgFloor": 12.97,
+          "avgDeckSize": 17.1,
+          "avgRelics": 4.4,
+          "avgEnergy": 3.4,
+          "deathFloorDistribution": {
+            "early": 0,
+            "mid": 27,
+            "late": 46
+          }
+        },
+        "exitCode": 0
+      },
+      "regular40": {
+        "winRate": 0,
+        "avgFloor": 12.38,
+        "timeouts": 0,
+        "raw": {
+          "profile": "physical",
+          "mode": "regular",
+          "strategy": "styleAware",
+          "runs": 40,
+          "seeds": 2,
+          "seedBase": 2026052700,
+          "winRate": 0,
+          "avgFloor": 12.38,
+          "avgDeckSize": 16.7,
+          "avgRelics": 4.4,
+          "avgEnergy": 3.3,
+          "deathFloorDistribution": {
+            "early": 0,
+            "mid": 13,
+            "late": 25
+          }
+        },
+        "exitCode": 0
+      },
+      "normal80": {
+        "winRate": 14.5,
+        "avgFloor": 15.16,
+        "timeouts": 0,
+        "raw": {
+          "profile": "physical",
+          "mode": "normal",
+          "strategy": "styleAware",
+          "runs": 80,
+          "seeds": 1,
+          "seedBase": 2026052700,
+          "winRate": 0.1447,
+          "avgFloor": 15.16,
+          "avgDeckSize": 20.3,
+          "avgRelics": 4.8,
+          "avgEnergy": 3.5,
+          "deathFloorDistribution": {
+            "early": 0,
+            "mid": 7,
+            "late": 58
+          }
+        },
+        "exitCode": 0
+      },
+      "normal40": {
+        "winRate": 21.1,
+        "avgFloor": 15.75,
+        "timeouts": 0,
+        "raw": {
+          "profile": "physical",
+          "mode": "normal",
+          "strategy": "styleAware",
+          "runs": 40,
+          "seeds": 2,
+          "seedBase": 2026052700,
+          "winRate": 0.2105,
+          "avgFloor": 15.75,
+          "avgDeckSize": 20.8,
+          "avgRelics": 4.8,
+          "avgEnergy": 3.6,
+          "deathFloorDistribution": {
+            "early": 0,
+            "mid": 1,
+            "late": 29
+          }
+        },
+        "exitCode": 0
+      },
+      "eliminationReasons": [],
+      "eliminated": false,
+      "entersStage2": false,
+      "sort": {
+        "reg": 6,
+        "normal": 0.5,
+        "modCount": 2,
+        "sim": 1
+      }
+    },
+    {
+      "id": "L2_TARGETED_PHYSICAL_AI_PLUS_TARGET",
+      "changes": [
+        "aiTarget"
+      ],
+      "modCount": 3,
+      "touchesSimAi": true,
+      "description": "targeted physicalAI plus physical targetUid",
+      "baselineSimHash": "9E69BBF77DF405E8CE0441BB4B29719D35BC91C6225CF2A58005EA294FF139A2",
+      "validatePass": true,
+      "smokePass": true,
+      "regular80": {
+        "winRate": 1.3,
+        "avgFloor": 12.66,
+        "timeouts": 0,
+        "raw": {
+          "profile": "physical",
+          "mode": "regular",
+          "strategy": "styleAware",
+          "runs": 80,
+          "seeds": 1,
+          "seedBase": 2026052700,
+          "winRate": 0.0128,
+          "avgFloor": 12.66,
+          "avgDeckSize": 16.8,
+          "avgRelics": 4.2,
+          "avgEnergy": 3.4,
+          "deathFloorDistribution": {
+            "early": 0,
+            "mid": 34,
+            "late": 43
+          }
+        },
+        "exitCode": 0
+      },
+      "regular40": {
+        "winRate": 5,
+        "avgFloor": 12.47,
+        "timeouts": 0,
+        "raw": {
+          "profile": "physical",
+          "mode": "regular",
+          "strategy": "styleAware",
+          "runs": 40,
+          "seeds": 2,
+          "seedBase": 2026052700,
+          "winRate": 0.05,
+          "avgFloor": 12.47,
+          "avgDeckSize": 16.8,
+          "avgRelics": 4.1,
+          "avgEnergy": 3.5,
+          "deathFloorDistribution": {
+            "early": 0,
+            "mid": 18,
+            "late": 20
+          }
+        },
+        "exitCode": 0
+      },
+      "normal80": {
+        "winRate": 21.8,
+        "avgFloor": 15.35,
+        "timeouts": 0,
+        "raw": {
+          "profile": "physical",
+          "mode": "normal",
+          "strategy": "styleAware",
+          "runs": 80,
+          "seeds": 1,
+          "seedBase": 2026052700,
+          "winRate": 0.2179,
+          "avgFloor": 15.35,
+          "avgDeckSize": 20.7,
+          "avgRelics": 4.8,
+          "avgEnergy": 3.5,
+          "deathFloorDistribution": {
+            "early": 0,
+            "mid": 7,
+            "late": 54
+          }
+        },
+        "exitCode": 0
+      },
+      "normal40": {
+        "winRate": 10.5,
+        "avgFloor": 14.9,
+        "timeouts": 0,
+        "raw": {
+          "profile": "physical",
+          "mode": "normal",
+          "strategy": "styleAware",
+          "runs": 40,
+          "seeds": 2,
+          "seedBase": 2026052700,
+          "winRate": 0.1053,
+          "avgFloor": 14.9,
+          "avgDeckSize": 20.1,
+          "avgRelics": 4.9,
+          "avgEnergy": 3.4,
+          "deathFloorDistribution": {
+            "early": 0,
+            "mid": 1,
+            "late": 33
+          }
+        },
+        "exitCode": 0
+      },
+      "eliminationReasons": [],
+      "eliminated": false,
+      "entersStage2": true,
+      "sort": {
+        "reg": 3.7,
+        "normal": 4.5,
+        "modCount": 3,
+        "sim": 1
+      }
+    },
+    {
+      "id": "L3_PHYSICAL_FINISHER_ACCESS",
+      "changes": [
+        "access"
+      ],
+      "modCount": 4,
+      "touchesSimAi": false,
+      "description": "physical finisher access via reward/archetype",
+      "baselineSimHash": "9E69BBF77DF405E8CE0441BB4B29719D35BC91C6225CF2A58005EA294FF139A2",
+      "validatePass": true,
+      "smokePass": true,
+      "regular80": {
+        "winRate": 1.3,
+        "avgFloor": 13.18,
+        "timeouts": 0,
+        "raw": {
+          "profile": "physical",
+          "mode": "regular",
+          "strategy": "styleAware",
+          "runs": 80,
+          "seeds": 1,
+          "seedBase": 2026052700,
+          "winRate": 0.0127,
+          "avgFloor": 13.18,
+          "avgDeckSize": 16.9,
+          "avgRelics": 4.5,
+          "avgEnergy": 3.3,
+          "deathFloorDistribution": {
+            "early": 0,
+            "mid": 25,
+            "late": 53
+          }
+        },
+        "exitCode": 0
+      },
+      "regular40": {
+        "winRate": 2.6,
+        "avgFloor": 12.4,
+        "timeouts": 0,
+        "raw": {
+          "profile": "physical",
+          "mode": "regular",
+          "strategy": "styleAware",
+          "runs": 40,
+          "seeds": 2,
+          "seedBase": 2026052700,
+          "winRate": 0.0256,
+          "avgFloor": 12.4,
+          "avgDeckSize": 16.1,
+          "avgRelics": 4.3,
+          "avgEnergy": 3.2,
+          "deathFloorDistribution": {
+            "early": 0,
+            "mid": 15,
+            "late": 23
+          }
+        },
+        "exitCode": 0
+      },
+      "normal80": {
+        "winRate": 10.5,
+        "avgFloor": 15.16,
+        "timeouts": 0,
+        "raw": {
+          "profile": "physical",
+          "mode": "normal",
+          "strategy": "styleAware",
+          "runs": 80,
+          "seeds": 1,
+          "seedBase": 2026052700,
+          "winRate": 0.1053,
+          "avgFloor": 15.16,
+          "avgDeckSize": 20.5,
+          "avgRelics": 4.9,
+          "avgEnergy": 3.5,
+          "deathFloorDistribution": {
+            "early": 0,
+            "mid": 4,
+            "late": 64
+          }
+        },
+        "exitCode": 0
+      },
+      "normal40": {
+        "winRate": 12.8,
+        "avgFloor": 15.18,
+        "timeouts": 0,
+        "raw": {
+          "profile": "physical",
+          "mode": "normal",
+          "strategy": "styleAware",
+          "runs": 40,
+          "seeds": 2,
+          "seedBase": 2026052700,
+          "winRate": 0.1282,
+          "avgFloor": 15.18,
+          "avgDeckSize": 19.9,
+          "avgRelics": 4.9,
+          "avgEnergy": 3.5,
+          "deathFloorDistribution": {
+            "early": 0,
+            "mid": 1,
+            "late": 33
+          }
+        },
+        "exitCode": 0
+      },
+      "eliminationReasons": [
+        "regular physical both < 3%"
+      ],
+      "eliminated": true,
+      "entersStage2": false,
+      "sort": {
+        "reg": 6.1,
+        "normal": 6.699999999999999,
+        "modCount": 4,
+        "sim": 0
+      }
+    },
+    {
+      "id": "L4_PHYSICAL_LATE_PACKAGE_LIGHT",
+      "changes": [
+        "lateLight"
+      ],
+      "modCount": 4,
+      "touchesSimAi": false,
+      "description": "light late physical package",
+      "baselineSimHash": "9E69BBF77DF405E8CE0441BB4B29719D35BC91C6225CF2A58005EA294FF139A2",
+      "validatePass": true,
+      "smokePass": true,
+      "regular80": {
+        "winRate": 0,
+        "avgFloor": 13.1,
+        "timeouts": 0,
+        "raw": {
+          "profile": "physical",
+          "mode": "regular",
+          "strategy": "styleAware",
+          "runs": 80,
+          "seeds": 1,
+          "seedBase": 2026052700,
+          "winRate": 0,
+          "avgFloor": 13.1,
+          "avgDeckSize": 16.8,
+          "avgRelics": 4.5,
+          "avgEnergy": 3.3,
+          "deathFloorDistribution": {
+            "early": 0,
+            "mid": 30,
+            "late": 48
+          }
+        },
+        "exitCode": 0
+      },
+      "regular40": {
+        "winRate": 0,
+        "avgFloor": 13.1,
+        "timeouts": 0,
+        "raw": {
+          "profile": "physical",
+          "mode": "regular",
+          "strategy": "styleAware",
+          "runs": 40,
+          "seeds": 2,
+          "seedBase": 2026052700,
+          "winRate": 0,
+          "avgFloor": 13.1,
+          "avgDeckSize": 16.7,
+          "avgRelics": 4.5,
+          "avgEnergy": 3.3,
+          "deathFloorDistribution": {
+            "early": 0,
+            "mid": 14,
+            "late": 24
+          }
+        },
+        "exitCode": 0
+      },
+      "normal80": {
+        "winRate": 13,
+        "avgFloor": 15.16,
+        "timeouts": 0,
+        "raw": {
+          "profile": "physical",
+          "mode": "normal",
+          "strategy": "styleAware",
+          "runs": 80,
+          "seeds": 1,
+          "seedBase": 2026052700,
+          "winRate": 0.1299,
+          "avgFloor": 15.16,
+          "avgDeckSize": 20.4,
+          "avgRelics": 4.9,
+          "avgEnergy": 3.4,
+          "deathFloorDistribution": {
+            "early": 0,
+            "mid": 7,
+            "late": 60
+          }
+        },
+        "exitCode": 0
+      },
+      "normal40": {
+        "winRate": 13.2,
+        "avgFloor": 14.78,
+        "timeouts": 0,
+        "raw": {
+          "profile": "physical",
+          "mode": "normal",
+          "strategy": "styleAware",
+          "runs": 40,
+          "seeds": 2,
+          "seedBase": 2026052700,
+          "winRate": 0.1316,
+          "avgFloor": 14.78,
+          "avgDeckSize": 20.3,
+          "avgRelics": 4.9,
+          "avgEnergy": 3.5,
+          "deathFloorDistribution": {
+            "early": 0,
+            "mid": 4,
+            "late": 29
+          }
+        },
+        "exitCode": 0
+      },
+      "eliminationReasons": [
+        "regular physical both < 3%"
+      ],
+      "eliminated": true,
+      "entersStage2": false,
+      "sort": {
+        "reg": 10,
+        "normal": 3.8000000000000007,
+        "modCount": 4,
+        "sim": 0
+      }
+    },
+    {
+      "id": "L5_PHYSICAL_LATE_PACKAGE_MED",
+      "changes": [
+        "lateMed"
+      ],
+      "modCount": 5,
+      "touchesSimAi": false,
+      "description": "medium late physical package",
+      "baselineSimHash": "9E69BBF77DF405E8CE0441BB4B29719D35BC91C6225CF2A58005EA294FF139A2",
+      "validatePass": true,
+      "smokePass": true,
+      "regular80": {
+        "winRate": 3.9,
+        "avgFloor": 13.25,
+        "timeouts": 0,
+        "raw": {
+          "profile": "physical",
+          "mode": "regular",
+          "strategy": "styleAware",
+          "runs": 80,
+          "seeds": 1,
+          "seedBase": 2026052700,
+          "winRate": 0.0385,
+          "avgFloor": 13.25,
+          "avgDeckSize": 16.9,
+          "avgRelics": 4.4,
+          "avgEnergy": 3.3,
+          "deathFloorDistribution": {
+            "early": 0,
+            "mid": 27,
+            "late": 48
+          }
+        },
+        "exitCode": 0
+      },
+      "regular40": {
+        "winRate": 2.6,
+        "avgFloor": 13.07,
+        "timeouts": 0,
+        "raw": {
+          "profile": "physical",
+          "mode": "regular",
+          "strategy": "styleAware",
+          "runs": 40,
+          "seeds": 2,
+          "seedBase": 2026052700,
+          "winRate": 0.0263,
+          "avgFloor": 13.07,
+          "avgDeckSize": 16.4,
+          "avgRelics": 4.2,
+          "avgEnergy": 3.3,
+          "deathFloorDistribution": {
+            "early": 0,
+            "mid": 14,
+            "late": 23
+          }
+        },
+        "exitCode": 0
+      },
+      "normal80": {
+        "winRate": 13,
+        "avgFloor": 15.28,
+        "timeouts": 0,
+        "raw": {
+          "profile": "physical",
+          "mode": "normal",
+          "strategy": "styleAware",
+          "runs": 80,
+          "seeds": 1,
+          "seedBase": 2026052700,
+          "winRate": 0.1299,
+          "avgFloor": 15.28,
+          "avgDeckSize": 20.5,
+          "avgRelics": 4.9,
+          "avgEnergy": 3.5,
+          "deathFloorDistribution": {
+            "early": 0,
+            "mid": 6,
+            "late": 61
+          }
+        },
+        "exitCode": 0
+      },
+      "normal40": {
+        "winRate": 15.8,
+        "avgFloor": 14.88,
+        "timeouts": 0,
+        "raw": {
+          "profile": "physical",
+          "mode": "normal",
+          "strategy": "styleAware",
+          "runs": 40,
+          "seeds": 2,
+          "seedBase": 2026052700,
+          "winRate": 0.1579,
+          "avgFloor": 14.88,
+          "avgDeckSize": 20.4,
+          "avgRelics": 5,
+          "avgEnergy": 3.5,
+          "deathFloorDistribution": {
+            "early": 0,
+            "mid": 4,
+            "late": 28
+          }
+        },
+        "exitCode": 0
+      },
+      "eliminationReasons": [],
+      "eliminated": false,
+      "entersStage2": false,
+      "sort": {
+        "reg": 3.5,
+        "normal": 2,
+        "modCount": 5,
+        "sim": 0
+      }
+    },
+    {
+      "id": "L6_AI_PLUS_FINISHER_ACCESS",
+      "changes": [
+        "ai",
+        "access"
+      ],
+      "modCount": 6,
+      "touchesSimAi": true,
+      "description": "L1 + L3",
+      "baselineSimHash": "9E69BBF77DF405E8CE0441BB4B29719D35BC91C6225CF2A58005EA294FF139A2",
+      "validatePass": true,
+      "smokePass": true,
+      "regular80": {
+        "winRate": 0,
+        "avgFloor": 13.44,
+        "timeouts": 0,
+        "raw": {
+          "profile": "physical",
+          "mode": "regular",
+          "strategy": "styleAware",
+          "runs": 80,
+          "seeds": 1,
+          "seedBase": 2026052700,
+          "winRate": 0,
+          "avgFloor": 13.44,
+          "avgDeckSize": 17.2,
+          "avgRelics": 4.4,
+          "avgEnergy": 3.4,
+          "deathFloorDistribution": {
+            "early": 0,
+            "mid": 22,
+            "late": 55
+          }
+        },
+        "exitCode": 0
+      },
+      "regular40": {
+        "winRate": 2.6,
+        "avgFloor": 13.3,
+        "timeouts": 0,
+        "raw": {
+          "profile": "physical",
+          "mode": "regular",
+          "strategy": "styleAware",
+          "runs": 40,
+          "seeds": 2,
+          "seedBase": 2026052700,
+          "winRate": 0.0263,
+          "avgFloor": 13.3,
+          "avgDeckSize": 17.1,
+          "avgRelics": 4.3,
+          "avgEnergy": 3.5,
+          "deathFloorDistribution": {
+            "early": 1,
+            "mid": 10,
+            "late": 26
+          }
+        },
+        "exitCode": 0
+      },
+      "normal80": {
+        "winRate": 12.8,
+        "avgFloor": 15.19,
+        "timeouts": 0,
+        "raw": {
+          "profile": "physical",
+          "mode": "normal",
+          "strategy": "styleAware",
+          "runs": 80,
+          "seeds": 1,
+          "seedBase": 2026052700,
+          "winRate": 0.1282,
+          "avgFloor": 15.19,
+          "avgDeckSize": 20.6,
+          "avgRelics": 4.8,
+          "avgEnergy": 3.4,
+          "deathFloorDistribution": {
+            "early": 0,
+            "mid": 6,
+            "late": 62
+          }
+        },
+        "exitCode": 0
+      },
+      "normal40": {
+        "winRate": 10.3,
+        "avgFloor": 15.7,
+        "timeouts": 0,
+        "raw": {
+          "profile": "physical",
+          "mode": "normal",
+          "strategy": "styleAware",
+          "runs": 40,
+          "seeds": 2,
+          "seedBase": 2026052700,
+          "winRate": 0.1026,
+          "avgFloor": 15.7,
+          "avgDeckSize": 21,
+          "avgRelics": 4.8,
+          "avgEnergy": 3.5,
+          "deathFloorDistribution": {
+            "early": 0,
+            "mid": 0,
+            "late": 35
+          }
+        },
+        "exitCode": 0
+      },
+      "eliminationReasons": [
+        "regular physical both < 3%"
+      ],
+      "eliminated": true,
+      "entersStage2": false,
+      "sort": {
+        "reg": 7.4,
+        "normal": 6.899999999999999,
+        "modCount": 6,
+        "sim": 1
+      }
+    },
+    {
+      "id": "L7_AI_PLUS_LATE_PACKAGE_LIGHT",
+      "changes": [
+        "ai",
+        "lateLight"
+      ],
+      "modCount": 6,
+      "touchesSimAi": true,
+      "description": "L1 + L4",
+      "baselineSimHash": "9E69BBF77DF405E8CE0441BB4B29719D35BC91C6225CF2A58005EA294FF139A2",
+      "validatePass": true,
+      "smokePass": true,
+      "regular80": {
+        "winRate": 4,
+        "avgFloor": 12.96,
+        "timeouts": 0,
+        "raw": {
+          "profile": "physical",
+          "mode": "regular",
+          "strategy": "styleAware",
+          "runs": 80,
+          "seeds": 1,
+          "seedBase": 2026052700,
+          "winRate": 0.0395,
+          "avgFloor": 12.96,
+          "avgDeckSize": 17.1,
+          "avgRelics": 4.4,
+          "avgEnergy": 3.4,
+          "deathFloorDistribution": {
+            "early": 0,
+            "mid": 27,
+            "late": 46
+          }
+        },
+        "exitCode": 0
+      },
+      "regular40": {
+        "winRate": 0,
+        "avgFloor": 12.45,
+        "timeouts": 0,
+        "raw": {
+          "profile": "physical",
+          "mode": "regular",
+          "strategy": "styleAware",
+          "runs": 40,
+          "seeds": 2,
+          "seedBase": 2026052700,
+          "winRate": 0,
+          "avgFloor": 12.45,
+          "avgDeckSize": 16.8,
+          "avgRelics": 4.4,
+          "avgEnergy": 3.3,
+          "deathFloorDistribution": {
+            "early": 0,
+            "mid": 13,
+            "late": 25
+          }
+        },
+        "exitCode": 0
+      },
+      "normal80": {
+        "winRate": 15.8,
+        "avgFloor": 15.22,
+        "timeouts": 0,
+        "raw": {
+          "profile": "physical",
+          "mode": "normal",
+          "strategy": "styleAware",
+          "runs": 80,
+          "seeds": 1,
+          "seedBase": 2026052700,
+          "winRate": 0.1579,
+          "avgFloor": 15.22,
+          "avgDeckSize": 20.5,
+          "avgRelics": 4.8,
+          "avgEnergy": 3.6,
+          "deathFloorDistribution": {
+            "early": 0,
+            "mid": 6,
+            "late": 58
+          }
+        },
+        "exitCode": 0
+      },
+      "normal40": {
+        "winRate": 18.4,
+        "avgFloor": 15.65,
+        "timeouts": 0,
+        "raw": {
+          "profile": "physical",
+          "mode": "normal",
+          "strategy": "styleAware",
+          "runs": 40,
+          "seeds": 2,
+          "seedBase": 2026052700,
+          "winRate": 0.1842,
+          "avgFloor": 15.65,
+          "avgDeckSize": 20.6,
+          "avgRelics": 4.8,
+          "avgEnergy": 3.6,
+          "deathFloorDistribution": {
+            "early": 0,
+            "mid": 1,
+            "late": 30
+          }
+        },
+        "exitCode": 0
+      },
+      "eliminationReasons": [],
+      "eliminated": false,
+      "entersStage2": false,
+      "sort": {
+        "reg": 6,
+        "normal": 0,
+        "modCount": 6,
+        "sim": 1
+      }
+    },
+    {
+      "id": "L8_ACCESS_PLUS_LATE_PACKAGE_LIGHT",
+      "changes": [
+        "access",
+        "lateLight"
+      ],
+      "modCount": 8,
+      "touchesSimAi": false,
+      "description": "L3 + L4",
+      "baselineSimHash": "9E69BBF77DF405E8CE0441BB4B29719D35BC91C6225CF2A58005EA294FF139A2",
+      "validatePass": true,
+      "smokePass": true,
+      "regular80": {
+        "winRate": 1.3,
+        "avgFloor": 13.22,
+        "timeouts": 0,
+        "raw": {
+          "profile": "physical",
+          "mode": "regular",
+          "strategy": "styleAware",
+          "runs": 80,
+          "seeds": 1,
+          "seedBase": 2026052700,
+          "winRate": 0.0127,
+          "avgFloor": 13.22,
+          "avgDeckSize": 16.8,
+          "avgRelics": 4.5,
+          "avgEnergy": 3.3,
+          "deathFloorDistribution": {
+            "early": 0,
+            "mid": 25,
+            "late": 53
+          }
+        },
+        "exitCode": 0
+      },
+      "regular40": {
+        "winRate": 2.6,
+        "avgFloor": 12.43,
+        "timeouts": 0,
+        "raw": {
+          "profile": "physical",
+          "mode": "regular",
+          "strategy": "styleAware",
+          "runs": 40,
+          "seeds": 2,
+          "seedBase": 2026052700,
+          "winRate": 0.0256,
+          "avgFloor": 12.43,
+          "avgDeckSize": 16,
+          "avgRelics": 4.3,
+          "avgEnergy": 3.2,
+          "deathFloorDistribution": {
+            "early": 0,
+            "mid": 15,
+            "late": 23
+          }
+        },
+        "exitCode": 0
+      },
+      "normal80": {
+        "winRate": 5.3,
+        "avgFloor": 15.09,
+        "timeouts": 0,
+        "raw": {
+          "profile": "physical",
+          "mode": "normal",
+          "strategy": "styleAware",
+          "runs": 80,
+          "seeds": 1,
+          "seedBase": 2026052700,
+          "winRate": 0.0533,
+          "avgFloor": 15.09,
+          "avgDeckSize": 20.6,
+          "avgRelics": 4.9,
+          "avgEnergy": 3.5,
+          "deathFloorDistribution": {
+            "early": 0,
+            "mid": 4,
+            "late": 67
+          }
+        },
+        "exitCode": 0
+      },
+      "normal40": {
+        "winRate": 15.4,
+        "avgFloor": 15.28,
+        "timeouts": 0,
+        "raw": {
+          "profile": "physical",
+          "mode": "normal",
+          "strategy": "styleAware",
+          "runs": 40,
+          "seeds": 2,
+          "seedBase": 2026052700,
+          "winRate": 0.1538,
+          "avgFloor": 15.28,
+          "avgDeckSize": 20.2,
+          "avgRelics": 4.9,
+          "avgEnergy": 3.5,
+          "deathFloorDistribution": {
+            "early": 0,
+            "mid": 1,
+            "late": 32
+          }
+        },
+        "exitCode": 0
+      },
+      "eliminationReasons": [
+        "regular physical both < 3%"
+      ],
+      "eliminated": true,
+      "entersStage2": false,
+      "sort": {
+        "reg": 6.1,
+        "normal": 9.7,
+        "modCount": 8,
+        "sim": 0
+      }
+    },
+    {
+      "id": "L9_FULL_SAFE",
+      "changes": [
+        "ai",
+        "access",
+        "lateLight"
+      ],
+      "modCount": 10,
+      "touchesSimAi": true,
+      "description": "L1 + L3 + L4",
+      "baselineSimHash": "9E69BBF77DF405E8CE0441BB4B29719D35BC91C6225CF2A58005EA294FF139A2",
+      "validatePass": true,
+      "smokePass": true,
+      "regular80": {
+        "winRate": 1.3,
+        "avgFloor": 13.4,
+        "timeouts": 0,
+        "raw": {
+          "profile": "physical",
+          "mode": "regular",
+          "strategy": "styleAware",
+          "runs": 80,
+          "seeds": 1,
+          "seedBase": 2026052700,
+          "winRate": 0.013,
+          "avgFloor": 13.4,
+          "avgDeckSize": 17.2,
+          "avgRelics": 4.4,
+          "avgEnergy": 3.4,
+          "deathFloorDistribution": {
+            "early": 0,
+            "mid": 22,
+            "late": 54
+          }
+        },
+        "exitCode": 0
+      },
+      "regular40": {
+        "winRate": 0,
+        "avgFloor": 13.2,
+        "timeouts": 0,
+        "raw": {
+          "profile": "physical",
+          "mode": "regular",
+          "strategy": "styleAware",
+          "runs": 40,
+          "seeds": 2,
+          "seedBase": 2026052700,
+          "winRate": 0,
+          "avgFloor": 13.2,
+          "avgDeckSize": 17.1,
+          "avgRelics": 4.3,
+          "avgEnergy": 3.5,
+          "deathFloorDistribution": {
+            "early": 1,
+            "mid": 10,
+            "late": 27
+          }
+        },
+        "exitCode": 0
+      },
+      "normal80": {
+        "winRate": 14.1,
+        "avgFloor": 15.32,
+        "timeouts": 0,
+        "raw": {
+          "profile": "physical",
+          "mode": "normal",
+          "strategy": "styleAware",
+          "runs": 80,
+          "seeds": 1,
+          "seedBase": 2026052700,
+          "winRate": 0.141,
+          "avgFloor": 15.32,
+          "avgDeckSize": 20.7,
+          "avgRelics": 4.8,
+          "avgEnergy": 3.4,
+          "deathFloorDistribution": {
+            "early": 0,
+            "mid": 5,
+            "late": 62
+          }
+        },
+        "exitCode": 0
+      },
+      "normal40": {
+        "winRate": 12.8,
+        "avgFloor": 15.85,
+        "timeouts": 0,
+        "raw": {
+          "profile": "physical",
+          "mode": "normal",
+          "strategy": "styleAware",
+          "runs": 40,
+          "seeds": 2,
+          "seedBase": 2026052700,
+          "winRate": 0.1282,
+          "avgFloor": 15.85,
+          "avgDeckSize": 21,
+          "avgRelics": 4.9,
+          "avgEnergy": 3.5,
+          "deathFloorDistribution": {
+            "early": 0,
+            "mid": 0,
+            "late": 34
+          }
+        },
+        "exitCode": 0
+      },
+      "eliminationReasons": [
+        "regular physical both < 3%"
+      ],
+      "eliminated": true,
+      "entersStage2": false,
+      "sort": {
+        "reg": 8.7,
+        "normal": 3.0999999999999996,
+        "modCount": 10,
+        "sim": 1
+      }
+    }
+  ]
+}

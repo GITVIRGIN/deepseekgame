@@ -1,0 +1,10 @@
+{
+  "name": "validate:data",
+  "command": "npm run validate:data",
+  "exitCode": 0,
+  "error": null,
+  "stdout": "C11_PHYSICAL_REWARD_ONLY_validate.stdout.txt",
+  "stderr": "C11_PHYSICAL_REWARD_ONLY_validate.stderr.txt",
+  "startedAt": "2026-06-10T07:27:11.242Z",
+  "finishedAt": "2026-06-10T07:27:11.581Z"
+}

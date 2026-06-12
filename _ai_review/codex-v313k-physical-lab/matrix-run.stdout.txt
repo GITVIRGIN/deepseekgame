@@ -1,0 +1,38 @@
+
+=== Stage1 P0_BASELINE ===
+P0_BASELINE: validate=true smoke=true n80=13 n40=15.8 r80=0 r40=0 stage2=false elim=regular physical both < 3%
+
+=== Stage1 P1_PHYSICAL_REWARD_MED ===
+P1_PHYSICAL_REWARD_MED: validate=true smoke=true n80=12.2 n40=16.2 r80=2.5 r40=0 stage2=false elim=regular physical both < 3%
+
+=== Stage1 P2_PHYSICAL_REWARD_BIG ===
+P2_PHYSICAL_REWARD_BIG: validate=true smoke=true n80=12.3 n40=15.8 r80=0 r40=0 stage2=false elim=regular physical both < 3%
+
+=== Stage1 P3_PHYSICAL_ARCHETYPE_LIGHT ===
+P3_PHYSICAL_ARCHETYPE_LIGHT: validate=true smoke=true n80=12.2 n40=7.9 r80=1.3 r40=0 stage2=false elim=regular physical both < 3%
+
+=== Stage1 P4_PHYSICAL_CARDS_LIGHT ===
+P4_PHYSICAL_CARDS_LIGHT: validate=true smoke=true n80=11.8 n40=10.8 r80=0 r40=0 stage2=false elim=regular physical both < 3%;normal physical both < 12%
+
+=== Stage1 P5_PHYSICAL_CARDS_MED ===
+P5_PHYSICAL_CARDS_MED: validate=true smoke=true n80=11.7 n40=10.5 r80=1.3 r40=0 stage2=false elim=regular physical both < 3%;normal physical both < 12%
+
+=== Stage1 P6_ARCHETYPE_PLUS_REWARD_MED ===
+P6_ARCHETYPE_PLUS_REWARD_MED: validate=true smoke=true n80=10.5 n40=12.8 r80=0 r40=0 stage2=false elim=regular physical both < 3%
+
+=== Stage1 P7_ARCHETYPE_PLUS_CARDS_LIGHT ===
+P7_ARCHETYPE_PLUS_CARDS_LIGHT: validate=true smoke=true n80=8.1 n40=10.5 r80=0 r40=0 stage2=false elim=regular physical both < 3%;normal physical both < 12%
+
+=== Stage1 P8_REWARD_MED_PLUS_CARDS_LIGHT ===
+P8_REWARD_MED_PLUS_CARDS_LIGHT: validate=true smoke=true n80=10.7 n40=16.2 r80=0 r40=0 stage2=false elim=regular physical both < 3%
+
+=== Stage1 P9_PHYSICAL_FULL_SAFE ===
+P9_PHYSICAL_FULL_SAFE: validate=true smoke=true n80=10.8 n40=10.5 r80=0 r40=0 stage2=false elim=regular physical both < 3%;normal physical both < 12%
+
+=== Stage1 P10_PHYSICAL_FULL_STRONG ===
+P10_PHYSICAL_FULL_STRONG: validate=true smoke=true n80=9.6 n40=13.5 r80=1.3 r40=5.1 stage2=true elim=no
+
+=== Stage2 P10_PHYSICAL_FULL_STRONG ===
+P10_PHYSICAL_FULL_STRONG: balance80=1 balance40=1 elim=regular > 12%
+
+Selected P0_BASELINE: no safe Stage2 candidate; restored baseline

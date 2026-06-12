@@ -1,0 +1,10 @@
+{
+  "label": "normal80",
+  "command": "node scripts/sim-ai.mjs --mode=normal --profile=physical --strategy=styleAware --runs=80 --seeds=1 --seedBase=2026052700 --json",
+  "exitCode": 0,
+  "error": null,
+  "stdout": "L9_FULL_SAFE_normal_physical_80x1.json",
+  "stderr": "L9_FULL_SAFE_normal_physical_80x1.stderr.txt",
+  "startedAt": "2026-06-10T10:05:22.817Z",
+  "finishedAt": "2026-06-10T10:05:25.870Z"
+}

@@ -1,0 +1,35 @@
+
+=== Stage1 L0_BASELINE ===
+L0_BASELINE: n80=13 n40=15.8 r80=0 r40=0 stage2=false elim=regular physical both < 3%
+
+=== Stage1 L1_TARGETED_PHYSICAL_AI ===
+L1_TARGETED_PHYSICAL_AI: n80=14.5 n40=21.1 r80=4 r40=0 stage2=false elim=no
+
+=== Stage1 L2_TARGETED_PHYSICAL_AI_PLUS_TARGET ===
+L2_TARGETED_PHYSICAL_AI_PLUS_TARGET: n80=21.8 n40=10.5 r80=1.3 r40=5 stage2=true elim=no
+
+=== Stage1 L3_PHYSICAL_FINISHER_ACCESS ===
+L3_PHYSICAL_FINISHER_ACCESS: n80=10.5 n40=12.8 r80=1.3 r40=2.6 stage2=false elim=regular physical both < 3%
+
+=== Stage1 L4_PHYSICAL_LATE_PACKAGE_LIGHT ===
+L4_PHYSICAL_LATE_PACKAGE_LIGHT: n80=13 n40=13.2 r80=0 r40=0 stage2=false elim=regular physical both < 3%
+
+=== Stage1 L5_PHYSICAL_LATE_PACKAGE_MED ===
+L5_PHYSICAL_LATE_PACKAGE_MED: n80=13 n40=15.8 r80=3.9 r40=2.6 stage2=false elim=no
+
+=== Stage1 L6_AI_PLUS_FINISHER_ACCESS ===
+L6_AI_PLUS_FINISHER_ACCESS: n80=12.8 n40=10.3 r80=0 r40=2.6 stage2=false elim=regular physical both < 3%
+
+=== Stage1 L7_AI_PLUS_LATE_PACKAGE_LIGHT ===
+L7_AI_PLUS_LATE_PACKAGE_LIGHT: n80=15.8 n40=18.4 r80=4 r40=0 stage2=false elim=no
+
+=== Stage1 L8_ACCESS_PLUS_LATE_PACKAGE_LIGHT ===
+L8_ACCESS_PLUS_LATE_PACKAGE_LIGHT: n80=5.3 n40=15.4 r80=1.3 r40=2.6 stage2=false elim=regular physical both < 3%
+
+=== Stage1 L9_FULL_SAFE ===
+L9_FULL_SAFE: n80=14.1 n40=12.8 r80=1.3 r40=0 stage2=false elim=regular physical both < 3%
+
+=== Stage2 L2_TARGETED_PHYSICAL_AI_PLUS_TARGET ===
+L2_TARGETED_PHYSICAL_AI_PLUS_TARGET: balance80=1 balance40=1 elim=no
+
+Selected L2_TARGETED_PHYSICAL_AI_PLUS_TARGET: safe Stage2 candidate selected by priority

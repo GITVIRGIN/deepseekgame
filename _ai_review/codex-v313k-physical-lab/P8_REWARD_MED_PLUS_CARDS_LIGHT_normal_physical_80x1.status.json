@@ -1,0 +1,10 @@
+{
+  "label": "normal80",
+  "command": "node scripts/sim-ai.mjs --mode=normal --profile=physical --strategy=styleAware --runs=80 --seeds=1 --seedBase=2026052700",
+  "exitCode": 0,
+  "error": null,
+  "stdout": "P8_REWARD_MED_PLUS_CARDS_LIGHT_normal_physical_80x1.txt",
+  "stderr": "P8_REWARD_MED_PLUS_CARDS_LIGHT_normal_physical_80x1.stderr.txt",
+  "startedAt": "2026-06-10T08:51:35.104Z",
+  "finishedAt": "2026-06-10T08:51:40.772Z"
+}

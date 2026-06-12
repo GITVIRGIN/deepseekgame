@@ -1,0 +1,10 @@
+{
+  "label": "validate:data",
+  "command": "npm run validate:data",
+  "exitCode": 0,
+  "error": null,
+  "stdout": "L5_PHYSICAL_LATE_PACKAGE_MED_validate.stdout.txt",
+  "stderr": "L5_PHYSICAL_LATE_PACKAGE_MED_validate.stderr.txt",
+  "startedAt": "2026-06-10T10:04:25.674Z",
+  "finishedAt": "2026-06-10T10:04:25.971Z"
+}

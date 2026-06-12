@@ -1,0 +1,10 @@
+{
+  "name": "validate:data",
+  "command": "npm run validate:data",
+  "exitCode": 0,
+  "error": null,
+  "stdout": "C5_POISON_CARDS_validate.stdout.txt",
+  "stderr": "C5_POISON_CARDS_validate.stderr.txt",
+  "startedAt": "2026-06-10T07:13:44.109Z",
+  "finishedAt": "2026-06-10T07:13:44.415Z"
+}

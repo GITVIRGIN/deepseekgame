@@ -1,0 +1,18 @@
+
+> player:flow
+> node scripts/player-flow-tests.mjs
+
+✅ 玩家未解锁时不能通过 martialSelect 进入真武选择
+✅ 玩家未解锁时不能直接 startTrueMartial
+✅ 非法真武流派不会 fallback 启动
+✅ 结算页进入真武选择后返回仍回到结算页
+✅ 玩家连点放弃不会重复结算
+✅ 结算页点击新开局不会污染上一局状态
+✅ 旧真武存档迁移后仍是 25 层虚渊主宰
+✅ 真武通关馈赠不会给未实现遗物
+✅ 结算页残留 pendingPurge 时 confirmPurge 不会改牌组
+✅ 真实普通遗物全收集后可以解锁真武
+✅ 真武专属遗物不是解锁前置
+✅ 直接调用 startRun 的非法真武流派不会 fallback
+
+12 total, 12 passed, 0 failed

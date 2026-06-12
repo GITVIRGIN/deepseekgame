@@ -3,6 +3,7 @@ import { drawCards, finishCombatIfWon } from "./combat.js";
 import { onEnemyKilled } from "./combat-events.js";
 import { awardMythMasteryForRunEnd, cardMythBoost, consumeMythFirstStrike, mythAwardText, mythFirstStrikeDamageBonus, mythStatusDamageBonus } from "./myth.js";
 import { addStatus, reduceConsumableDebuff, reduceStatus, statusLabel, statusStacks } from "./status.js";
+import { difficultyTuning } from "./types.js";
 
 const SPIRIT_BONUS_PER_COST = 4;
 const PHYSICAL_INTENT_GAIN = 7;
@@ -103,6 +104,10 @@ function syncPlayerFighter(run, fighter) {
   run.statuses = fighter.statuses;
 }
 
+function hasTrueMartialRelic(run, relicId) {
+  return Boolean(run?.trueMartial && run?.relics?.includes(relicId));
+}
+
 export function applyEffect(state, effect, targetUid) {
   const run = state.run;
   const combat = run?.combat;
@@ -158,7 +163,14 @@ export function applyEffect(state, effect, targetUid) {
     }
 
     if (effect.type === "block") {
-      const amount = boostedValue(effect);
+      let amount = boostedValue(effect);
+      // V3.1: inverseScaleArmor — first block each turn boosted 50%
+      if (target.uid === "player" && run.relics.includes("inverseScaleArmor") && combat.flags.inverseScaleArmorTurn !== combat.turn) {
+        const bonus = Math.ceil(amount * 0.5);
+        amount += bonus;
+        combat.flags.inverseScaleArmorTurn = combat.turn;
+        combatLog(state, `逆鳞甲护体，本回合首次格挡额外 +${bonus}。`);
+      }
       target.block += amount;
       combatLog(state, `获得 ${amount} 点格挡。`);
     }
@@ -189,18 +201,50 @@ export function applyEffect(state, effect, targetUid) {
 
     if (effect.type === "status" && effect.status) {
       let stacks = boostedStacks(effect);
+      // V3.1: infernoLotus — burn applied to enemies boosted 50%
+      if (run.relics.includes("infernoLotus") && effect.status === "burn" && target.uid !== "player") {
+        const bonus = Math.ceil(stacks * 0.5);
+        stacks += bonus;
+        combatLog(state, `业火莲助燃，灼烧层数 +${bonus}。`);
+      }
+      // V3.3: bloodPrisonOath — bleed boosted 50%, lose 2 HP
+      if (run.relics.includes("bloodPrisonOath") && effect.status === "bleed" && target.uid !== "player") {
+        const bonus = Math.ceil(stacks * 0.5);
+        stacks += bonus;
+        state.run.hp = Math.max(1, state.run.hp - 2);
+        combatLog(state, `血狱誓催发，流血层数 +${bonus}，自身失去 2 点生命。`);
+      }
+      // V3.3: venomousCauldron — poison boosted 50%, gain 2 poison
+      if (run.relics.includes("venomousCauldron") && effect.status === "poison" && target.uid !== "player") {
+        const bonus = Math.ceil(stacks * 0.5);
+        stacks += bonus;
+        addStatus(state.run, "poison", 2);
+        combatLog(state, `万蛊盏催毒，毒瘴层数 +${bonus}，自身获得 2 层毒瘴。`);
+      }
       stacks = applyControlStatus(state, target, effect.status, stacks);
+      // V3.13N-C1B: regular-only playerPoisonApplyMult scales poison applied by player to enemies
+      if (stacks > 0 && effect.status === "poison" && target.uid !== "player" && run.difficulty === "regular") {
+        stacks = Math.max(1, Math.round(stacks * difficultyTuning.regular.playerPoisonApplyMult));
+      }
       if (stacks > 0) {
         addStatus(target, effect.status, stacks);
         combatLog(state, `${target.uid === "player" ? "你" : target.name} 获得 ${statusLabel(effect.status)} ${stacks}。`);
         if (CONTROL_STATUS_IDS.has(effect.status)) trackControlApplied(state, target, stacks);
+        // V3.1: chaosBell — extra damage on control applied
+        if (run.relics.includes("chaosBell") && CONTROL_STATUS_IDS.has(effect.status)) {
+          const dmg = applyBlock(target, 4);
+          target.hp = Math.max(0, target.hp - dmg);
+          addStatus(target, "controlResist", 1);
+          combatLog(state, `乱魂铃震响，${target.name} 受到 ${dmg} 点伤害并获得 1 层定力。`);
+          if (target.hp <= 0) onEnemyKilled(state, target);
+        }
       }
       if (effect.status === "thunderMark" && effect.cardStyle !== "spell") triggerThunderTribulations(state, target, effect);
       triggerControlBreak(state, target);
     }
 
     if (effect.type === "amplifyDebuffs") {
-      const added = amplifyDebuffs(target, effect.statuses, (effect.value ?? 0) + (effect.cardMythStatusBonus ?? 0));
+      const added = amplifyDebuffs(target, effect.statuses, (effect.value ?? 0) + (effect.cardMythStatusBonus ?? 0), run);
       if (added > 0) {
         combatLog(state, `${target.uid === "player" ? "你" : target.name} 的负面状态增长 ${added} 层。`);
       }
@@ -254,6 +298,12 @@ export function applyCardDamage(state, target, baseDamage, cardCost = 1, cardSty
     combatLog(state, `${relics.thunderSeal.name} 追加 4 点雷伤。`);
   }
 
+  // V3.3: berserkBrand — double physical card damage
+  if (run.relics.includes("berserkBrand") && cardStyle === "physical") {
+    damage *= 2;
+    combatLog(state, "狂战烙印爆燃，物理牌伤害翻倍。");
+  }
+
   damage = applyBrittleDamage(state, target, damage);
   damage = applyBlock(target, damage);
   target.hp = Math.max(0, target.hp - damage);
@@ -269,7 +319,7 @@ export function applyCardDamage(state, target, baseDamage, cardCost = 1, cardSty
     combatLog(state, `${target.name} 流血爆开，格挡抵消 ${rawBleedDamage - bleedDamage} 点，额外受到 ${bleedDamage} 点伤害${reduced ? "。" : "，凝滞保留了流血。"}`);
   }
 
-  if (run.relics.includes("poJunLing") && cardStyle === "physical") {
+  if (hasTrueMartialRelic(run, "poJunLing") && cardStyle === "physical") {
     target.hp = Math.max(0, target.hp - 10);
     combatLog(state, "破军令追加 10 点真伤。");
     if (target.hp <= 0) onEnemyKilled(state, target);
@@ -304,7 +354,7 @@ function applySpikeBurst(state, targets) {
   if (!run || !combat || targets.length === 0) return;
   const spikes = statusStacks(playerFighter(run), "spikes");
   const block = combat.block ?? 0;
-  const turtleMult = run.relics.includes("turtleShell") ? 1.25 : 1;
+  const turtleMult = hasTrueMartialRelic(run, "turtleShell") ? 1.25 : 1;
   const raw = Math.floor(Math.min(block, spikes * 3) * turtleMult);
   if (raw <= 0) { combatLog(state, "棘刺无力。"); return; }
   for (const target of targets) {
@@ -350,10 +400,12 @@ export function applyIncomingDamage(state, rawDamage) {
 }
 
 export function tickDamageStatus(state, fighter, statusId) {
+  const run = state?.run;
+  const combat = run?.combat;
   const stacks = statusStacks(fighter, statusId);
   if (stacks <= 0) return;
 
-  const venomMult = (state.run.relics.includes("venomScripture") && fighter.uid !== "player" && statusId === "poison") ? 2 : 1;
+  const venomMult = hasTrueMartialRelic(run, "venomScripture") ? 2 : 1;
   if (venomMult > 1) combatLog(state, "万毒真经生效，毒瘴伤害翻倍。");
   const bonus = mythStatusDamageBonus(state.run, fighter, statusId);
   const rawDamage = applyBrittleDamage(state, fighter, stacks * venomMult + bonus);
@@ -388,6 +440,13 @@ export function tickDamageStatus(state, fighter, statusId) {
 export function applyCardEffects(state, cardInstance, targetUid) {
   const card = cards[cardInstance.cardId];
   const mythBoost = cardMythBoost(state.run, card);
+
+  // V3.3: berserkBrand — lose 3 HP when playing a physical card
+  if (card.style === "physical" && state.run?.relics?.includes("berserkBrand")) {
+    state.run.hp = Math.max(1, state.run.hp - 3);
+    combatLog(state, "狂战烙印燃血，打出物理牌失去 3 点生命。");
+  }
+
   const growsBattleIntent = card.style === "physical" && card.effects.some((effect) => ["damage", "execute"].includes(effect.type));
   if (mythBoost.active) {
     combatLog(state, `${mythBoost.tag}箓印 ${mythBoost.level} 生效。`);
@@ -568,15 +627,20 @@ function resolveTargets(run, targetType, targetUid) {
   return selected ? [selected] : combat.enemies.filter((enemy) => enemy.hp > 0).slice(0, 1);
 }
 
-function amplifyDebuffs(target, statuses, value) {
+function amplifyDebuffs(target, statuses, value, run) {
   const debuffs = statuses ?? ["burn", "bleed", "poison", "curse", "chaos", "bind", "stun", "stasis", "thunderMark", "brittle"];
   let added = 0;
 
   for (const statusId of debuffs) {
     const stacks = statusStacks(target, statusId);
     if (stacks > 0) {
-      addStatus(target, statusId, value);
-      added += value;
+      let finalValue = value;
+      // V3.13N-C1B: regular-only playerPoisonApplyMult for amplifyDebuffs
+      if (statusId === "poison" && target.uid !== "player" && run?.difficulty === "regular") {
+        finalValue = Math.max(1, Math.round(value * difficultyTuning.regular.playerPoisonApplyMult));
+      }
+      addStatus(target, statusId, finalValue);
+      added += finalValue;
     }
   }
 
@@ -603,7 +667,7 @@ function triggerThunderTribulations(state, target, effect = {}) {
 
   const threshold = effect.threshold ?? THUNDER_TRIBULATION_THRESHOLD;
   const baseDamage = effect.damage ?? THUNDER_TRIBULATION_DAMAGE;
-  const nineSky = run.relics.includes("nineSkyTribulation");
+  const nineSky = hasTrueMartialRelic(run, "nineSkyTribulation");
   const damage = nineSky ? baseDamage + 60 : baseDamage;
   if (nineSky) combatLog(state, "九天雷劫爆发，雷伤 +60。");
 
@@ -639,7 +703,7 @@ function applyBleedSiphon(state, targets, effect) {
 
   const ratio = Math.max(1, effect.ratio ?? 3);
   let heal = Math.floor(totalBleed / ratio) + (effect.value ?? 0) + (effect.cardMythBonus ?? 0);
-  if (run.relics.includes("asuraHeart")) { heal *= 2; combatLog(state, "修罗心翻涌，血魔汲血翻倍。"); }
+  if (hasTrueMartialRelic(run, "asuraHeart")) { heal *= 2; combatLog(state, "修罗心翻涌，血魔汲血翻倍。"); }
   if (heal <= 0) {
     combatLog(state, `流血不足 ${ratio} 层，未能回血。`);
     return;
@@ -664,7 +728,7 @@ function applyShellReflect(state, targets, effect) {
   }
 
   const ratio = Math.max(0, effect.ratio ?? 0.5);
-  const turtleMult = run.relics.includes("turtleShell") ? 1.25 : 1;
+  const turtleMult = hasTrueMartialRelic(run, "turtleShell") ? 1.25 : 1;
   const rawDamage = Math.max(1, Math.floor((Math.floor(block * ratio) + (effect.value ?? 0) + (effect.cardMythBonus ?? 0)) * turtleMult));
   // consumeRatio: 0 means this reflect does not deduct block. It does NOT grant blockShield.
   if (rawDamage <= 0) {
@@ -716,7 +780,7 @@ function applyPoisonBurst(state, targets, effect) {
       continue;
     }
 
-    const venomMult = run.relics.includes("venomScripture") ? 2 : 1;
+    const venomMult = hasTrueMartialRelic(run, "venomScripture") ? 2 : 1;
     if (venomMult > 1) combatLog(state, "万毒真经生效，毒爆伤害翻倍。");
 
     const rawDamage = applyBrittleDamage(state, target, poison * venomMult + mythStatusDamageBonus(run, target, "poison"));
@@ -801,11 +865,16 @@ function consumeControlPressure(target, amount) {
 
 
 
-function finishDefeat(state, message) {
+export function finishDefeat(state, message) {
   const run = state.run;
   if (!run || run.finished) return;
 
   const mythAward = awardMythMasteryForRunEnd(state, "defeat");
+  // CQA-P3-001: clean up transient state on defeat
+  run.combat = null;
+  run.rewards = [];
+  run.pendingPurge = null;
+  run.pendingChoice = null;
   run.finished = true;
   state.phase = "gameOver";
   state.message = mythAward ? `${message} ${mythAwardText(mythAward)}` : message;

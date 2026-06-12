@@ -1,6 +1,7 @@
 import { createInitialState } from "./state.js";
 import { migrateArchetypes } from "./archetypes.js";
 import { createRunGoal, migrateRunGoal } from "./goals.js";
+import { DIFFICULTY_TRUE_MARTIAL, ROLL_MAX_TRUE_MARTIAL } from "./types.js";
 import { ensureShopTiers, prepareRouteChoice } from "./nodes.js";
 import { migrateMeta } from "./progression.js";
 import { ensureMythStats, snapshotMythMastery } from "./myth.js";
@@ -71,6 +72,26 @@ function migrateGame(state) {
   if (!run) return state;
 
   run.goal = run.goal ?? createRunGoal(run.seed ?? 0);
+  const isTrueMartialRun = Boolean(run.trueMartial || run.difficulty === DIFFICULTY_TRUE_MARTIAL);
+  if (isTrueMartialRun) {
+    run.trueMartial = true;
+    run.difficulty = DIFFICULTY_TRUE_MARTIAL;
+    run.rollsMax = ROLL_MAX_TRUE_MARTIAL;
+    run.rollsUsed = run.rollsUsed ?? 0;
+  }
+  // CQA-P3-002: normalize difficulty and rollsMax for all modes
+  if (!isTrueMartialRun) {
+    const validDifficulties = ["beginner", "regular"];
+    if (!run.difficulty || !validDifficulties.includes(run.difficulty)) {
+      run.difficulty = "beginner";
+    }
+    if (run.difficulty === "regular") {
+      run.rollsMax = 3;
+    } else {
+      run.rollsMax = 3;
+    }
+    run.rollsUsed = run.rollsUsed ?? 0;
+  }
   migrateRunGoal(run);
   run.handLimit = run.handLimit ?? 5;
   run.deckLimit = run.deckLimit ?? 30;

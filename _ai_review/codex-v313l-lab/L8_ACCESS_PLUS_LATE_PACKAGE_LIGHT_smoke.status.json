@@ -1,0 +1,10 @@
+{
+  "label": "smoke",
+  "command": "npm run smoke",
+  "exitCode": 0,
+  "error": null,
+  "stdout": "L8_ACCESS_PLUS_LATE_PACKAGE_LIGHT_smoke.stdout.txt",
+  "stderr": "L8_ACCESS_PLUS_LATE_PACKAGE_LIGHT_smoke.stderr.txt",
+  "startedAt": "2026-06-10T10:05:05.298Z",
+  "finishedAt": "2026-06-10T10:05:05.627Z"
+}

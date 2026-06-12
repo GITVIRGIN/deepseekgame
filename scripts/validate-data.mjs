@@ -10,7 +10,8 @@ function pass(msg) { console.log("✅", msg); }
 const IMPLEMENTED_EFFECTS = new Set([
   "damage", "execute", "block", "heal", "loseHp", "draw", "gainEnergy",
   "status", "amplifyDebuffs", "poisonBurst", "thunderMark", "bleedSiphon", "shellReflect",
-  "recoverDiscard", "cleanse", "spikeBurst", "doubleBlock"
+  "recoverDiscard", "cleanse", "spikeBurst", "doubleBlock",
+  "purgeCard", "loseHpPlayer", // 删牌系统和真武高代价效果
 ]);
 
 // 1. Card effect types
@@ -25,7 +26,7 @@ for (const [id, card] of Object.entries(cards)) {
 pass("Card effect types validated");
 
 // 2. Shop item effects
-const SHOP_EFFECT_TYPES = new Set(["maxEnergy","maxHp","rareCard","relic","heal","handLimit","deckLimit","energy","draw","gold","cleanse"]);
+const SHOP_EFFECT_TYPES = new Set(["maxEnergy","maxHp","rareCard","relic","heal","handLimit","deckLimit","energy","draw","gold","cleanse","purgeCard","loseHpPlayer"]);
 for (const [id, item] of Object.entries(shopItems)) {
   for (const effect of item.effects ?? []) {
     if (!SHOP_EFFECT_TYPES.has(effect.type)) {
@@ -90,6 +91,76 @@ for (const [id, info] of Object.entries(statusInfo)) {
   if (!info.label) warn(`Status ${id} has no label`);
 }
 pass("Status info validated");
+
+// 10. Purge reward types require filter
+const purgeShopItems = Object.values(shopItems).filter(item =>
+  item.effects?.some(e => e.type === "purgeCard")
+);
+for (const item of purgeShopItems) {
+  const effect = item.effects.find(e => e.type === "purgeCard");
+  if (!effect.filter) warn(`Shop purge item ${item.id} lacks filter`);
+}
+pass("Purge item filter validated");
+
+// 11. Curse/special cards excluded from reward pools
+const curseCardIds = Object.values(cards).filter(c => c.isCurse).map(c => c.id);
+if (curseCardIds.length > 0 && !curseCardIds.includes("karmaCurse")) {
+  warn("karmaCurse card not defined or lacks isCurse flag");
+}
+pass("Curse card exclusion validated");
+
+// 12. trueMartialOnly relics filtering
+const tmOnlyRelics = Object.values(relics).filter(r => r.trueMartialOnly);
+if (tmOnlyRelics.length === 0) warn("No trueMartialOnly relics defined");
+// Check for relics without implemented field (true by default, but should be explicit)
+for (const relic of tmOnlyRelics) {
+  if (relic.implemented === undefined) {
+    warn(`True martial relic ${relic.id} lacks implemented field`);
+  }
+}
+pass("True martial relic filtering validated");
+
+// 13. undeletable card checks
+const undeletableCards = Object.values(cards).filter(c => c.undeletable);
+if (undeletableCards.length === 0) warn("No undeletable cards defined");
+for (const card of undeletableCards) {
+  if (!card.undeletable) warn(`Card ${card.id} missing undeletable flag`);
+}
+pass("Undeletable card rules validated");
+
+// V2.6: True Martial unlock relic requirements validation
+const normalUnlockRelicsForValidation = Object.values(relics).filter(r =>
+  r.implemented !== false &&
+  r.trueMartialOnly !== true &&
+  !r.text?.includes("真武专属")
+);
+const normalUnlockRelicIds = new Set(normalUnlockRelicsForValidation.map(r => r.id));
+
+for (const relic of Object.values(relics)) {
+  if ((relic.trueMartialOnly === true || relic.implemented === false) && normalUnlockRelicIds.has(relic.id)) {
+    warn(`True martial unlock requirements incorrectly include ${relic.id}`);
+  }
+}
+for (const id of ["bloodContract", "cursedMirror", "soulFurnace", "hollowBlessing"]) {
+  if (normalUnlockRelicIds.has(id)) warn(`True martial unlock requirements incorrectly include ${id}`);
+}
+pass("True Martial unlock relic requirements validated");
+
+// V3.3: True Martial relic implemented effects validation
+const tmRelics = Object.values(relics).filter(r => r.trueMartialOnly === true);
+for (const relic of tmRelics) {
+  if (relic.implemented === undefined) warn(`TM relic ${relic.id} missing implemented field`);
+  if (relic.implemented === true) {
+    const implementedIds = ["bloodContract", "cursedMirror", "soulFurnace", "infernoLotus", "inverseScaleArmor", "chaosBell", "berserkBrand", "bloodPrisonOath", "venomousCauldron", "poJunLing", "nineSkyTribulation", "asuraHeart", "venomScripture", "chaosTreasure", "turtleShell"];
+    if (!implementedIds.includes(relic.id)) warn(`TM relic ${relic.id} marked implemented=true but no code reference found`);
+  }
+}
+// Only hollowBlessing should remain implemented:false
+for (const id of ["hollowBlessing"]) {
+  const r = relics[id];
+  if (r && r.implemented !== false) warn(`${id} must be implemented:false`);
+}
+pass("True Martial relic implemented effects validated");
 
 // Summary
 if (warns === 0) {

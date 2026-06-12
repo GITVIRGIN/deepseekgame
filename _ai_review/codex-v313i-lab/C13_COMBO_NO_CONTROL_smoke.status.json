@@ -1,0 +1,10 @@
+{
+  "name": "smoke",
+  "command": "npm run smoke",
+  "exitCode": 0,
+  "error": null,
+  "stdout": "C13_COMBO_NO_CONTROL_smoke.stdout.txt",
+  "stderr": "C13_COMBO_NO_CONTROL_smoke.stderr.txt",
+  "startedAt": "2026-06-10T07:31:40.192Z",
+  "finishedAt": "2026-06-10T07:31:40.535Z"
+}

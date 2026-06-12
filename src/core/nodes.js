@@ -1,20 +1,36 @@
-import { MAX_FLOOR, TIER_SIZE } from "./types.js";
+import { MAX_FLOOR, TIER_SIZE, TRUE_MARTIAL_MAX_FLOOR, TRUE_MARTIAL_TIER_SIZE } from "./types.js";
 
 const tierNames = ["山门外", "妖雾岭", "黑山道"];
-export function isBossFloor(floor) {
+const trueMartialTierNames = ["试锋", "破阵", "入魔", "登真", "问武"];
+
+export function isBossFloor(run) {
+  const floor = run.floor;
+  if (run.trueMartial) {
+    return floor === 5 || floor === 10 || floor === 15 || floor === 20 || floor === TRUE_MARTIAL_MAX_FLOOR;
+  }
   return floor === 3 || floor === 6 || floor === 9 || floor === 12 || floor === 15 || floor === MAX_FLOOR;
 }
 
-export function isStageBossFloor(floor) {
+export function isStageBossFloor(run) {
+  const floor = run.floor;
+  if (run.trueMartial) {
+    return floor === 10 || floor === 20 || floor === TRUE_MARTIAL_MAX_FLOOR;
+  }
   return floor === 6 || floor === 12 || floor === MAX_FLOOR;
 }
 
-
-export function tierForFloor(floor) {
-  return Math.min(3, Math.max(1, Math.ceil(floor / TIER_SIZE)));
+export function tierForFloor(run) {
+  if (run.trueMartial) {
+    return Math.min(5, Math.max(1, Math.ceil(run.floor / TRUE_MARTIAL_TIER_SIZE)));
+  }
+  return Math.min(3, Math.max(1, Math.ceil(run.floor / TIER_SIZE)));
 }
 
-export function isTierGateFloor(floor) {
+export function isTierGateFloor(run) {
+  const floor = run.floor;
+  if (run.trueMartial) {
+    return floor > 0 && floor % TRUE_MARTIAL_TIER_SIZE === 0 && floor < TRUE_MARTIAL_MAX_FLOOR;
+  }
   return floor > 0 && floor % TIER_SIZE === 0 && floor < MAX_FLOOR;
 }
 
@@ -66,19 +82,21 @@ export function finishCurrentNode(run) {
 }
 
 function buildNodeChoices(run) {
-  const tier = tierForFloor(run.floor);
-  const tierName = tierNames[tier - 1];
+  const tier = tierForFloor(run);
+  const isTM = run.trueMartial;
+  const maxFloor = isTM ? TRUE_MARTIAL_MAX_FLOOR : MAX_FLOOR;
+  const tierName = isTM ? trueMartialTierNames[tier - 1] : tierNames[tier - 1];
   const visitedShopTiers = run.visitedShopTiers ?? [];
-  const finalFloor = run.floor >= MAX_FLOOR;
+  const finalFloor = run.floor >= maxFloor;
   const choices = [
     {
       id: `main_${run.floor}`,
       type: "main",
       tier,
-      title: isBossFloor(run.floor) ? (isStageBossFloor(run.floor) ? "阶段 Boss" : "精英怪") : (run.floor >= MAX_FLOOR ? "关底 Boss" : `主线 ${run.floor}/${MAX_FLOOR}`),
-      text: isBossFloor(run.floor) ? (isStageBossFloor(run.floor) ? "真正的考验到了。" : "比寻常妖物强上不少。") : (run.floor >= MAX_FLOOR ? "黑山老妖守在山路尽头。" : `${tierName} 的主线战斗，推进通关进度。`),
-      rewardText: isBossFloor(run.floor) ? "丰厚奖励" : (isTierGateFloor(run.floor) ? "精品奖励" : "卡牌奖励"),
-      rewardKind: isBossFloor(run.floor) ? "bossPremium" : (isTierGateFloor(run.floor) ? "tierPremium" : "normal"),
+      title: isBossFloor(run) ? (isStageBossFloor(run) ? "阶段 Boss" : "精英怪") : (run.floor >= maxFloor ? "关底 Boss" : (isTM ? `主线 ${run.floor}/${maxFloor}` : `主线 ${run.floor}/${maxFloor}`)),
+      text: isBossFloor(run) ? (isStageBossFloor(run) ? "真正的考验到了。" : "比寻常妖物强上不少。") : (run.floor >= maxFloor ? (isTM ? "虚渊主宰盘踞在真武之巅。" : "黑山老妖守在山路尽头。") : `${tierName} 的主线战斗，推进通关进度。`),
+      rewardText: isBossFloor(run) ? "丰厚奖励" : (isTierGateFloor(run) ? "精品奖励" : "卡牌奖励"),
+      rewardKind: isBossFloor(run) ? "bossPremium" : (isTierGateFloor(run) ? "tierPremium" : "normal"),
     },
   ];
 
@@ -146,11 +164,13 @@ function buildNodeChoices(run) {
 export function ensureShopTiers(run) {
   if (Array.isArray(run.shopTiers) && run.shopTiers.length > 0) return;
 
-  run.shopTiers = [1, 2, 3].filter((tier) => routeRoll(run.seed, tier, 0) < 65);
+  const maxTier = run.trueMartial ? 5 : 3;
+  run.shopTiers = Array.from({ length: maxTier }, (_, i) => i + 1).filter((tier) => routeRoll(run.seed, tier, 0) < 65);
 }
 
 function branchForFloor(run, tier, completedSideTiers, visitedShopTiers) {
-  if (run.floor <= 1 || run.floor >= MAX_FLOOR) return null;
+  const maxFloor = run.trueMartial ? TRUE_MARTIAL_MAX_FLOOR : MAX_FLOOR;
+  if (run.floor <= 1 || run.floor >= maxFloor) return null;
 
   const roll = routeRoll(run.seed, tier, run.floor);
   const canShop = (run.shopTiers ?? []).includes(tier) && !visitedShopTiers.includes(tier);

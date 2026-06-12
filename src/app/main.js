@@ -1,10 +1,10 @@
 import { cards, gradeInfo, rarityInfo, relics, shopItems, statusInfo, styleInfo } from "../core/data.js";
 import { archetypeRanking, dominantArchetype, styleLabel } from "../core/archetypes.js";
-import { previewEnemyIntent } from "../core/combat.js";
+import { previewEnemyIntent, effectiveMaxEnergy, trueMartialFormationInfo } from "../core/combat.js";
 import { reduceGame } from "../core/reducer.js";
 import { canShowTrueMartialEntry } from "../core/state.js";
 import { clearSave, loadGame, migrateGameState, saveGame } from "../core/save.js";
-import { MAX_FLOOR } from "../core/types.js";
+import { MAX_FLOOR, TRUE_MARTIAL_MAX_FLOOR, DIFFICULTY_LABELS, DIFFICULTY_BEGINNER, MIN_DECK_SIZE } from "../core/types.js";
 import { gameVersion } from "../core/version.js";
 import { createRunGoal, goalProgress } from "../core/goals.js";
 import { talentCost, talentDefinitions, talentLevel } from "../core/progression.js";
@@ -27,6 +27,15 @@ let replayRecording = null;
 function dispatch(action) {
   if (replayRecording && state.phase !== "gameOver") {
     replayRecording.actions.push({ phase: state.phase, action });
+  }
+  // V2.5: reset UI state on new game start
+  const newGameActions = new Set(["startRun", "startRegular", "startTrueMartial"]);
+  if (newGameActions.has(action.type)) {
+    replayRecording = null;
+    selectedTargetUid = null;
+    detailInfo = null;
+    pileInfo = null;
+    progressionOpen = false;
   }
   state = reduceGame(state, action);
   if (state.run && !replayRecording) {
@@ -106,6 +115,11 @@ function renderShell() {
     shell.append(renderDiscardPickPanel(state.run));
   }
 
+  // V2.5: don't show purge overlay on gameOver
+  if (state.phase !== "gameOver" && state.run?.pendingPurge) {
+    shell.append(renderPurgeOverlay(state.run));
+  }
+
   return shell;
 }
 
@@ -139,8 +153,11 @@ function renderHome() {
       el("div", "intro", [
         el("h2", "", "携残箓入山"),
         el("p", "", "先做能爽起来的第一版：抽牌、叠状态、拿遗物、一路打到黑山。"),
-        button("开始一局", "primary", () => dispatch({ type: "startRun" })),
-        canShowTrueMartialEntry(state) ? button("真武模式", "danger", () => dispatch({ type: "martialSelect" })) : "",
+        el("div", "difficulty-choices", [
+          button("入门难度", "primary", () => dispatch({ type: "startRun" })),
+          button("常规难度", "ghost", () => dispatch({ type: "startRegular" })),
+          canShowTrueMartialEntry(state) ? button("真武模式", "danger", () => dispatch({ type: "martialSelect" })) : "",
+        ].filter(Boolean)),
       ]),
       renderCloudPanel(),
       renderProgression(),
@@ -179,6 +196,23 @@ function renderMartialSelect() {
   return view;
 }
 
+// V3.0: True Martial formation panel
+function renderTrueMartialFormationPanel(run) {
+  const info = trueMartialFormationInfo(run);
+  if (!info) return el("div");
+  const panel = el("div", "tm-formation-panel");
+  const chip = el("span", "tm-formation-chip", info.name);
+  panel.append(
+    el("div", "tm-formation-title", [chip, ` 阵势 ${info.pressure} | ${info.stageLabel}`]),
+    el("span", "tm-formation-summary", info.summary),
+    button("详情", "ghost-tiny", () => {
+      detailInfo = { type: "tmFormation", formation: info };
+      render();
+    }),
+  );
+  return panel;
+}
+
 function renderCombat() {
   const run = state.run;
   const combat = run.combat;
@@ -190,6 +224,7 @@ function renderCombat() {
 
   view.append(
     renderRunPanel(run),
+    renderTrueMartialFormationPanel(run),
     el("section", "battlefield", [
       renderActionBanner(combat.log),
       el("div", "enemy-row", combat.enemies.map(renderEnemy)),
@@ -271,6 +306,7 @@ function renderShopItem(stockItem) {
 function renderReward() {
   const run = state.run;
   const view = el("section", "reward-view");
+  const rollRemaining = (run.rollsMax ?? 3) - (run.rollsUsed ?? 0);
   view.append(
     el("h2", "", state.message),
     el("p", "", `第 ${run.floor} 层已清净，选择一份机缘继续前行。`),
@@ -283,6 +319,12 @@ function renderReward() {
   }
 
   view.append(rewards);
+  view.append(el("div", "reward-actions", [
+    button("跳过拿牌", "ghost", () => dispatch({ type: "skipReward" })),
+    rollRemaining > 0
+      ? button(`刷新机缘 (${rollRemaining} 次)`, "ghost", () => dispatch({ type: "rollRewards" }))
+      : button(`刷新已用完 (${run.rollsMax ?? 3})`, "ghost disabled", null),
+  ].filter(Boolean)));
   return view;
 }
 
@@ -305,14 +347,15 @@ function renderGameOver() {
     el("h2", "", state.message),
     state.run ? renderRunSummary(state.run) : el("p", "", "旧梦已散。"),
     el("div", "actions", [
-      button("再开一局", "primary", () => dispatch({ type: "startRun" })),
+      button("入门难度", "primary", () => dispatch({ type: "startRun" })),
+      button("常规难度", "ghost", () => dispatch({ type: "startRegular" })),
       canShowTrueMartialEntry(state) ? button("真武模式", "danger", () => dispatch({ type: "martialSelect" })) : "",
       button("清除存档", "ghost", () => {
         clearSave();
         state = reduceGame(state, { type: "reset" });
         render();
       }),
-    ]),
+    ].filter(Boolean)),
   ]));
   view.append(renderProgression());
   view.append(renderCloudPanel());
@@ -451,26 +494,36 @@ function renderRunPanel(run) {
   const panel = el("aside", "run-panel");
   const pChips = formatPlayerStatusChips(run, 3);
 
-  // 行旅符 virtual relic for normal mode
-  const travelBadge = !run.trueMartial
+  // Difficulty badge
+  const diffLabel = DIFFICULTY_LABELS[run.difficulty] || "未知";
+  const diffBadge = el("span", "difficulty-badge", diffLabel);
+
+  // 行旅符 virtual relic for beginner mode
+  const travelBadge = run.difficulty === DIFFICULTY_BEGINNER
     ? el("span", "relic-badge travel-talisman", "行旅符")
     : null;
-  if (travelBadge) travelBadge.title = "普通模式专属。每场战斗开始时触发行旅护持，并根据牌组倾向提供小幅扶助。";
+  if (travelBadge) travelBadge.title = "入门难度专属。每场战斗开始时触发行旅护持，并根据牌组倾向提供小幅扶助。";
+
+  const maxFloor = run.trueMartial ? TRUE_MARTIAL_MAX_FLOOR : MAX_FLOOR;
 
   panel.append(
     el("div", "floor-head", [
-      el("h2", "", `第 ${run.floor}/${MAX_FLOOR} 层`),
+      el("h2", "", `第 ${run.floor}/${maxFloor} 层`),
       el("div", "floor-actions", [
         button("修行", "ghost micro", () => { progressionOpen = true; render(); }),
         button("放弃", "danger micro", () => dispatch({ type: "abandonRun" })),
       ]),
     ]),
     el("div", "stat-grid player-vitals-row", [
+      diffBadge,
       stat("生命", `${run.hp}/${run.maxHp}`),
       stat("格挡", run.combat?.block ?? 0),
       el("div", "player-status-chip-row", pChips),
       travelBadge,
       el("div", "player-gold-slot", stat("金", run.gold)),
+    ]),
+    el("div", "roll-info", [
+      el("span", "", `刷新次数：${run.rollsUsed ?? 0} / ${run.rollsMax ?? 3}`),
     ]),
   );
   return panel;
@@ -537,8 +590,9 @@ function renderEnemy(enemy) {
   const card = el("article", `enemy ${isSelected ? "selected" : ""}`);
   const hpPercent = Math.max(0, Math.round((enemy.hp / enemy.maxHp) * 100));
 
+  const isAnchor = state.run?.combat?.flags?.trueMartialFormation?.anchorUid === enemy.uid && enemy.hp > 0;
   card.append(
-    el("div", "enemy-title", [el("h3", "", enemy.name), renderIntentButton(enemy)]),
+    el("div", "enemy-title", [el("h3", "", enemy.name), isAnchor ? el("span", "tm-anchor-badge", "阵眼") : null, renderIntentButton(enemy)]),
     meter(hpPercent, `${enemy.hp}/${enemy.maxHp}`, "hp-meter"),
     blockMeter(enemy.block),
     renderBarImpacts(enemy.statuses, "enemy"),
@@ -592,7 +646,7 @@ function renderHand(run, combat) {
 
   area.append(
     el("div", "hand-head", [
-      el("div", "", [el("h2", "", `⚡${run.energy}/${run.maxEnergy} 手牌 ${combat.hand.length}/${run.handLimit ?? 5}`), renderPileStrip(run, combat), renderMobilePlayerStrip(run)]),
+      el("div", "", [el("h2", "", `⚡${run.energy}/${effectiveMaxEnergy(run)} 手牌 ${combat.hand.length}/${run.handLimit ?? 5}`), renderPileStrip(run, combat), renderMobilePlayerStrip(run)]),
       button("结束回合", "danger", () => dispatch({ type: "endTurn" })),
     ]),
     cardsNode,
@@ -644,7 +698,7 @@ function renderMobilePlayerStrip(run) {
     el("div", "mobile-vitals", [
       el("span", "", `命 ${run.hp}/${run.maxHp}`),
       el("span", "", `挡 ${run.combat?.block ?? 0}`),
-      el("span", "", `气 ${run.energy}/${run.maxEnergy}`),
+      el("span", "", `气 ${run.energy}/${effectiveMaxEnergy(run)}`),
     ]),
     el("div", "player-status-chip-row", formatPlayerStatusChips(run, 3)),
   ]);
@@ -725,7 +779,7 @@ function renderCardStyle(definition) {
 function canPlayCard(definition, run) {
   const costInfo = effectiveCardCost(run, definition);
   if (run.energy < costInfo.cost) return false;
-  if (definition.id === "meditate" && run.energy >= run.maxEnergy) return false;
+  if (definition.id === "meditate" && run.energy >= effectiveMaxEnergy(run)) return false;
   return true;
 }
 
@@ -740,7 +794,12 @@ function renderRewardChoice(reward) {
     const node = el("button", `relic-choice rarity-${relic.rarity}`);
     node.type = "button";
     node.addEventListener("click", () => dispatch({ type: "chooseReward", rewardId: reward.id }));
-    node.append(el("span", "card-rarity", rarityInfo[relic.rarity].label), el("strong", "", relic.name), el("p", "", relic.text));
+    // V3.1: show blood sacrifice label/text if present
+    node.append(
+      el("span", "card-rarity", reward.bloodSacrifice ? "血祭" : rarityInfo[relic.rarity].label),
+      el("strong", "", reward.label || relic.name),
+      el("p", "", reward.text || relic.text)
+    );
     return node;
   }
 
@@ -754,6 +813,14 @@ function renderRewardChoice(reward) {
 
   if (reward.type === "gold") {
     return button(`获得 ${reward.value} 金`, "primary", () => dispatch({ type: "chooseReward", rewardId: reward.id }));
+  }
+
+  if (reward.type === "purge") {
+    const node = el("button", "relic-choice rarity-rare");
+    node.type = "button";
+    node.addEventListener("click", () => dispatch({ type: "chooseReward", rewardId: reward.id }));
+    node.append(el("span", "card-rarity", "剔牌"), el("strong", "", reward.label || "斩念机缘"), el("p", "", reward.text || "剔除一张可删除牌。"));
+    return node;
   }
 
   return button(`回复 ${reward.value} 点生命`, "primary", () => dispatch({ type: "chooseReward", rewardId: reward.id }));
@@ -890,6 +957,58 @@ function canRecoverDiscardCard(cardInstance, choice) {
   const excluded = new Set(choice.excludeStyles ?? []);
   const style = cards[cardInstance.cardId]?.style;
   return !style || !excluded.has(style);
+}
+
+function renderPurgeOverlay(run) {
+  const purge = run.pendingPurge;
+  // Normalize: could be string (old) or object (new)
+  let filter, remaining, label;
+  if (typeof purge === "object" && purge !== null) {
+    filter = purge.filter || "any";
+    remaining = purge.remaining || 0;
+    label = filter === "twoWithCurse" ? "洗髓令" : filter === "basic" ? "散功符" : "斩念符";
+  } else {
+    filter = typeof purge === "string" ? purge : "any";
+    remaining = filter === "twoWithCurse" ? 2 : 1;
+    label = filter === "twoWithCurse" ? "洗髓令" : filter === "basic" ? "散功符" : "斩念符";
+  }
+
+  const title = remaining > 0
+    ? `还需剔除 ${remaining} 张`
+    : `${label}`;
+  const filterHint = filter === "basic" ? "只能选择基础牌（斩妖式/护身咒/黄符/调息）" : "选择任意可删除的牌";
+
+  const deckCards = sortCardInstancesByFunction([...run.deck]);
+  const canDelete = run.deck.length > MIN_DECK_SIZE;
+  const basicIds = ["strike", "guard", "yellowCharm", "meditate"];
+
+  return el("aside", "purge-overlay", [
+    el("div", "detail-head", [
+      el("div", "", [el("span", "muted", `剔牌 — ${label}`), el("h2", "", title)]),
+    ]),
+    el("p", "detail-main", canDelete
+      ? `${filterHint}（牌组至少保留 ${MIN_DECK_SIZE} 张）。`
+      : `牌组仅剩 ${run.deck.length} 张，无法继续剔除。`),
+    el("div", "purge-grid",
+      deckCards.map((cardInstance) => {
+        const definition = cards[cardInstance.cardId];
+        const isBasic = basicIds.includes(cardInstance.cardId);
+        const allowed = filter === "any" || filter === "twoWithCurse"
+          ? (!definition?.undeletable && !definition?.isCurse)
+          : filter === "basic"
+            ? isBasic
+            : (!definition?.undeletable && !definition?.isCurse);
+        const node = renderCard(definition, () => {
+          if (!canDelete || !allowed) return;
+          dispatch({ type: "confirmPurge", cardUid: cardInstance.uid });
+        });
+        if (!allowed) node.classList.add("disabled");
+        node.classList.add("pick-card");
+        return node;
+      }),
+    ),
+    el("p", "muted", `牌组：${run.deck.length} 张 | 最低保留：${MIN_DECK_SIZE} 张`),
+  ]);
 }
 
 function renderStatusChips(statuses) {
@@ -1061,6 +1180,19 @@ function impactLabels(statuses, owner) {
 }
 
 function renderDetailPanel(info) {
+  // V3.0: tmFormation detail
+  if (info.type === "tmFormation") {
+    const f = info.formation;
+    const lines = [...(f.detailLines || []), `阶段：${f.stageLabel}`, f.nextTrigger ? `触发：${f.nextTrigger}` : "", f.tip ? `建议：${f.tip}` : ""].filter(Boolean);
+    return el("aside", "detail-panel", [
+      el("div", "detail-head", [
+        el("div", "", [el("span", "muted", "敌方情报"), el("h2", "", f.name)]),
+        button("关闭", "ghost small", () => { detailInfo = null; render(); }),
+      ]),
+      el("p", "detail-main", f.summary),
+      el("ul", "detail-list", lines.map((line) => el("li", "", line))),
+    ]);
+  }
   return el("aside", "detail-panel", [
     el("div", "detail-head", [
       el("div", "", [el("span", "muted", info.type), el("h2", "", info.title)]),
@@ -1278,8 +1410,9 @@ function renderCodex() {
 }
 
 function renderRunSummary(run) {
+  const maxFloor = run.trueMartial ? TRUE_MARTIAL_MAX_FLOOR : MAX_FLOOR;
   return el("div", "summary", [
-    stat("层数", `${Math.min(run.floor, MAX_FLOOR)}/${MAX_FLOOR}`),
+    stat("层数", `${Math.min(run.floor, maxFloor)}/${maxFloor}`),
     stat("生命", `${run.hp}/${run.maxHp}`),
     stat("牌组", run.deck.length),
     stat("遗物", run.relics.length),
@@ -1363,7 +1496,9 @@ function el(tag, className = "", children = []) {
   if (!Array.isArray(children)) children = [children];
 
   for (const child of children) {
-    node.append(child);
+    // V3.13M-R1-HARNESS-UI: prevent literal null/undefined in DOM
+    // node.append(null) renders the string "null" in browsers
+    if (child != null) node.append(child);
   }
 
   return node;

@@ -1,0 +1,7886 @@
+{
+  "mode": "regular",
+  "profile": "physical",
+  "strategy": "styleAware",
+  "runs": 80,
+  "seeds": 1,
+  "seedBase": 2026052700,
+  "summary": {
+    "runs": 80,
+    "wins": 0,
+    "losses": 77,
+    "timeouts": 3,
+    "avgDeathFloor": 13.12,
+    "deathFloorDistribution": {
+      "early1to6": 0,
+      "mid7to12": 29,
+      "late13plus": 48,
+      "critical13to16": 43
+    },
+    "multiEnemyDeathRate": 76.6,
+    "zeroBattleIntentDeathRate": 57.1,
+    "avgPhysicalCardCount": 7.92,
+    "avgBasicStrikeCount": 5.31,
+    "avgBasicGuardCount": 4.14,
+    "avgPhysicalDamageCardCount": 6.88,
+    "avgAoePhysicalCardCount": 0.04,
+    "avgExecuteCardCount": 0.27,
+    "keyCardOwnershipRate": {
+      "readyStance": 51.9,
+      "battleCry": 31.2,
+      "heavySlash": 42.9,
+      "chainBlade": 22.1,
+      "traceCutter": 22.1,
+      "armyBreaker": 14.3,
+      "xingtianCleave": 24.7,
+      "tiangangBreak": 3.9
+    },
+    "mostCommonDeathEnemies": [
+      {
+        "name": "铁尸",
+        "count": 46
+      },
+      {
+        "name": "小妖",
+        "count": 35
+      },
+      {
+        "name": "狐妖",
+        "count": 35
+      },
+      {
+        "name": "水鬼",
+        "count": 34
+      },
+      {
+        "name": "山魈",
+        "count": 30
+      },
+      {
+        "name": "判官",
+        "count": 11
+      },
+      {
+        "name": "魔尊",
+        "count": 1
+      },
+      {
+        "name": "鬼将",
+        "count": 1
+      }
+    ]
+  },
+  "samples": [
+    {
+      "seed": 2026052700,
+      "won": false,
+      "timedOut": false,
+      "deathFloor": 14,
+      "hp": 0,
+      "maxHp": 72,
+      "maxEnergy": 3,
+      "deckSize": 16,
+      "relicCount": 5,
+      "finalEnemyCount": 3,
+      "finalEnemyNames": [
+        "水鬼",
+        "水鬼",
+        "山魈"
+      ],
+      "finalEnemyHp": [
+        {
+          "name": "水鬼",
+          "hp": 20,
+          "block": 0,
+          "maxHp": 84
+        },
+        {
+          "name": "水鬼",
+          "hp": 84,
+          "block": 0,
+          "maxHp": 84
+        },
+        {
+          "name": "山魈",
+          "hp": 88,
+          "block": 0,
+          "maxHp": 88
+        }
+      ],
+      "finalPlayerStatuses": {
+        "spirit": 2,
+        "battleIntent": 6,
+        "curse": 4
+      },
+      "battleIntentStacksAtDeath": 6,
+      "handCardIds": [
+        "strike",
+        "underworldPen",
+        "guard"
+      ],
+      "drawPileCardIds": [
+        "guard",
+        "strike",
+        "meditate",
+        "foxFire",
+        "chainBlade"
+      ],
+      "discardPileCardIds": [
+        "heavySlash",
+        "strike",
+        "strike",
+        "readyStance",
+        "guard",
+        "guard",
+        "foxFire",
+        "yellowCharm"
+      ],
+      "deckCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "guard",
+        "guard",
+        "guard",
+        "meditate",
+        "yellowCharm",
+        "readyStance",
+        "foxFire",
+        "heavySlash",
+        "chainBlade",
+        "foxFire",
+        "underworldPen"
+      ],
+      "physicalCardCount": 7,
+      "battleIntentCardCount": 1,
+      "physicalDamageCardCount": 6,
+      "aoePhysicalCardCount": 0,
+      "executeCardCount": 0,
+      "blockCardCount": 4,
+      "basicStrikeCount": 4,
+      "basicGuardCount": 4,
+      "hasReadyStance": true,
+      "hasBattleCry": false,
+      "hasHeavySlash": true,
+      "hasChainBlade": true,
+      "hasTraceCutter": false,
+      "hasArmyBreaker": false,
+      "hasXingtianCleave": false,
+      "hasTiangangBreak": false,
+      "phase": "gameOver",
+      "steps": 300
+    },
+    {
+      "seed": 2026145521,
+      "won": false,
+      "timedOut": false,
+      "deathFloor": 16,
+      "hp": 0,
+      "maxHp": 80,
+      "maxEnergy": 4,
+      "deckSize": 16,
+      "relicCount": 5,
+      "finalEnemyCount": 4,
+      "finalEnemyNames": [
+        "小妖",
+        "狐妖",
+        "小妖",
+        "山魈"
+      ],
+      "finalEnemyHp": [
+        {
+          "name": "小妖",
+          "hp": 44,
+          "block": 0,
+          "maxHp": 102
+        },
+        {
+          "name": "狐妖",
+          "hp": 109,
+          "block": 0,
+          "maxHp": 109
+        },
+        {
+          "name": "小妖",
+          "hp": 102,
+          "block": 0,
+          "maxHp": 102
+        },
+        {
+          "name": "山魈",
+          "hp": 117,
+          "block": 0,
+          "maxHp": 117
+        }
+      ],
+      "finalPlayerStatuses": {
+        "curse": 3,
+        "burn": 4,
+        "spirit": 1
+      },
+      "battleIntentStacksAtDeath": 0,
+      "handCardIds": [],
+      "drawPileCardIds": [
+        "strike",
+        "guard",
+        "strike",
+        "strike",
+        "meditate",
+        "readyStance",
+        "fiveThunder",
+        "guard",
+        "heavySlash",
+        "armyBreaker",
+        "guard"
+      ],
+      "discardPileCardIds": [
+        "guard",
+        "armyBreaker",
+        "meditate",
+        "meditate",
+        "strike"
+      ],
+      "deckCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "guard",
+        "guard",
+        "guard",
+        "meditate",
+        "heavySlash",
+        "meditate",
+        "readyStance",
+        "meditate",
+        "fiveThunder",
+        "armyBreaker",
+        "armyBreaker"
+      ],
+      "physicalCardCount": 8,
+      "battleIntentCardCount": 1,
+      "physicalDamageCardCount": 7,
+      "aoePhysicalCardCount": 0,
+      "executeCardCount": 0,
+      "blockCardCount": 4,
+      "basicStrikeCount": 4,
+      "basicGuardCount": 4,
+      "hasReadyStance": true,
+      "hasBattleCry": false,
+      "hasHeavySlash": true,
+      "hasChainBlade": false,
+      "hasTraceCutter": false,
+      "hasArmyBreaker": true,
+      "hasXingtianCleave": false,
+      "hasTiangangBreak": false,
+      "phase": "gameOver",
+      "steps": 448
+    },
+    {
+      "seed": 2026238342,
+      "won": false,
+      "timedOut": false,
+      "deathFloor": 10,
+      "hp": 0,
+      "maxHp": 72,
+      "maxEnergy": 3,
+      "deckSize": 14,
+      "relicCount": 4,
+      "finalEnemyCount": 3,
+      "finalEnemyNames": [
+        "水鬼",
+        "山魈",
+        "小妖"
+      ],
+      "finalEnemyHp": [
+        {
+          "name": "水鬼",
+          "hp": 20,
+          "block": 0,
+          "maxHp": 60
+        },
+        {
+          "name": "山魈",
+          "hp": 58,
+          "block": 0,
+          "maxHp": 64
+        },
+        {
+          "name": "小妖",
+          "hp": 41,
+          "block": 0,
+          "maxHp": 53
+        }
+      ],
+      "finalPlayerStatuses": {
+        "battleIntent": 12,
+        "curse": 1
+      },
+      "battleIntentStacksAtDeath": 12,
+      "handCardIds": [
+        "flameTalisman",
+        "strike",
+        "strike"
+      ],
+      "drawPileCardIds": [
+        "strike"
+      ],
+      "discardPileCardIds": [
+        "thunderPool",
+        "breakArmor",
+        "meditate",
+        "readyStance",
+        "guard",
+        "guard",
+        "guard",
+        "guard",
+        "dragonRain",
+        "strike"
+      ],
+      "deckCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "guard",
+        "guard",
+        "guard",
+        "meditate",
+        "readyStance",
+        "flameTalisman",
+        "dragonRain",
+        "breakArmor",
+        "thunderPool"
+      ],
+      "physicalCardCount": 5,
+      "battleIntentCardCount": 1,
+      "physicalDamageCardCount": 4,
+      "aoePhysicalCardCount": 0,
+      "executeCardCount": 0,
+      "blockCardCount": 4,
+      "basicStrikeCount": 4,
+      "basicGuardCount": 4,
+      "hasReadyStance": true,
+      "hasBattleCry": false,
+      "hasHeavySlash": false,
+      "hasChainBlade": false,
+      "hasTraceCutter": false,
+      "hasArmyBreaker": false,
+      "hasXingtianCleave": false,
+      "hasTiangangBreak": false,
+      "phase": "gameOver",
+      "steps": 175
+    },
+    {
+      "seed": 2026331163,
+      "won": false,
+      "timedOut": false,
+      "deathFloor": 10,
+      "hp": 0,
+      "maxHp": 72,
+      "maxEnergy": 3,
+      "deckSize": 14,
+      "relicCount": 4,
+      "finalEnemyCount": 3,
+      "finalEnemyNames": [
+        "山魈",
+        "狐妖",
+        "铁尸"
+      ],
+      "finalEnemyHp": [
+        {
+          "name": "山魈",
+          "hp": 12,
+          "block": 0,
+          "maxHp": 64
+        },
+        {
+          "name": "狐妖",
+          "hp": 58,
+          "block": 0,
+          "maxHp": 58
+        },
+        {
+          "name": "铁尸",
+          "hp": 74,
+          "block": 0,
+          "maxHp": 74
+        }
+      ],
+      "finalPlayerStatuses": {
+        "curse": 5,
+        "spirit": 4
+      },
+      "battleIntentStacksAtDeath": 0,
+      "handCardIds": [],
+      "drawPileCardIds": [
+        "guard",
+        "readyStance",
+        "strike",
+        "guard",
+        "guard",
+        "strike"
+      ],
+      "discardPileCardIds": [
+        "kunlunBreath",
+        "strike",
+        "strike",
+        "guard",
+        "meditate",
+        "bindingRope",
+        "strike",
+        "strike"
+      ],
+      "deckCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "guard",
+        "guard",
+        "guard",
+        "meditate",
+        "kunlunBreath",
+        "readyStance",
+        "strike",
+        "bindingRope"
+      ],
+      "physicalCardCount": 7,
+      "battleIntentCardCount": 1,
+      "physicalDamageCardCount": 6,
+      "aoePhysicalCardCount": 0,
+      "executeCardCount": 0,
+      "blockCardCount": 4,
+      "basicStrikeCount": 6,
+      "basicGuardCount": 4,
+      "hasReadyStance": true,
+      "hasBattleCry": false,
+      "hasHeavySlash": false,
+      "hasChainBlade": false,
+      "hasTraceCutter": false,
+      "hasArmyBreaker": false,
+      "hasXingtianCleave": false,
+      "hasTiangangBreak": false,
+      "phase": "gameOver",
+      "steps": 243
+    },
+    {
+      "seed": 2026423984,
+      "won": false,
+      "timedOut": false,
+      "deathFloor": 14,
+      "hp": 0,
+      "maxHp": 72,
+      "maxEnergy": 3,
+      "deckSize": 19,
+      "relicCount": 5,
+      "finalEnemyCount": 3,
+      "finalEnemyNames": [
+        "小妖",
+        "铁尸",
+        "水鬼"
+      ],
+      "finalEnemyHp": [
+        {
+          "name": "小妖",
+          "hp": 51,
+          "block": 0,
+          "maxHp": 81
+        },
+        {
+          "name": "铁尸",
+          "hp": 100,
+          "block": 0,
+          "maxHp": 106
+        },
+        {
+          "name": "水鬼",
+          "hp": 84,
+          "block": 0,
+          "maxHp": 90
+        }
+      ],
+      "finalPlayerStatuses": {
+        "curse": 8,
+        "spirit": 2,
+        "battleIntent": 26
+      },
+      "battleIntentStacksAtDeath": 26,
+      "handCardIds": [],
+      "drawPileCardIds": [
+        "traceCutter",
+        "guard",
+        "guard",
+        "returnTalisman",
+        "guard",
+        "yellowCharm",
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "guard"
+      ],
+      "discardPileCardIds": [
+        "nineHeavenTribulation",
+        "traceCutter",
+        "readyStance",
+        "heavySlash",
+        "meditate",
+        "strike",
+        "readyStance",
+        "bloodNet"
+      ],
+      "deckCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "guard",
+        "guard",
+        "guard",
+        "meditate",
+        "yellowCharm",
+        "heavySlash",
+        "readyStance",
+        "readyStance",
+        "returnTalisman",
+        "bloodNet",
+        "traceCutter",
+        "traceCutter",
+        "nineHeavenTribulation"
+      ],
+      "physicalCardCount": 10,
+      "battleIntentCardCount": 2,
+      "physicalDamageCardCount": 8,
+      "aoePhysicalCardCount": 0,
+      "executeCardCount": 0,
+      "blockCardCount": 4,
+      "basicStrikeCount": 5,
+      "basicGuardCount": 4,
+      "hasReadyStance": true,
+      "hasBattleCry": false,
+      "hasHeavySlash": true,
+      "hasChainBlade": false,
+      "hasTraceCutter": true,
+      "hasArmyBreaker": false,
+      "hasXingtianCleave": false,
+      "hasTiangangBreak": false,
+      "phase": "gameOver",
+      "steps": 284
+    },
+    {
+      "seed": 2026516805,
+      "won": false,
+      "timedOut": false,
+      "deathFloor": 13,
+      "hp": 0,
+      "maxHp": 72,
+      "maxEnergy": 3,
+      "deckSize": 18,
+      "relicCount": 5,
+      "finalEnemyCount": 1,
+      "finalEnemyNames": [
+        "铁尸"
+      ],
+      "finalEnemyHp": [
+        {
+          "name": "铁尸",
+          "hp": 93,
+          "block": 0,
+          "maxHp": 93
+        }
+      ],
+      "finalPlayerStatuses": {
+        "curse": 12,
+        "spirit": 2
+      },
+      "battleIntentStacksAtDeath": 0,
+      "handCardIds": [
+        "ghostNeedle",
+        "strike",
+        "strike",
+        "bloodDemonLoop"
+      ],
+      "drawPileCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "fireRite"
+      ],
+      "discardPileCardIds": [
+        "traceCutter",
+        "guard",
+        "meditate",
+        "guard",
+        "guard",
+        "bloodOath",
+        "guard",
+        "yellowCharm",
+        "heavySlash"
+      ],
+      "deckCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "guard",
+        "guard",
+        "guard",
+        "meditate",
+        "yellowCharm",
+        "heavySlash",
+        "ghostNeedle",
+        "guard",
+        "fireRite",
+        "bloodOath",
+        "bloodDemonLoop",
+        "traceCutter"
+      ],
+      "physicalCardCount": 7,
+      "battleIntentCardCount": 0,
+      "physicalDamageCardCount": 7,
+      "aoePhysicalCardCount": 0,
+      "executeCardCount": 0,
+      "blockCardCount": 5,
+      "basicStrikeCount": 5,
+      "basicGuardCount": 5,
+      "hasReadyStance": false,
+      "hasBattleCry": false,
+      "hasHeavySlash": true,
+      "hasChainBlade": false,
+      "hasTraceCutter": true,
+      "hasArmyBreaker": false,
+      "hasXingtianCleave": false,
+      "hasTiangangBreak": false,
+      "phase": "gameOver",
+      "steps": 300
+    },
+    {
+      "seed": 2026609626,
+      "won": false,
+      "timedOut": false,
+      "deathFloor": 12,
+      "hp": 0,
+      "maxHp": 72,
+      "maxEnergy": 3,
+      "deckSize": 16,
+      "relicCount": 4,
+      "finalEnemyCount": 1,
+      "finalEnemyNames": [
+        "判官"
+      ],
+      "finalEnemyHp": [
+        {
+          "name": "判官",
+          "hp": 22,
+          "block": 15,
+          "maxHp": 199
+        }
+      ],
+      "finalPlayerStatuses": {
+        "spirit": 2
+      },
+      "battleIntentStacksAtDeath": 0,
+      "handCardIds": [
+        "dragonRain",
+        "strike",
+        "guard"
+      ],
+      "drawPileCardIds": [
+        "strike",
+        "strike",
+        "guard",
+        "strike",
+        "strike",
+        "foxFire",
+        "guard",
+        "strike",
+        "foxFire",
+        "meditate",
+        "heavySlash"
+      ],
+      "discardPileCardIds": [
+        "guard",
+        "bloodDemonLoop"
+      ],
+      "deckCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "guard",
+        "guard",
+        "guard",
+        "meditate",
+        "strike",
+        "dragonRain",
+        "foxFire",
+        "foxFire",
+        "bloodDemonLoop",
+        "heavySlash"
+      ],
+      "physicalCardCount": 7,
+      "battleIntentCardCount": 0,
+      "physicalDamageCardCount": 7,
+      "aoePhysicalCardCount": 0,
+      "executeCardCount": 0,
+      "blockCardCount": 4,
+      "basicStrikeCount": 6,
+      "basicGuardCount": 4,
+      "hasReadyStance": false,
+      "hasBattleCry": false,
+      "hasHeavySlash": true,
+      "hasChainBlade": false,
+      "hasTraceCutter": false,
+      "hasArmyBreaker": false,
+      "hasXingtianCleave": false,
+      "hasTiangangBreak": false,
+      "phase": "gameOver",
+      "steps": 283
+    },
+    {
+      "seed": 2026702447,
+      "won": false,
+      "timedOut": false,
+      "deathFloor": 13,
+      "hp": 0,
+      "maxHp": 72,
+      "maxEnergy": 3,
+      "deckSize": 14,
+      "relicCount": 5,
+      "finalEnemyCount": 3,
+      "finalEnemyNames": [
+        "铁尸",
+        "铁尸",
+        "狐妖"
+      ],
+      "finalEnemyHp": [
+        {
+          "name": "铁尸",
+          "hp": 58,
+          "block": 0,
+          "maxHp": 93
+        },
+        {
+          "name": "铁尸",
+          "hp": 93,
+          "block": 0,
+          "maxHp": 93
+        },
+        {
+          "name": "狐妖",
+          "hp": 76,
+          "block": 0,
+          "maxHp": 76
+        }
+      ],
+      "finalPlayerStatuses": {
+        "spirit": 2
+      },
+      "battleIntentStacksAtDeath": 0,
+      "handCardIds": [],
+      "drawPileCardIds": [
+        "meditate",
+        "strike",
+        "strike",
+        "strike",
+        "meditate"
+      ],
+      "discardPileCardIds": [
+        "guard",
+        "guard",
+        "guard",
+        "strike",
+        "guard",
+        "meditate",
+        "foxFire",
+        "strike",
+        "strike"
+      ],
+      "deckCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "guard",
+        "guard",
+        "guard",
+        "meditate",
+        "meditate",
+        "foxFire",
+        "meditate",
+        "strike"
+      ],
+      "physicalCardCount": 6,
+      "battleIntentCardCount": 0,
+      "physicalDamageCardCount": 6,
+      "aoePhysicalCardCount": 0,
+      "executeCardCount": 0,
+      "blockCardCount": 4,
+      "basicStrikeCount": 6,
+      "basicGuardCount": 4,
+      "hasReadyStance": false,
+      "hasBattleCry": false,
+      "hasHeavySlash": false,
+      "hasChainBlade": false,
+      "hasTraceCutter": false,
+      "hasArmyBreaker": false,
+      "hasXingtianCleave": false,
+      "hasTiangangBreak": false,
+      "phase": "gameOver",
+      "steps": 336
+    },
+    {
+      "seed": 2026795268,
+      "won": false,
+      "timedOut": false,
+      "deathFloor": 12,
+      "hp": 0,
+      "maxHp": 72,
+      "maxEnergy": 3,
+      "deckSize": 16,
+      "relicCount": 3,
+      "finalEnemyCount": 1,
+      "finalEnemyNames": [
+        "判官"
+      ],
+      "finalEnemyHp": [
+        {
+          "name": "判官",
+          "hp": 126,
+          "block": 0,
+          "maxHp": 153
+        }
+      ],
+      "finalPlayerStatuses": {
+        "curse": 9,
+        "battleIntent": 6
+      },
+      "battleIntentStacksAtDeath": 6,
+      "handCardIds": [],
+      "drawPileCardIds": [
+        "strike",
+        "strike",
+        "guard",
+        "thornMail",
+        "strike",
+        "meditate",
+        "strike",
+        "strike",
+        "guard",
+        "strike",
+        "guard"
+      ],
+      "discardPileCardIds": [
+        "returnTalisman",
+        "chainBlade",
+        "strike",
+        "readyStance",
+        "guard"
+      ],
+      "deckCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "guard",
+        "guard",
+        "guard",
+        "meditate",
+        "readyStance",
+        "thornMail",
+        "strike",
+        "strike",
+        "chainBlade",
+        "returnTalisman"
+      ],
+      "physicalCardCount": 9,
+      "battleIntentCardCount": 1,
+      "physicalDamageCardCount": 8,
+      "aoePhysicalCardCount": 0,
+      "executeCardCount": 0,
+      "blockCardCount": 5,
+      "basicStrikeCount": 7,
+      "basicGuardCount": 4,
+      "hasReadyStance": true,
+      "hasBattleCry": false,
+      "hasHeavySlash": false,
+      "hasChainBlade": true,
+      "hasTraceCutter": false,
+      "hasArmyBreaker": false,
+      "hasXingtianCleave": false,
+      "hasTiangangBreak": false,
+      "phase": "gameOver",
+      "steps": 247
+    },
+    {
+      "seed": 2026888089,
+      "won": false,
+      "timedOut": false,
+      "deathFloor": 12,
+      "hp": 0,
+      "maxHp": 72,
+      "maxEnergy": 3,
+      "deckSize": 11,
+      "relicCount": 4,
+      "finalEnemyCount": 1,
+      "finalEnemyNames": [
+        "判官"
+      ],
+      "finalEnemyHp": [
+        {
+          "name": "判官",
+          "hp": 28,
+          "block": 0,
+          "maxHp": 157
+        }
+      ],
+      "finalPlayerStatuses": {
+        "spirit": 2,
+        "curse": 1
+      },
+      "battleIntentStacksAtDeath": 0,
+      "handCardIds": [
+        "strike",
+        "strike"
+      ],
+      "drawPileCardIds": [
+        "guard"
+      ],
+      "discardPileCardIds": [
+        "guard",
+        "meditate",
+        "strike",
+        "strike",
+        "guard",
+        "guard",
+        "strike",
+        "strike"
+      ],
+      "deckCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "guard",
+        "guard",
+        "guard",
+        "meditate",
+        "strike",
+        "strike"
+      ],
+      "physicalCardCount": 6,
+      "battleIntentCardCount": 0,
+      "physicalDamageCardCount": 6,
+      "aoePhysicalCardCount": 0,
+      "executeCardCount": 0,
+      "blockCardCount": 4,
+      "basicStrikeCount": 6,
+      "basicGuardCount": 4,
+      "hasReadyStance": false,
+      "hasBattleCry": false,
+      "hasHeavySlash": false,
+      "hasChainBlade": false,
+      "hasTraceCutter": false,
+      "hasArmyBreaker": false,
+      "hasXingtianCleave": false,
+      "hasTiangangBreak": false,
+      "phase": "gameOver",
+      "steps": 392
+    },
+    {
+      "seed": 2026980910,
+      "won": false,
+      "timedOut": false,
+      "deathFloor": 16,
+      "hp": 0,
+      "maxHp": 72,
+      "maxEnergy": 3,
+      "deckSize": 20,
+      "relicCount": 5,
+      "finalEnemyCount": 4,
+      "finalEnemyNames": [
+        "狐妖",
+        "水鬼",
+        "狐妖",
+        "小妖"
+      ],
+      "finalEnemyHp": [
+        {
+          "name": "狐妖",
+          "hp": 63,
+          "block": 0,
+          "maxHp": 104
+        },
+        {
+          "name": "水鬼",
+          "hp": 106,
+          "block": 0,
+          "maxHp": 106
+        },
+        {
+          "name": "狐妖",
+          "hp": 104,
+          "block": 0,
+          "maxHp": 104
+        },
+        {
+          "name": "小妖",
+          "hp": 97,
+          "block": 0,
+          "maxHp": 97
+        }
+      ],
+      "finalPlayerStatuses": {
+        "curse": 5,
+        "spirit": 1
+      },
+      "battleIntentStacksAtDeath": 0,
+      "handCardIds": [
+        "strike",
+        "traceCutter",
+        "strike",
+        "strike"
+      ],
+      "drawPileCardIds": [
+        "yellowCharm",
+        "armyBreaker",
+        "battleCry",
+        "shellTap",
+        "strike",
+        "battleCry",
+        "strike",
+        "guard",
+        "strike",
+        "chainBlade",
+        "strike",
+        "guard",
+        "meditate",
+        "guard"
+      ],
+      "discardPileCardIds": [
+        "guard",
+        "xingtianCleave"
+      ],
+      "deckCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "guard",
+        "guard",
+        "guard",
+        "meditate",
+        "yellowCharm",
+        "strike",
+        "strike",
+        "shellTap",
+        "battleCry",
+        "battleCry",
+        "chainBlade",
+        "traceCutter",
+        "armyBreaker",
+        "xingtianCleave"
+      ],
+      "physicalCardCount": 13,
+      "battleIntentCardCount": 2,
+      "physicalDamageCardCount": 11,
+      "aoePhysicalCardCount": 0,
+      "executeCardCount": 1,
+      "blockCardCount": 5,
+      "basicStrikeCount": 7,
+      "basicGuardCount": 4,
+      "hasReadyStance": false,
+      "hasBattleCry": true,
+      "hasHeavySlash": false,
+      "hasChainBlade": true,
+      "hasTraceCutter": true,
+      "hasArmyBreaker": true,
+      "hasXingtianCleave": true,
+      "hasTiangangBreak": false,
+      "phase": "gameOver",
+      "steps": 425
+    },
+    {
+      "seed": 2027073731,
+      "won": false,
+      "timedOut": false,
+      "deathFloor": 10,
+      "hp": 0,
+      "maxHp": 72,
+      "maxEnergy": 3,
+      "deckSize": 14,
+      "relicCount": 4,
+      "finalEnemyCount": 2,
+      "finalEnemyNames": [
+        "水鬼",
+        "水鬼"
+      ],
+      "finalEnemyHp": [
+        {
+          "name": "水鬼",
+          "hp": 9,
+          "block": 0,
+          "maxHp": 60
+        },
+        {
+          "name": "水鬼",
+          "hp": 60,
+          "block": 0,
+          "maxHp": 60
+        }
+      ],
+      "finalPlayerStatuses": {
+        "spirit": 2,
+        "curse": 5
+      },
+      "battleIntentStacksAtDeath": 0,
+      "handCardIds": [
+        "heavySlash",
+        "heavySlash"
+      ],
+      "drawPileCardIds": [
+        "guard",
+        "heavySlash",
+        "strike",
+        "strike",
+        "strike"
+      ],
+      "discardPileCardIds": [
+        "guard",
+        "meditate",
+        "strike",
+        "strike",
+        "guard",
+        "guard",
+        "strike"
+      ],
+      "deckCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "guard",
+        "guard",
+        "guard",
+        "meditate",
+        "strike",
+        "heavySlash",
+        "strike",
+        "heavySlash",
+        "heavySlash"
+      ],
+      "physicalCardCount": 9,
+      "battleIntentCardCount": 0,
+      "physicalDamageCardCount": 9,
+      "aoePhysicalCardCount": 0,
+      "executeCardCount": 0,
+      "blockCardCount": 4,
+      "basicStrikeCount": 6,
+      "basicGuardCount": 4,
+      "hasReadyStance": false,
+      "hasBattleCry": false,
+      "hasHeavySlash": true,
+      "hasChainBlade": false,
+      "hasTraceCutter": false,
+      "hasArmyBreaker": false,
+      "hasXingtianCleave": false,
+      "hasTiangangBreak": false,
+      "phase": "gameOver",
+      "steps": 242
+    },
+    {
+      "seed": 2027166552,
+      "won": false,
+      "timedOut": false,
+      "deathFloor": 13,
+      "hp": 0,
+      "maxHp": 72,
+      "maxEnergy": 3,
+      "deckSize": 15,
+      "relicCount": 5,
+      "finalEnemyCount": 2,
+      "finalEnemyNames": [
+        "小妖",
+        "铁尸"
+      ],
+      "finalEnemyHp": [
+        {
+          "name": "小妖",
+          "hp": 41,
+          "block": 0,
+          "maxHp": 70
+        },
+        {
+          "name": "铁尸",
+          "hp": 86,
+          "block": 22,
+          "maxHp": 93
+        }
+      ],
+      "finalPlayerStatuses": {
+        "curse": 3,
+        "spirit": 2
+      },
+      "battleIntentStacksAtDeath": 0,
+      "handCardIds": [
+        "discordCharm",
+        "strike"
+      ],
+      "drawPileCardIds": [
+        "bloodDemonLoop",
+        "strike",
+        "strike",
+        "strike",
+        "meditate",
+        "foxFire",
+        "strike"
+      ],
+      "discardPileCardIds": [
+        "guard",
+        "guard",
+        "strike",
+        "guard",
+        "guard",
+        "strike"
+      ],
+      "deckCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "guard",
+        "guard",
+        "guard",
+        "meditate",
+        "discordCharm",
+        "foxFire",
+        "strike",
+        "strike",
+        "bloodDemonLoop"
+      ],
+      "physicalCardCount": 7,
+      "battleIntentCardCount": 0,
+      "physicalDamageCardCount": 7,
+      "aoePhysicalCardCount": 0,
+      "executeCardCount": 0,
+      "blockCardCount": 4,
+      "basicStrikeCount": 7,
+      "basicGuardCount": 4,
+      "hasReadyStance": false,
+      "hasBattleCry": false,
+      "hasHeavySlash": false,
+      "hasChainBlade": false,
+      "hasTraceCutter": false,
+      "hasArmyBreaker": false,
+      "hasXingtianCleave": false,
+      "hasTiangangBreak": false,
+      "phase": "gameOver",
+      "steps": 365
+    },
+    {
+      "seed": 2027259373,
+      "won": false,
+      "timedOut": false,
+      "deathFloor": 17,
+      "hp": 0,
+      "maxHp": 72,
+      "maxEnergy": 4,
+      "deckSize": 18,
+      "relicCount": 5,
+      "finalEnemyCount": 3,
+      "finalEnemyNames": [
+        "狐妖",
+        "小妖",
+        "水鬼"
+      ],
+      "finalEnemyHp": [
+        {
+          "name": "狐妖",
+          "hp": 72,
+          "block": 0,
+          "maxHp": 109
+        },
+        {
+          "name": "小妖",
+          "hp": 102,
+          "block": 0,
+          "maxHp": 102
+        },
+        {
+          "name": "水鬼",
+          "hp": 111,
+          "block": 0,
+          "maxHp": 111
+        }
+      ],
+      "finalPlayerStatuses": {
+        "spirit": 1,
+        "battleIntent": 8,
+        "burn": 1
+      },
+      "battleIntentStacksAtDeath": 8,
+      "handCardIds": [],
+      "drawPileCardIds": [
+        "strike",
+        "guard",
+        "guard",
+        "returnTalisman",
+        "meditate",
+        "foxFire",
+        "foxFire",
+        "guard",
+        "fiveThunder",
+        "strike",
+        "guard",
+        "strike"
+      ],
+      "discardPileCardIds": [
+        "strike",
+        "strike",
+        "meditate",
+        "strike",
+        "battleCry",
+        "poisonPowder"
+      ],
+      "deckCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "guard",
+        "guard",
+        "guard",
+        "meditate",
+        "strike",
+        "foxFire",
+        "poisonPowder",
+        "meditate",
+        "battleCry",
+        "returnTalisman",
+        "foxFire",
+        "fiveThunder"
+      ],
+      "physicalCardCount": 7,
+      "battleIntentCardCount": 1,
+      "physicalDamageCardCount": 6,
+      "aoePhysicalCardCount": 0,
+      "executeCardCount": 0,
+      "blockCardCount": 4,
+      "basicStrikeCount": 6,
+      "basicGuardCount": 4,
+      "hasReadyStance": false,
+      "hasBattleCry": true,
+      "hasHeavySlash": false,
+      "hasChainBlade": false,
+      "hasTraceCutter": false,
+      "hasArmyBreaker": false,
+      "hasXingtianCleave": false,
+      "hasTiangangBreak": false,
+      "phase": "gameOver",
+      "steps": 451
+    },
+    {
+      "seed": 2027352194,
+      "won": false,
+      "timedOut": false,
+      "deathFloor": 17,
+      "hp": 0,
+      "maxHp": 72,
+      "maxEnergy": 4,
+      "deckSize": 13,
+      "relicCount": 5,
+      "finalEnemyCount": 4,
+      "finalEnemyNames": [
+        "小妖",
+        "铁尸",
+        "狐妖",
+        "山魈"
+      ],
+      "finalEnemyHp": [
+        {
+          "name": "小妖",
+          "hp": 61,
+          "block": 0,
+          "maxHp": 102
+        },
+        {
+          "name": "铁尸",
+          "hp": 125,
+          "block": 0,
+          "maxHp": 129
+        },
+        {
+          "name": "狐妖",
+          "hp": 105,
+          "block": 0,
+          "maxHp": 109
+        },
+        {
+          "name": "山魈",
+          "hp": 112,
+          "block": 0,
+          "maxHp": 116
+        }
+      ],
+      "finalPlayerStatuses": {
+        "curse": 1,
+        "spirit": 4,
+        "burn": 3
+      },
+      "battleIntentStacksAtDeath": 0,
+      "handCardIds": [
+        "strike",
+        "heavySlash"
+      ],
+      "drawPileCardIds": [],
+      "discardPileCardIds": [
+        "strike",
+        "guard",
+        "miasma",
+        "guard",
+        "guard",
+        "stoneShell",
+        "guard",
+        "kunlunBreath",
+        "xuanwuPrison",
+        "meditate",
+        "strike"
+      ],
+      "deckCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "guard",
+        "guard",
+        "guard",
+        "meditate",
+        "kunlunBreath",
+        "heavySlash",
+        "miasma",
+        "stoneShell",
+        "xuanwuPrison"
+      ],
+      "physicalCardCount": 4,
+      "battleIntentCardCount": 0,
+      "physicalDamageCardCount": 4,
+      "aoePhysicalCardCount": 0,
+      "executeCardCount": 0,
+      "blockCardCount": 6,
+      "basicStrikeCount": 3,
+      "basicGuardCount": 4,
+      "hasReadyStance": false,
+      "hasBattleCry": false,
+      "hasHeavySlash": true,
+      "hasChainBlade": false,
+      "hasTraceCutter": false,
+      "hasArmyBreaker": false,
+      "hasXingtianCleave": false,
+      "hasTiangangBreak": false,
+      "phase": "gameOver",
+      "steps": 674
+    },
+    {
+      "seed": 2027445015,
+      "won": false,
+      "timedOut": false,
+      "deathFloor": 16,
+      "hp": 0,
+      "maxHp": 72,
+      "maxEnergy": 4,
+      "deckSize": 19,
+      "relicCount": 5,
+      "finalEnemyCount": 4,
+      "finalEnemyNames": [
+        "小妖",
+        "狐妖",
+        "山魈",
+        "狐妖"
+      ],
+      "finalEnemyHp": [
+        {
+          "name": "小妖",
+          "hp": 57,
+          "block": 0,
+          "maxHp": 98
+        },
+        {
+          "name": "狐妖",
+          "hp": 105,
+          "block": 0,
+          "maxHp": 105
+        },
+        {
+          "name": "山魈",
+          "hp": 112,
+          "block": 9,
+          "maxHp": 112
+        },
+        {
+          "name": "狐妖",
+          "hp": 105,
+          "block": 0,
+          "maxHp": 105
+        }
+      ],
+      "finalPlayerStatuses": {
+        "curse": 3,
+        "spirit": 1
+      },
+      "battleIntentStacksAtDeath": 0,
+      "handCardIds": [
+        "strike",
+        "discordCharm"
+      ],
+      "drawPileCardIds": [
+        "strike",
+        "strike",
+        "meditate",
+        "guard",
+        "foxFire",
+        "strike",
+        "guard",
+        "battleCry",
+        "bloodNet",
+        "strike",
+        "guard",
+        "foxFire",
+        "strike",
+        "battleCry"
+      ],
+      "discardPileCardIds": [
+        "xingtianCleave",
+        "guard",
+        "guard"
+      ],
+      "deckCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "guard",
+        "guard",
+        "guard",
+        "meditate",
+        "foxFire",
+        "guard",
+        "foxFire",
+        "discordCharm",
+        "strike",
+        "strike",
+        "battleCry",
+        "bloodNet",
+        "battleCry",
+        "xingtianCleave"
+      ],
+      "physicalCardCount": 9,
+      "battleIntentCardCount": 2,
+      "physicalDamageCardCount": 7,
+      "aoePhysicalCardCount": 0,
+      "executeCardCount": 1,
+      "blockCardCount": 5,
+      "basicStrikeCount": 6,
+      "basicGuardCount": 5,
+      "hasReadyStance": false,
+      "hasBattleCry": true,
+      "hasHeavySlash": false,
+      "hasChainBlade": false,
+      "hasTraceCutter": false,
+      "hasArmyBreaker": false,
+      "hasXingtianCleave": true,
+      "hasTiangangBreak": false,
+      "phase": "gameOver",
+      "steps": 411
+    },
+    {
+      "seed": 2027537836,
+      "won": false,
+      "timedOut": false,
+      "deathFloor": 14,
+      "hp": 0,
+      "maxHp": 72,
+      "maxEnergy": 3,
+      "deckSize": 17,
+      "relicCount": 5,
+      "finalEnemyCount": 2,
+      "finalEnemyNames": [
+        "山魈",
+        "铁尸"
+      ],
+      "finalEnemyHp": [
+        {
+          "name": "山魈",
+          "hp": 62,
+          "block": 0,
+          "maxHp": 94
+        },
+        {
+          "name": "铁尸",
+          "hp": 106,
+          "block": 24,
+          "maxHp": 106
+        }
+      ],
+      "finalPlayerStatuses": {
+        "spirit": 2,
+        "battleIntent": 36
+      },
+      "battleIntentStacksAtDeath": 36,
+      "handCardIds": [
+        "heavySlash"
+      ],
+      "drawPileCardIds": [
+        "heavySlash"
+      ],
+      "discardPileCardIds": [
+        "xingtianCleave",
+        "meditate",
+        "readyStance",
+        "guard",
+        "guard",
+        "strike",
+        "heavySlash",
+        "strike",
+        "strike",
+        "strike",
+        "battleCry",
+        "chainBlade",
+        "guard",
+        "guard",
+        "battleCry"
+      ],
+      "deckCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "guard",
+        "guard",
+        "guard",
+        "meditate",
+        "readyStance",
+        "heavySlash",
+        "heavySlash",
+        "heavySlash",
+        "battleCry",
+        "battleCry",
+        "chainBlade",
+        "xingtianCleave"
+      ],
+      "physicalCardCount": 12,
+      "battleIntentCardCount": 3,
+      "physicalDamageCardCount": 9,
+      "aoePhysicalCardCount": 0,
+      "executeCardCount": 1,
+      "blockCardCount": 4,
+      "basicStrikeCount": 4,
+      "basicGuardCount": 4,
+      "hasReadyStance": true,
+      "hasBattleCry": true,
+      "hasHeavySlash": true,
+      "hasChainBlade": true,
+      "hasTraceCutter": false,
+      "hasArmyBreaker": false,
+      "hasXingtianCleave": true,
+      "hasTiangangBreak": false,
+      "phase": "gameOver",
+      "steps": 285
+    },
+    {
+      "seed": 2027630657,
+      "won": false,
+      "timedOut": false,
+      "deathFloor": 10,
+      "hp": 0,
+      "maxHp": 72,
+      "maxEnergy": 3,
+      "deckSize": 14,
+      "relicCount": 5,
+      "finalEnemyCount": 3,
+      "finalEnemyNames": [
+        "铁尸",
+        "水鬼",
+        "狐妖"
+      ],
+      "finalEnemyHp": [
+        {
+          "name": "铁尸",
+          "hp": 11,
+          "block": 0,
+          "maxHp": 76
+        },
+        {
+          "name": "水鬼",
+          "hp": 62,
+          "block": 0,
+          "maxHp": 62
+        },
+        {
+          "name": "狐妖",
+          "hp": 60,
+          "block": 0,
+          "maxHp": 60
+        }
+      ],
+      "finalPlayerStatuses": {
+        "curse": 3,
+        "spirit": 2,
+        "spikes": 2
+      },
+      "battleIntentStacksAtDeath": 0,
+      "handCardIds": [
+        "heavySlash",
+        "strike"
+      ],
+      "drawPileCardIds": [],
+      "discardPileCardIds": [
+        "strike",
+        "strike",
+        "meditate",
+        "guard",
+        "guard",
+        "thornMail",
+        "yellowCharm",
+        "guard",
+        "foxFire",
+        "guard",
+        "strike",
+        "strike"
+      ],
+      "deckCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "guard",
+        "guard",
+        "guard",
+        "meditate",
+        "heavySlash",
+        "yellowCharm",
+        "foxFire",
+        "thornMail"
+      ],
+      "physicalCardCount": 6,
+      "battleIntentCardCount": 0,
+      "physicalDamageCardCount": 6,
+      "aoePhysicalCardCount": 0,
+      "executeCardCount": 0,
+      "blockCardCount": 5,
+      "basicStrikeCount": 5,
+      "basicGuardCount": 4,
+      "hasReadyStance": false,
+      "hasBattleCry": false,
+      "hasHeavySlash": true,
+      "hasChainBlade": false,
+      "hasTraceCutter": false,
+      "hasArmyBreaker": false,
+      "hasXingtianCleave": false,
+      "hasTiangangBreak": false,
+      "phase": "gameOver",
+      "steps": 197
+    },
+    {
+      "seed": 2027723478,
+      "won": false,
+      "timedOut": false,
+      "deathFloor": 12,
+      "hp": 0,
+      "maxHp": 72,
+      "maxEnergy": 3,
+      "deckSize": 17,
+      "relicCount": 5,
+      "finalEnemyCount": 1,
+      "finalEnemyNames": [
+        "判官"
+      ],
+      "finalEnemyHp": [
+        {
+          "name": "判官",
+          "hp": 11,
+          "block": 0,
+          "maxHp": 160
+        }
+      ],
+      "finalPlayerStatuses": {
+        "curse": 1,
+        "spirit": 2,
+        "battleIntent": 36
+      },
+      "battleIntentStacksAtDeath": 36,
+      "handCardIds": [],
+      "drawPileCardIds": [],
+      "discardPileCardIds": [
+        "stoneShell",
+        "fireRite",
+        "strike",
+        "meditate",
+        "readyStance",
+        "guard",
+        "bloodDemonLoop",
+        "strike",
+        "meditate",
+        "strike",
+        "battleCry",
+        "guard",
+        "guard",
+        "meditate",
+        "strike",
+        "strike",
+        "guard"
+      ],
+      "deckCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "guard",
+        "guard",
+        "guard",
+        "meditate",
+        "readyStance",
+        "meditate",
+        "strike",
+        "meditate",
+        "bloodDemonLoop",
+        "fireRite",
+        "battleCry",
+        "stoneShell"
+      ],
+      "physicalCardCount": 7,
+      "battleIntentCardCount": 2,
+      "physicalDamageCardCount": 5,
+      "aoePhysicalCardCount": 0,
+      "executeCardCount": 0,
+      "blockCardCount": 5,
+      "basicStrikeCount": 5,
+      "basicGuardCount": 4,
+      "hasReadyStance": true,
+      "hasBattleCry": true,
+      "hasHeavySlash": false,
+      "hasChainBlade": false,
+      "hasTraceCutter": false,
+      "hasArmyBreaker": false,
+      "hasXingtianCleave": false,
+      "hasTiangangBreak": false,
+      "phase": "gameOver",
+      "steps": 324
+    },
+    {
+      "seed": 2027816299,
+      "won": false,
+      "timedOut": false,
+      "deathFloor": 8,
+      "hp": 0,
+      "maxHp": 72,
+      "maxEnergy": 3,
+      "deckSize": 14,
+      "relicCount": 3,
+      "finalEnemyCount": 2,
+      "finalEnemyNames": [
+        "铁尸",
+        "山魈"
+      ],
+      "finalEnemyHp": [
+        {
+          "name": "铁尸",
+          "hp": 24,
+          "block": 0,
+          "maxHp": 62
+        },
+        {
+          "name": "山魈",
+          "hp": 53,
+          "block": 7,
+          "maxHp": 53
+        }
+      ],
+      "finalPlayerStatuses": {
+        "spirit": 6,
+        "spikes": 2
+      },
+      "battleIntentStacksAtDeath": 0,
+      "handCardIds": [
+        "strike",
+        "strike"
+      ],
+      "drawPileCardIds": [
+        "meditate",
+        "guard",
+        "strike",
+        "strike",
+        "guard",
+        "guard"
+      ],
+      "discardPileCardIds": [
+        "thornMail",
+        "kunlunBreath",
+        "guard",
+        "jiaoScale",
+        "strike",
+        "strike"
+      ],
+      "deckCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "guard",
+        "guard",
+        "guard",
+        "meditate",
+        "kunlunBreath",
+        "thornMail",
+        "jiaoScale",
+        "strike"
+      ],
+      "physicalCardCount": 6,
+      "battleIntentCardCount": 0,
+      "physicalDamageCardCount": 6,
+      "aoePhysicalCardCount": 0,
+      "executeCardCount": 0,
+      "blockCardCount": 6,
+      "basicStrikeCount": 6,
+      "basicGuardCount": 4,
+      "hasReadyStance": false,
+      "hasBattleCry": false,
+      "hasHeavySlash": false,
+      "hasChainBlade": false,
+      "hasTraceCutter": false,
+      "hasArmyBreaker": false,
+      "hasXingtianCleave": false,
+      "hasTiangangBreak": false,
+      "phase": "gameOver",
+      "steps": 198
+    },
+    {
+      "seed": 2027909120,
+      "won": false,
+      "timedOut": false,
+      "deathFloor": 12,
+      "hp": 0,
+      "maxHp": 80,
+      "maxEnergy": 3,
+      "deckSize": 15,
+      "relicCount": 4,
+      "finalEnemyCount": 1,
+      "finalEnemyNames": [
+        "判官"
+      ],
+      "finalEnemyHp": [
+        {
+          "name": "判官",
+          "hp": 1,
+          "block": 0,
+          "maxHp": 199
+        }
+      ],
+      "finalPlayerStatuses": {
+        "spirit": 2,
+        "battleIntent": 33
+      },
+      "battleIntentStacksAtDeath": 33,
+      "handCardIds": [
+        "guard",
+        "guard"
+      ],
+      "drawPileCardIds": [
+        "readyStance",
+        "strike",
+        "chainBlade",
+        "strike",
+        "heavySlash"
+      ],
+      "discardPileCardIds": [
+        "guard",
+        "meditate",
+        "strike",
+        "strike",
+        "jiaoScale",
+        "guard",
+        "strike",
+        "strike"
+      ],
+      "deckCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "guard",
+        "guard",
+        "guard",
+        "meditate",
+        "strike",
+        "heavySlash",
+        "readyStance",
+        "strike",
+        "jiaoScale",
+        "chainBlade"
+      ],
+      "physicalCardCount": 9,
+      "battleIntentCardCount": 1,
+      "physicalDamageCardCount": 8,
+      "aoePhysicalCardCount": 0,
+      "executeCardCount": 0,
+      "blockCardCount": 5,
+      "basicStrikeCount": 6,
+      "basicGuardCount": 4,
+      "hasReadyStance": true,
+      "hasBattleCry": false,
+      "hasHeavySlash": true,
+      "hasChainBlade": true,
+      "hasTraceCutter": false,
+      "hasArmyBreaker": false,
+      "hasXingtianCleave": false,
+      "hasTiangangBreak": false,
+      "phase": "gameOver",
+      "steps": 255
+    },
+    {
+      "seed": 2028001941,
+      "won": false,
+      "timedOut": false,
+      "deathFloor": 16,
+      "hp": 0,
+      "maxHp": 72,
+      "maxEnergy": 4,
+      "deckSize": 18,
+      "relicCount": 4,
+      "finalEnemyCount": 4,
+      "finalEnemyNames": [
+        "铁尸",
+        "狐妖",
+        "狐妖",
+        "山魈"
+      ],
+      "finalEnemyHp": [
+        {
+          "name": "铁尸",
+          "hp": 68,
+          "block": 0,
+          "maxHp": 132
+        },
+        {
+          "name": "狐妖",
+          "hp": 101,
+          "block": 0,
+          "maxHp": 110
+        },
+        {
+          "name": "狐妖",
+          "hp": 101,
+          "block": 0,
+          "maxHp": 110
+        },
+        {
+          "name": "山魈",
+          "hp": 118,
+          "block": 1,
+          "maxHp": 118
+        }
+      ],
+      "finalPlayerStatuses": {
+        "curse": 4,
+        "spirit": 2,
+        "burn": 3,
+        "spikes": 3
+      },
+      "battleIntentStacksAtDeath": 0,
+      "handCardIds": [
+        "strike"
+      ],
+      "drawPileCardIds": [
+        "strike",
+        "softBoneSmoke",
+        "poisonPowder",
+        "meditate",
+        "strike",
+        "guard",
+        "strike",
+        "boneMeltMiasma",
+        "guard",
+        "yellowCharm"
+      ],
+      "discardPileCardIds": [
+        "returnTalisman",
+        "xingtianCleave",
+        "guard",
+        "turtleCrush",
+        "meditate",
+        "guard",
+        "heavySlash"
+      ],
+      "deckCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "guard",
+        "guard",
+        "guard",
+        "meditate",
+        "yellowCharm",
+        "meditate",
+        "poisonPowder",
+        "heavySlash",
+        "returnTalisman",
+        "softBoneSmoke",
+        "xingtianCleave",
+        "boneMeltMiasma",
+        "turtleCrush"
+      ],
+      "physicalCardCount": 6,
+      "battleIntentCardCount": 0,
+      "physicalDamageCardCount": 6,
+      "aoePhysicalCardCount": 0,
+      "executeCardCount": 1,
+      "blockCardCount": 6,
+      "basicStrikeCount": 4,
+      "basicGuardCount": 4,
+      "hasReadyStance": false,
+      "hasBattleCry": false,
+      "hasHeavySlash": true,
+      "hasChainBlade": false,
+      "hasTraceCutter": false,
+      "hasArmyBreaker": false,
+      "hasXingtianCleave": true,
+      "hasTiangangBreak": false,
+      "phase": "gameOver",
+      "steps": 430
+    },
+    {
+      "seed": 2028094762,
+      "won": false,
+      "timedOut": false,
+      "deathFloor": 16,
+      "hp": 0,
+      "maxHp": 80,
+      "maxEnergy": 5,
+      "deckSize": 16,
+      "relicCount": 5,
+      "finalEnemyCount": 4,
+      "finalEnemyNames": [
+        "小妖",
+        "小妖",
+        "狐妖",
+        "狐妖"
+      ],
+      "finalEnemyHp": [
+        {
+          "name": "小妖",
+          "hp": 57,
+          "block": 0,
+          "maxHp": 106
+        },
+        {
+          "name": "小妖",
+          "hp": 106,
+          "block": 0,
+          "maxHp": 106
+        },
+        {
+          "name": "狐妖",
+          "hp": 114,
+          "block": 0,
+          "maxHp": 114
+        },
+        {
+          "name": "狐妖",
+          "hp": 114,
+          "block": 0,
+          "maxHp": 114
+        }
+      ],
+      "finalPlayerStatuses": {
+        "curse": 3,
+        "spirit": 1
+      },
+      "battleIntentStacksAtDeath": 0,
+      "handCardIds": [
+        "strike"
+      ],
+      "drawPileCardIds": [
+        "readyStance",
+        "guard",
+        "armyBreaker",
+        "meditate",
+        "foxFire",
+        "guard",
+        "battleCry",
+        "traceCutter",
+        "numbingThorn",
+        "dragonRain",
+        "strike"
+      ],
+      "discardPileCardIds": [
+        "xingtianCleave",
+        "guard",
+        "guard",
+        "strike"
+      ],
+      "deckCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "guard",
+        "guard",
+        "guard",
+        "meditate",
+        "dragonRain",
+        "numbingThorn",
+        "readyStance",
+        "foxFire",
+        "battleCry",
+        "traceCutter",
+        "armyBreaker",
+        "xingtianCleave"
+      ],
+      "physicalCardCount": 8,
+      "battleIntentCardCount": 2,
+      "physicalDamageCardCount": 6,
+      "aoePhysicalCardCount": 0,
+      "executeCardCount": 1,
+      "blockCardCount": 4,
+      "basicStrikeCount": 3,
+      "basicGuardCount": 4,
+      "hasReadyStance": true,
+      "hasBattleCry": true,
+      "hasHeavySlash": false,
+      "hasChainBlade": false,
+      "hasTraceCutter": true,
+      "hasArmyBreaker": true,
+      "hasXingtianCleave": true,
+      "hasTiangangBreak": false,
+      "phase": "gameOver",
+      "steps": 361
+    },
+    {
+      "seed": 2028187583,
+      "won": false,
+      "timedOut": false,
+      "deathFloor": 14,
+      "hp": 0,
+      "maxHp": 72,
+      "maxEnergy": 3,
+      "deckSize": 20,
+      "relicCount": 5,
+      "finalEnemyCount": 3,
+      "finalEnemyNames": [
+        "狐妖",
+        "铁尸",
+        "水鬼"
+      ],
+      "finalEnemyHp": [
+        {
+          "name": "狐妖",
+          "hp": 55,
+          "block": 0,
+          "maxHp": 85
+        },
+        {
+          "name": "铁尸",
+          "hp": 103,
+          "block": 12,
+          "maxHp": 103
+        },
+        {
+          "name": "水鬼",
+          "hp": 87,
+          "block": 0,
+          "maxHp": 87
+        }
+      ],
+      "finalPlayerStatuses": {
+        "curse": 6,
+        "spirit": 2,
+        "battleIntent": 26
+      },
+      "battleIntentStacksAtDeath": 26,
+      "handCardIds": [
+        "mountainEcho",
+        "guard",
+        "miasma",
+        "guard",
+        "strike"
+      ],
+      "drawPileCardIds": [
+        "stoneShell",
+        "strike",
+        "guard",
+        "guard",
+        "meditate"
+      ],
+      "discardPileCardIds": [
+        "bloodDemonLoop",
+        "strike",
+        "readyStance",
+        "jiaoScale",
+        "strike",
+        "strike",
+        "jiaoScale",
+        "returnTalisman",
+        "fiveThunder",
+        "strike"
+      ],
+      "deckCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "guard",
+        "guard",
+        "guard",
+        "meditate",
+        "jiaoScale",
+        "miasma",
+        "jiaoScale",
+        "readyStance",
+        "strike",
+        "mountainEcho",
+        "returnTalisman",
+        "stoneShell",
+        "bloodDemonLoop",
+        "fiveThunder"
+      ],
+      "physicalCardCount": 7,
+      "battleIntentCardCount": 1,
+      "physicalDamageCardCount": 6,
+      "aoePhysicalCardCount": 0,
+      "executeCardCount": 0,
+      "blockCardCount": 8,
+      "basicStrikeCount": 6,
+      "basicGuardCount": 4,
+      "hasReadyStance": true,
+      "hasBattleCry": false,
+      "hasHeavySlash": false,
+      "hasChainBlade": false,
+      "hasTraceCutter": false,
+      "hasArmyBreaker": false,
+      "hasXingtianCleave": false,
+      "hasTiangangBreak": false,
+      "phase": "gameOver",
+      "steps": 384
+    },
+    {
+      "seed": 2028280404,
+      "won": false,
+      "timedOut": true,
+      "deathFloor": 9,
+      "hp": 35,
+      "maxHp": 72,
+      "maxEnergy": 3,
+      "deckSize": 17,
+      "relicCount": 3,
+      "finalEnemyCount": 1,
+      "finalEnemyNames": [
+        "鬼将"
+      ],
+      "finalEnemyHp": [
+        {
+          "name": "鬼将",
+          "hp": 80,
+          "block": 0,
+          "maxHp": 80
+        }
+      ],
+      "finalPlayerStatuses": {
+        "burn": 1
+      },
+      "battleIntentStacksAtDeath": 0,
+      "handCardIds": [
+        "meditate",
+        "guard",
+        "strike"
+      ],
+      "drawPileCardIds": [
+        "foxFire",
+        "meditate",
+        "guard",
+        "strike",
+        "strike",
+        "guard",
+        "strike",
+        "foxFire",
+        "traceCutter",
+        "guard",
+        "strike",
+        "guard"
+      ],
+      "discardPileCardIds": [
+        "returnTalisman",
+        "returnTalisman"
+      ],
+      "deckCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "guard",
+        "guard",
+        "guard",
+        "meditate",
+        "guard",
+        "meditate",
+        "traceCutter",
+        "foxFire",
+        "foxFire",
+        "returnTalisman",
+        "returnTalisman"
+      ],
+      "physicalCardCount": 6,
+      "battleIntentCardCount": 0,
+      "physicalDamageCardCount": 6,
+      "aoePhysicalCardCount": 0,
+      "executeCardCount": 0,
+      "blockCardCount": 5,
+      "basicStrikeCount": 5,
+      "basicGuardCount": 5,
+      "hasReadyStance": false,
+      "hasBattleCry": false,
+      "hasHeavySlash": false,
+      "hasChainBlade": false,
+      "hasTraceCutter": true,
+      "hasArmyBreaker": false,
+      "hasXingtianCleave": false,
+      "hasTiangangBreak": false,
+      "phase": "combat",
+      "steps": 5000
+    },
+    {
+      "seed": 2028373225,
+      "won": false,
+      "timedOut": true,
+      "deathFloor": 11,
+      "hp": 58,
+      "maxHp": 80,
+      "maxEnergy": 3,
+      "deckSize": 17,
+      "relicCount": 3,
+      "finalEnemyCount": 2,
+      "finalEnemyNames": [
+        "小妖",
+        "小妖"
+      ],
+      "finalEnemyHp": [
+        {
+          "name": "小妖",
+          "hp": 58,
+          "block": 0,
+          "maxHp": 58
+        },
+        {
+          "name": "小妖",
+          "hp": 58,
+          "block": 0,
+          "maxHp": 58
+        }
+      ],
+      "finalPlayerStatuses": {
+        "spirit": 1
+      },
+      "battleIntentStacksAtDeath": 0,
+      "handCardIds": [
+        "guard",
+        "guard",
+        "strike"
+      ],
+      "drawPileCardIds": [
+        "panguMark",
+        "meditate",
+        "guard",
+        "guard",
+        "gatherAsh",
+        "strike",
+        "softBoneSmoke",
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "readyStance"
+      ],
+      "discardPileCardIds": [
+        "returnTalisman",
+        "returnTalisman"
+      ],
+      "deckCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "guard",
+        "guard",
+        "guard",
+        "meditate",
+        "panguMark",
+        "strike",
+        "gatherAsh",
+        "readyStance",
+        "softBoneSmoke",
+        "returnTalisman",
+        "returnTalisman"
+      ],
+      "physicalCardCount": 7,
+      "battleIntentCardCount": 1,
+      "physicalDamageCardCount": 6,
+      "aoePhysicalCardCount": 0,
+      "executeCardCount": 0,
+      "blockCardCount": 5,
+      "basicStrikeCount": 6,
+      "basicGuardCount": 4,
+      "hasReadyStance": true,
+      "hasBattleCry": false,
+      "hasHeavySlash": false,
+      "hasChainBlade": false,
+      "hasTraceCutter": false,
+      "hasArmyBreaker": false,
+      "hasXingtianCleave": false,
+      "hasTiangangBreak": false,
+      "phase": "combat",
+      "steps": 5000
+    },
+    {
+      "seed": 2028466046,
+      "won": false,
+      "timedOut": false,
+      "deathFloor": 14,
+      "hp": 0,
+      "maxHp": 72,
+      "maxEnergy": 3,
+      "deckSize": 18,
+      "relicCount": 4,
+      "finalEnemyCount": 3,
+      "finalEnemyNames": [
+        "水鬼",
+        "铁尸",
+        "狐妖"
+      ],
+      "finalEnemyHp": [
+        {
+          "name": "水鬼",
+          "hp": 9,
+          "block": 0,
+          "maxHp": 82
+        },
+        {
+          "name": "铁尸",
+          "hp": 97,
+          "block": 18,
+          "maxHp": 97
+        },
+        {
+          "name": "狐妖",
+          "hp": 54,
+          "block": 0,
+          "maxHp": 80
+        }
+      ],
+      "finalPlayerStatuses": {
+        "spirit": 2,
+        "curse": 3,
+        "battleIntent": 36,
+        "spikes": 2
+      },
+      "battleIntentStacksAtDeath": 36,
+      "handCardIds": [
+        "strike"
+      ],
+      "drawPileCardIds": [
+        "jiaoScale",
+        "strike",
+        "thornMail",
+        "guard",
+        "strike",
+        "meditate",
+        "traceCutter",
+        "strike",
+        "guard"
+      ],
+      "discardPileCardIds": [
+        "guard",
+        "guard",
+        "strike",
+        "readyStance",
+        "reflectArt",
+        "foxFire",
+        "fireRite",
+        "readyStance"
+      ],
+      "deckCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "guard",
+        "guard",
+        "guard",
+        "meditate",
+        "jiaoScale",
+        "readyStance",
+        "foxFire",
+        "thornMail",
+        "traceCutter",
+        "fireRite",
+        "readyStance",
+        "reflectArt"
+      ],
+      "physicalCardCount": 8,
+      "battleIntentCardCount": 2,
+      "physicalDamageCardCount": 6,
+      "aoePhysicalCardCount": 0,
+      "executeCardCount": 0,
+      "blockCardCount": 7,
+      "basicStrikeCount": 5,
+      "basicGuardCount": 4,
+      "hasReadyStance": true,
+      "hasBattleCry": false,
+      "hasHeavySlash": false,
+      "hasChainBlade": false,
+      "hasTraceCutter": true,
+      "hasArmyBreaker": false,
+      "hasXingtianCleave": false,
+      "hasTiangangBreak": false,
+      "phase": "gameOver",
+      "steps": 387
+    },
+    {
+      "seed": 2028558867,
+      "won": false,
+      "timedOut": false,
+      "deathFloor": 14,
+      "hp": 0,
+      "maxHp": 72,
+      "maxEnergy": 3,
+      "deckSize": 18,
+      "relicCount": 5,
+      "finalEnemyCount": 3,
+      "finalEnemyNames": [
+        "小妖",
+        "山魈",
+        "铁尸"
+      ],
+      "finalEnemyHp": [
+        {
+          "name": "小妖",
+          "hp": 6,
+          "block": 0,
+          "maxHp": 75
+        },
+        {
+          "name": "山魈",
+          "hp": 88,
+          "block": 7,
+          "maxHp": 88
+        },
+        {
+          "name": "铁尸",
+          "hp": 99,
+          "block": 11,
+          "maxHp": 99
+        }
+      ],
+      "finalPlayerStatuses": {
+        "spirit": 2,
+        "battleIntent": 21
+      },
+      "battleIntentStacksAtDeath": 21,
+      "handCardIds": [
+        "heavySlash"
+      ],
+      "drawPileCardIds": [
+        "chainBlade",
+        "meditate",
+        "bloodDemonLoop",
+        "strike"
+      ],
+      "discardPileCardIds": [
+        "strike",
+        "strike",
+        "meditate",
+        "strike",
+        "guard",
+        "guard",
+        "strike",
+        "strike",
+        "readyStance",
+        "guard",
+        "guard",
+        "strike",
+        "battleCry"
+      ],
+      "deckCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "guard",
+        "guard",
+        "guard",
+        "meditate",
+        "strike",
+        "strike",
+        "readyStance",
+        "heavySlash",
+        "chainBlade",
+        "battleCry",
+        "bloodDemonLoop",
+        "meditate"
+      ],
+      "physicalCardCount": 11,
+      "battleIntentCardCount": 2,
+      "physicalDamageCardCount": 9,
+      "aoePhysicalCardCount": 0,
+      "executeCardCount": 0,
+      "blockCardCount": 4,
+      "basicStrikeCount": 7,
+      "basicGuardCount": 4,
+      "hasReadyStance": true,
+      "hasBattleCry": true,
+      "hasHeavySlash": true,
+      "hasChainBlade": true,
+      "hasTraceCutter": false,
+      "hasArmyBreaker": false,
+      "hasXingtianCleave": false,
+      "hasTiangangBreak": false,
+      "phase": "gameOver",
+      "steps": 255
+    },
+    {
+      "seed": 2028651688,
+      "won": false,
+      "timedOut": false,
+      "deathFloor": 16,
+      "hp": 0,
+      "maxHp": 72,
+      "maxEnergy": 3,
+      "deckSize": 20,
+      "relicCount": 5,
+      "finalEnemyCount": 3,
+      "finalEnemyNames": [
+        "水鬼",
+        "水鬼",
+        "铁尸"
+      ],
+      "finalEnemyHp": [
+        {
+          "name": "水鬼",
+          "hp": 61,
+          "block": 0,
+          "maxHp": 102
+        },
+        {
+          "name": "水鬼",
+          "hp": 102,
+          "block": 0,
+          "maxHp": 102
+        },
+        {
+          "name": "铁尸",
+          "hp": 119,
+          "block": 0,
+          "maxHp": 119
+        }
+      ],
+      "finalPlayerStatuses": {
+        "curse": 3,
+        "spirit": 1,
+        "spikes": 2,
+        "battleIntent": 8
+      },
+      "battleIntentStacksAtDeath": 8,
+      "handCardIds": [],
+      "drawPileCardIds": [
+        "traceCutter",
+        "strike",
+        "readyStance",
+        "attractThunder",
+        "strike",
+        "attractThunder",
+        "strike",
+        "kunlunBreath",
+        "strike",
+        "battleCry",
+        "guard",
+        "guard",
+        "strike",
+        "guard",
+        "strike"
+      ],
+      "discardPileCardIds": [
+        "xingtianCleave",
+        "reflectArt",
+        "meditate",
+        "guard",
+        "battleCry"
+      ],
+      "deckCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "guard",
+        "guard",
+        "guard",
+        "meditate",
+        "attractThunder",
+        "readyStance",
+        "attractThunder",
+        "kunlunBreath",
+        "strike",
+        "battleCry",
+        "battleCry",
+        "reflectArt",
+        "traceCutter",
+        "xingtianCleave"
+      ],
+      "physicalCardCount": 11,
+      "battleIntentCardCount": 3,
+      "physicalDamageCardCount": 8,
+      "aoePhysicalCardCount": 0,
+      "executeCardCount": 1,
+      "blockCardCount": 5,
+      "basicStrikeCount": 6,
+      "basicGuardCount": 4,
+      "hasReadyStance": true,
+      "hasBattleCry": true,
+      "hasHeavySlash": false,
+      "hasChainBlade": false,
+      "hasTraceCutter": true,
+      "hasArmyBreaker": false,
+      "hasXingtianCleave": true,
+      "hasTiangangBreak": false,
+      "phase": "gameOver",
+      "steps": 359
+    },
+    {
+      "seed": 2028744509,
+      "won": false,
+      "timedOut": false,
+      "deathFloor": 13,
+      "hp": 0,
+      "maxHp": 80,
+      "maxEnergy": 3,
+      "deckSize": 18,
+      "relicCount": 5,
+      "finalEnemyCount": 2,
+      "finalEnemyNames": [
+        "山魈",
+        "水鬼"
+      ],
+      "finalEnemyHp": [
+        {
+          "name": "山魈",
+          "hp": 41,
+          "block": 0,
+          "maxHp": 82
+        },
+        {
+          "name": "水鬼",
+          "hp": 64,
+          "block": 0,
+          "maxHp": 78
+        }
+      ],
+      "finalPlayerStatuses": {
+        "curse": 11,
+        "spirit": 2
+      },
+      "battleIntentStacksAtDeath": 0,
+      "handCardIds": [
+        "strike",
+        "miasma",
+        "strike"
+      ],
+      "drawPileCardIds": [
+        "guard",
+        "heavySlash",
+        "guard",
+        "battleCry",
+        "dragonRain",
+        "strike",
+        "guard"
+      ],
+      "discardPileCardIds": [
+        "guard",
+        "yellowCharm",
+        "meditate",
+        "strike",
+        "traceCutter",
+        "returnTalisman",
+        "mountainEcho",
+        "fireRite"
+      ],
+      "deckCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "guard",
+        "guard",
+        "guard",
+        "meditate",
+        "miasma",
+        "dragonRain",
+        "heavySlash",
+        "yellowCharm",
+        "fireRite",
+        "battleCry",
+        "traceCutter",
+        "returnTalisman",
+        "mountainEcho"
+      ],
+      "physicalCardCount": 7,
+      "battleIntentCardCount": 1,
+      "physicalDamageCardCount": 6,
+      "aoePhysicalCardCount": 0,
+      "executeCardCount": 0,
+      "blockCardCount": 5,
+      "basicStrikeCount": 4,
+      "basicGuardCount": 4,
+      "hasReadyStance": false,
+      "hasBattleCry": true,
+      "hasHeavySlash": true,
+      "hasChainBlade": false,
+      "hasTraceCutter": true,
+      "hasArmyBreaker": false,
+      "hasXingtianCleave": false,
+      "hasTiangangBreak": false,
+      "phase": "gameOver",
+      "steps": 292
+    },
+    {
+      "seed": 2028837330,
+      "won": false,
+      "timedOut": false,
+      "deathFloor": 12,
+      "hp": 0,
+      "maxHp": 72,
+      "maxEnergy": 3,
+      "deckSize": 17,
+      "relicCount": 5,
+      "finalEnemyCount": 1,
+      "finalEnemyNames": [
+        "判官"
+      ],
+      "finalEnemyHp": [
+        {
+          "name": "判官",
+          "hp": 49,
+          "block": 0,
+          "maxHp": 160
+        }
+      ],
+      "finalPlayerStatuses": {
+        "spirit": 4
+      },
+      "battleIntentStacksAtDeath": 0,
+      "handCardIds": [
+        "miasma",
+        "strike"
+      ],
+      "drawPileCardIds": [
+        "meditate",
+        "guard",
+        "bloodDemonLoop",
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "strike",
+        "returnTalisman",
+        "thunderCharm",
+        "guard",
+        "flameTalisman"
+      ],
+      "discardPileCardIds": [
+        "guard",
+        "fireRite",
+        "strike"
+      ],
+      "deckCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "guard",
+        "guard",
+        "guard",
+        "meditate",
+        "strike",
+        "thunderCharm",
+        "flameTalisman",
+        "miasma",
+        "fireRite",
+        "returnTalisman",
+        "bloodDemonLoop"
+      ],
+      "physicalCardCount": 6,
+      "battleIntentCardCount": 0,
+      "physicalDamageCardCount": 6,
+      "aoePhysicalCardCount": 0,
+      "executeCardCount": 0,
+      "blockCardCount": 4,
+      "basicStrikeCount": 6,
+      "basicGuardCount": 4,
+      "hasReadyStance": false,
+      "hasBattleCry": false,
+      "hasHeavySlash": false,
+      "hasChainBlade": false,
+      "hasTraceCutter": false,
+      "hasArmyBreaker": false,
+      "hasXingtianCleave": false,
+      "hasTiangangBreak": false,
+      "phase": "gameOver",
+      "steps": 341
+    },
+    {
+      "seed": 2028930151,
+      "won": false,
+      "timedOut": false,
+      "deathFloor": 14,
+      "hp": 0,
+      "maxHp": 72,
+      "maxEnergy": 3,
+      "deckSize": 15,
+      "relicCount": 5,
+      "finalEnemyCount": 2,
+      "finalEnemyNames": [
+        "山魈",
+        "小妖"
+      ],
+      "finalEnemyHp": [
+        {
+          "name": "山魈",
+          "hp": 55,
+          "block": 7,
+          "maxHp": 88
+        },
+        {
+          "name": "小妖",
+          "hp": 69,
+          "block": 0,
+          "maxHp": 75
+        }
+      ],
+      "finalPlayerStatuses": {
+        "spirit": 3
+      },
+      "battleIntentStacksAtDeath": 0,
+      "handCardIds": [
+        "discordCharm",
+        "strike"
+      ],
+      "drawPileCardIds": [
+        "strike"
+      ],
+      "discardPileCardIds": [
+        "guard",
+        "guard",
+        "guard",
+        "attractThunder",
+        "guard",
+        "meditate",
+        "foxFire",
+        "strike",
+        "stasisCharm",
+        "strike",
+        "strike",
+        "strike"
+      ],
+      "deckCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "guard",
+        "guard",
+        "guard",
+        "meditate",
+        "attractThunder",
+        "foxFire",
+        "discordCharm",
+        "strike",
+        "stasisCharm"
+      ],
+      "physicalCardCount": 6,
+      "battleIntentCardCount": 0,
+      "physicalDamageCardCount": 6,
+      "aoePhysicalCardCount": 0,
+      "executeCardCount": 0,
+      "blockCardCount": 4,
+      "basicStrikeCount": 6,
+      "basicGuardCount": 4,
+      "hasReadyStance": false,
+      "hasBattleCry": false,
+      "hasHeavySlash": false,
+      "hasChainBlade": false,
+      "hasTraceCutter": false,
+      "hasArmyBreaker": false,
+      "hasXingtianCleave": false,
+      "hasTiangangBreak": false,
+      "phase": "gameOver",
+      "steps": 349
+    },
+    {
+      "seed": 2029022972,
+      "won": false,
+      "timedOut": false,
+      "deathFloor": 12,
+      "hp": 0,
+      "maxHp": 72,
+      "maxEnergy": 3,
+      "deckSize": 17,
+      "relicCount": 4,
+      "finalEnemyCount": 1,
+      "finalEnemyNames": [
+        "判官"
+      ],
+      "finalEnemyHp": [
+        {
+          "name": "判官",
+          "hp": 44,
+          "block": 0,
+          "maxHp": 169
+        }
+      ],
+      "finalPlayerStatuses": {
+        "curse": 2,
+        "spirit": 2,
+        "battleIntent": 33
+      },
+      "battleIntentStacksAtDeath": 33,
+      "handCardIds": [
+        "shellTap"
+      ],
+      "drawPileCardIds": [
+        "strike",
+        "xingtianCleave",
+        "meditate",
+        "readyStance",
+        "strike",
+        "meditate",
+        "guard",
+        "strike",
+        "guard",
+        "strike",
+        "readyStance",
+        "guard"
+      ],
+      "discardPileCardIds": [
+        "guard",
+        "ghostNeedle",
+        "strike",
+        "battleCry"
+      ],
+      "deckCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "guard",
+        "guard",
+        "guard",
+        "meditate",
+        "ghostNeedle",
+        "meditate",
+        "readyStance",
+        "shellTap",
+        "readyStance",
+        "xingtianCleave",
+        "battleCry"
+      ],
+      "physicalCardCount": 9,
+      "battleIntentCardCount": 3,
+      "physicalDamageCardCount": 6,
+      "aoePhysicalCardCount": 0,
+      "executeCardCount": 1,
+      "blockCardCount": 5,
+      "basicStrikeCount": 5,
+      "basicGuardCount": 4,
+      "hasReadyStance": true,
+      "hasBattleCry": true,
+      "hasHeavySlash": false,
+      "hasChainBlade": false,
+      "hasTraceCutter": false,
+      "hasArmyBreaker": false,
+      "hasXingtianCleave": true,
+      "hasTiangangBreak": false,
+      "phase": "gameOver",
+      "steps": 286
+    },
+    {
+      "seed": 2029115793,
+      "won": false,
+      "timedOut": false,
+      "deathFloor": 15,
+      "hp": 0,
+      "maxHp": 80,
+      "maxEnergy": 6,
+      "deckSize": 20,
+      "relicCount": 5,
+      "finalEnemyCount": 1,
+      "finalEnemyNames": [
+        "魔尊"
+      ],
+      "finalEnemyHp": [
+        {
+          "name": "魔尊",
+          "hp": 6,
+          "block": 0,
+          "maxHp": 204
+        }
+      ],
+      "finalPlayerStatuses": {
+        "spirit": 3
+      },
+      "battleIntentStacksAtDeath": 0,
+      "handCardIds": [
+        "guard"
+      ],
+      "drawPileCardIds": [
+        "returnTalisman",
+        "echoBell",
+        "guard",
+        "thornMail",
+        "shellTap"
+      ],
+      "discardPileCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "thunderPool",
+        "jiaoScale",
+        "nineHeavenTribulation",
+        "meditate",
+        "chainBlade",
+        "guard",
+        "guard",
+        "guard",
+        "strike",
+        "strike",
+        "doomSutra"
+      ],
+      "deckCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "guard",
+        "guard",
+        "guard",
+        "meditate",
+        "jiaoScale",
+        "shellTap",
+        "guard",
+        "thornMail",
+        "chainBlade",
+        "echoBell",
+        "returnTalisman",
+        "thunderPool",
+        "nineHeavenTribulation",
+        "doomSutra"
+      ],
+      "physicalCardCount": 6,
+      "battleIntentCardCount": 0,
+      "physicalDamageCardCount": 6,
+      "aoePhysicalCardCount": 0,
+      "executeCardCount": 0,
+      "blockCardCount": 9,
+      "basicStrikeCount": 5,
+      "basicGuardCount": 5,
+      "hasReadyStance": false,
+      "hasBattleCry": false,
+      "hasHeavySlash": false,
+      "hasChainBlade": true,
+      "hasTraceCutter": false,
+      "hasArmyBreaker": false,
+      "hasXingtianCleave": false,
+      "hasTiangangBreak": false,
+      "phase": "gameOver",
+      "steps": 605
+    },
+    {
+      "seed": 2029208614,
+      "won": false,
+      "timedOut": false,
+      "deathFloor": 13,
+      "hp": 0,
+      "maxHp": 72,
+      "maxEnergy": 3,
+      "deckSize": 20,
+      "relicCount": 5,
+      "finalEnemyCount": 3,
+      "finalEnemyNames": [
+        "狐妖",
+        "小妖",
+        "山魈"
+      ],
+      "finalEnemyHp": [
+        {
+          "name": "狐妖",
+          "hp": 52,
+          "block": 0,
+          "maxHp": 82
+        },
+        {
+          "name": "小妖",
+          "hp": 75,
+          "block": 0,
+          "maxHp": 75
+        },
+        {
+          "name": "山魈",
+          "hp": 88,
+          "block": 0,
+          "maxHp": 88
+        }
+      ],
+      "finalPlayerStatuses": {
+        "curse": 4,
+        "spirit": 1,
+        "battleIntent": 14
+      },
+      "battleIntentStacksAtDeath": 14,
+      "handCardIds": [],
+      "drawPileCardIds": [
+        "xingtianCleave",
+        "battleCry",
+        "stoneShell",
+        "guard",
+        "heavySlash",
+        "guard",
+        "strike",
+        "meditate",
+        "strike",
+        "guard",
+        "strike",
+        "numbingThorn",
+        "strike",
+        "strike",
+        "reflectArt"
+      ],
+      "discardPileCardIds": [
+        "strike",
+        "chainBlade",
+        "readyStance",
+        "battleCry",
+        "guard"
+      ],
+      "deckCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "guard",
+        "guard",
+        "guard",
+        "meditate",
+        "readyStance",
+        "strike",
+        "numbingThorn",
+        "reflectArt",
+        "heavySlash",
+        "battleCry",
+        "battleCry",
+        "xingtianCleave",
+        "stoneShell",
+        "chainBlade"
+      ],
+      "physicalCardCount": 12,
+      "battleIntentCardCount": 3,
+      "physicalDamageCardCount": 9,
+      "aoePhysicalCardCount": 0,
+      "executeCardCount": 1,
+      "blockCardCount": 6,
+      "basicStrikeCount": 6,
+      "basicGuardCount": 4,
+      "hasReadyStance": true,
+      "hasBattleCry": true,
+      "hasHeavySlash": true,
+      "hasChainBlade": true,
+      "hasTraceCutter": false,
+      "hasArmyBreaker": false,
+      "hasXingtianCleave": true,
+      "hasTiangangBreak": false,
+      "phase": "gameOver",
+      "steps": 282
+    },
+    {
+      "seed": 2029301435,
+      "won": false,
+      "timedOut": false,
+      "deathFloor": 14,
+      "hp": 0,
+      "maxHp": 72,
+      "maxEnergy": 3,
+      "deckSize": 19,
+      "relicCount": 5,
+      "finalEnemyCount": 2,
+      "finalEnemyNames": [
+        "小妖",
+        "狐妖"
+      ],
+      "finalEnemyHp": [
+        {
+          "name": "小妖",
+          "hp": 60,
+          "block": 0,
+          "maxHp": 82
+        },
+        {
+          "name": "狐妖",
+          "hp": 66,
+          "block": 0,
+          "maxHp": 88
+        }
+      ],
+      "finalPlayerStatuses": {
+        "spirit": 2,
+        "battleIntent": 19,
+        "burn": 2
+      },
+      "battleIntentStacksAtDeath": 19,
+      "handCardIds": [
+        "strike",
+        "strike",
+        "strike"
+      ],
+      "drawPileCardIds": [
+        "guard",
+        "fiveThunder",
+        "returnTalisman",
+        "guard",
+        "traceCutter",
+        "strike",
+        "readyStance",
+        "meditate",
+        "meditate",
+        "strike",
+        "guard",
+        "guard",
+        "softBoneSmoke",
+        "guard"
+      ],
+      "discardPileCardIds": [
+        "armyBreaker",
+        "strike"
+      ],
+      "deckCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "guard",
+        "guard",
+        "guard",
+        "meditate",
+        "meditate",
+        "readyStance",
+        "strike",
+        "guard",
+        "softBoneSmoke",
+        "traceCutter",
+        "returnTalisman",
+        "armyBreaker",
+        "fiveThunder"
+      ],
+      "physicalCardCount": 9,
+      "battleIntentCardCount": 1,
+      "physicalDamageCardCount": 8,
+      "aoePhysicalCardCount": 0,
+      "executeCardCount": 0,
+      "blockCardCount": 6,
+      "basicStrikeCount": 6,
+      "basicGuardCount": 5,
+      "hasReadyStance": true,
+      "hasBattleCry": false,
+      "hasHeavySlash": false,
+      "hasChainBlade": false,
+      "hasTraceCutter": true,
+      "hasArmyBreaker": true,
+      "hasXingtianCleave": false,
+      "hasTiangangBreak": false,
+      "phase": "gameOver",
+      "steps": 434
+    },
+    {
+      "seed": 2029394256,
+      "won": false,
+      "timedOut": false,
+      "deathFloor": 17,
+      "hp": 0,
+      "maxHp": 80,
+      "maxEnergy": 5,
+      "deckSize": 19,
+      "relicCount": 5,
+      "finalEnemyCount": 3,
+      "finalEnemyNames": [
+        "铁尸",
+        "水鬼",
+        "小妖"
+      ],
+      "finalEnemyHp": [
+        {
+          "name": "铁尸",
+          "hp": 25,
+          "block": 15,
+          "maxHp": 144
+        },
+        {
+          "name": "水鬼",
+          "hp": 124,
+          "block": 0,
+          "maxHp": 124
+        },
+        {
+          "name": "小妖",
+          "hp": 113,
+          "block": 0,
+          "maxHp": 113
+        }
+      ],
+      "finalPlayerStatuses": {
+        "curse": 8,
+        "spirit": 2
+      },
+      "battleIntentStacksAtDeath": 0,
+      "handCardIds": [
+        "strike"
+      ],
+      "drawPileCardIds": [
+        "guard",
+        "heavySlash",
+        "strike",
+        "strike",
+        "traceCutter",
+        "meditate",
+        "softBoneSmoke",
+        "nineHeavenTribulation",
+        "bindingRope"
+      ],
+      "discardPileCardIds": [
+        "foxFire",
+        "heavySlash",
+        "strike",
+        "miasma",
+        "guard",
+        "guard",
+        "guard",
+        "armyBreaker",
+        "strike"
+      ],
+      "deckCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "guard",
+        "guard",
+        "guard",
+        "meditate",
+        "foxFire",
+        "miasma",
+        "bindingRope",
+        "heavySlash",
+        "traceCutter",
+        "softBoneSmoke",
+        "heavySlash",
+        "nineHeavenTribulation",
+        "armyBreaker"
+      ],
+      "physicalCardCount": 9,
+      "battleIntentCardCount": 0,
+      "physicalDamageCardCount": 9,
+      "aoePhysicalCardCount": 0,
+      "executeCardCount": 0,
+      "blockCardCount": 5,
+      "basicStrikeCount": 5,
+      "basicGuardCount": 4,
+      "hasReadyStance": false,
+      "hasBattleCry": false,
+      "hasHeavySlash": true,
+      "hasChainBlade": false,
+      "hasTraceCutter": true,
+      "hasArmyBreaker": true,
+      "hasXingtianCleave": false,
+      "hasTiangangBreak": false,
+      "phase": "gameOver",
+      "steps": 500
+    },
+    {
+      "seed": 2029487077,
+      "won": false,
+      "timedOut": false,
+      "deathFloor": 12,
+      "hp": 0,
+      "maxHp": 72,
+      "maxEnergy": 3,
+      "deckSize": 18,
+      "relicCount": 4,
+      "finalEnemyCount": 1,
+      "finalEnemyNames": [
+        "判官"
+      ],
+      "finalEnemyHp": [
+        {
+          "name": "判官",
+          "hp": 42,
+          "block": 0,
+          "maxHp": 169
+        }
+      ],
+      "finalPlayerStatuses": {
+        "spirit": 4,
+        "battleIntent": 12
+      },
+      "battleIntentStacksAtDeath": 12,
+      "handCardIds": [],
+      "drawPileCardIds": [
+        "strike",
+        "chainBlade",
+        "strike",
+        "strike",
+        "strike",
+        "miasma"
+      ],
+      "discardPileCardIds": [
+        "xingtianCleave",
+        "attractThunder",
+        "guard",
+        "meditate",
+        "thunderPool",
+        "breakArmor",
+        "strike",
+        "guard",
+        "readyStance",
+        "readyStance",
+        "guard",
+        "guard"
+      ],
+      "deckCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "guard",
+        "guard",
+        "guard",
+        "meditate",
+        "readyStance",
+        "miasma",
+        "attractThunder",
+        "breakArmor",
+        "thunderPool",
+        "chainBlade",
+        "xingtianCleave",
+        "readyStance"
+      ],
+      "physicalCardCount": 9,
+      "battleIntentCardCount": 2,
+      "physicalDamageCardCount": 7,
+      "aoePhysicalCardCount": 0,
+      "executeCardCount": 1,
+      "blockCardCount": 4,
+      "basicStrikeCount": 5,
+      "basicGuardCount": 4,
+      "hasReadyStance": true,
+      "hasBattleCry": false,
+      "hasHeavySlash": false,
+      "hasChainBlade": true,
+      "hasTraceCutter": false,
+      "hasArmyBreaker": false,
+      "hasXingtianCleave": true,
+      "hasTiangangBreak": false,
+      "phase": "gameOver",
+      "steps": 277
+    },
+    {
+      "seed": 2029579898,
+      "won": false,
+      "timedOut": false,
+      "deathFloor": 16,
+      "hp": 0,
+      "maxHp": 72,
+      "maxEnergy": 3,
+      "deckSize": 19,
+      "relicCount": 5,
+      "finalEnemyCount": 3,
+      "finalEnemyNames": [
+        "狐妖",
+        "水鬼",
+        "山魈"
+      ],
+      "finalEnemyHp": [
+        {
+          "name": "狐妖",
+          "hp": 66,
+          "block": 0,
+          "maxHp": 107
+        },
+        {
+          "name": "水鬼",
+          "hp": 109,
+          "block": 0,
+          "maxHp": 109
+        },
+        {
+          "name": "山魈",
+          "hp": 114,
+          "block": 0,
+          "maxHp": 114
+        }
+      ],
+      "finalPlayerStatuses": {
+        "curse": 5,
+        "spirit": 1,
+        "battleIntent": 6
+      },
+      "battleIntentStacksAtDeath": 6,
+      "handCardIds": [
+        "strike",
+        "xingtianCleave"
+      ],
+      "drawPileCardIds": [
+        "meditate",
+        "strike",
+        "guard",
+        "thunderCharm",
+        "strike",
+        "heavySlash",
+        "bloodDemonLoop",
+        "echoBell",
+        "strike",
+        "traceCutter",
+        "strike",
+        "guard",
+        "strike",
+        "guard"
+      ],
+      "discardPileCardIds": [
+        "guard",
+        "xingtianCleave",
+        "readyStance"
+      ],
+      "deckCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "guard",
+        "guard",
+        "guard",
+        "meditate",
+        "strike",
+        "readyStance",
+        "heavySlash",
+        "thunderCharm",
+        "echoBell",
+        "bloodDemonLoop",
+        "xingtianCleave",
+        "traceCutter",
+        "xingtianCleave"
+      ],
+      "physicalCardCount": 11,
+      "battleIntentCardCount": 1,
+      "physicalDamageCardCount": 10,
+      "aoePhysicalCardCount": 0,
+      "executeCardCount": 2,
+      "blockCardCount": 5,
+      "basicStrikeCount": 6,
+      "basicGuardCount": 4,
+      "hasReadyStance": true,
+      "hasBattleCry": false,
+      "hasHeavySlash": true,
+      "hasChainBlade": false,
+      "hasTraceCutter": true,
+      "hasArmyBreaker": false,
+      "hasXingtianCleave": true,
+      "hasTiangangBreak": false,
+      "phase": "gameOver",
+      "steps": 355
+    },
+    {
+      "seed": 2029672719,
+      "won": false,
+      "timedOut": false,
+      "deathFloor": 14,
+      "hp": 0,
+      "maxHp": 72,
+      "maxEnergy": 4,
+      "deckSize": 16,
+      "relicCount": 5,
+      "finalEnemyCount": 2,
+      "finalEnemyNames": [
+        "狐妖",
+        "山魈"
+      ],
+      "finalEnemyHp": [
+        {
+          "name": "狐妖",
+          "hp": 21,
+          "block": 0,
+          "maxHp": 92
+        },
+        {
+          "name": "山魈",
+          "hp": 97,
+          "block": 9,
+          "maxHp": 99
+        }
+      ],
+      "finalPlayerStatuses": {
+        "spirit": 3,
+        "battleIntent": 35,
+        "burn": 1
+      },
+      "battleIntentStacksAtDeath": 35,
+      "handCardIds": [],
+      "drawPileCardIds": [
+        "returnTalisman",
+        "shanHaiCall",
+        "thunderCharm",
+        "guard",
+        "guard",
+        "guard",
+        "armyBreaker",
+        "guard",
+        "dragonRain",
+        "battleCry",
+        "attractThunder"
+      ],
+      "discardPileCardIds": [
+        "strike",
+        "meditate",
+        "strike",
+        "strike",
+        "strike"
+      ],
+      "deckCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "guard",
+        "guard",
+        "guard",
+        "meditate",
+        "thunderCharm",
+        "dragonRain",
+        "shanHaiCall",
+        "armyBreaker",
+        "attractThunder",
+        "battleCry",
+        "returnTalisman"
+      ],
+      "physicalCardCount": 6,
+      "battleIntentCardCount": 1,
+      "physicalDamageCardCount": 5,
+      "aoePhysicalCardCount": 0,
+      "executeCardCount": 0,
+      "blockCardCount": 4,
+      "basicStrikeCount": 4,
+      "basicGuardCount": 4,
+      "hasReadyStance": false,
+      "hasBattleCry": true,
+      "hasHeavySlash": false,
+      "hasChainBlade": false,
+      "hasTraceCutter": false,
+      "hasArmyBreaker": true,
+      "hasXingtianCleave": false,
+      "hasTiangangBreak": false,
+      "phase": "gameOver",
+      "steps": 285
+    },
+    {
+      "seed": 2029765540,
+      "won": false,
+      "timedOut": false,
+      "deathFloor": 14,
+      "hp": 0,
+      "maxHp": 72,
+      "maxEnergy": 3,
+      "deckSize": 17,
+      "relicCount": 4,
+      "finalEnemyCount": 4,
+      "finalEnemyNames": [
+        "山魈",
+        "水鬼",
+        "铁尸",
+        "狐妖"
+      ],
+      "finalEnemyHp": [
+        {
+          "name": "山魈",
+          "hp": 39,
+          "block": 0,
+          "maxHp": 86
+        },
+        {
+          "name": "水鬼",
+          "hp": 82,
+          "block": 0,
+          "maxHp": 82
+        },
+        {
+          "name": "铁尸",
+          "hp": 97,
+          "block": 0,
+          "maxHp": 97
+        },
+        {
+          "name": "狐妖",
+          "hp": 80,
+          "block": 0,
+          "maxHp": 80
+        }
+      ],
+      "finalPlayerStatuses": {
+        "spirit": 2,
+        "curse": 4,
+        "burn": 1
+      },
+      "battleIntentStacksAtDeath": 0,
+      "handCardIds": [],
+      "drawPileCardIds": [
+        "guard",
+        "meditate",
+        "battleCry",
+        "strike",
+        "readyStance",
+        "traceCutter",
+        "guard",
+        "strike"
+      ],
+      "discardPileCardIds": [
+        "yellowCharm",
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "meditate",
+        "guard",
+        "strike",
+        "strike"
+      ],
+      "deckCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "guard",
+        "guard",
+        "guard",
+        "meditate",
+        "readyStance",
+        "meditate",
+        "strike",
+        "yellowCharm",
+        "battleCry",
+        "strike",
+        "traceCutter"
+      ],
+      "physicalCardCount": 10,
+      "battleIntentCardCount": 2,
+      "physicalDamageCardCount": 8,
+      "aoePhysicalCardCount": 0,
+      "executeCardCount": 0,
+      "blockCardCount": 4,
+      "basicStrikeCount": 7,
+      "basicGuardCount": 4,
+      "hasReadyStance": true,
+      "hasBattleCry": true,
+      "hasHeavySlash": false,
+      "hasChainBlade": false,
+      "hasTraceCutter": true,
+      "hasArmyBreaker": false,
+      "hasXingtianCleave": false,
+      "hasTiangangBreak": false,
+      "phase": "gameOver",
+      "steps": 281
+    },
+    {
+      "seed": 2029858361,
+      "won": false,
+      "timedOut": false,
+      "deathFloor": 16,
+      "hp": 0,
+      "maxHp": 80,
+      "maxEnergy": 4,
+      "deckSize": 20,
+      "relicCount": 5,
+      "finalEnemyCount": 2,
+      "finalEnemyNames": [
+        "山魈",
+        "小妖"
+      ],
+      "finalEnemyHp": [
+        {
+          "name": "山魈",
+          "hp": 48,
+          "block": 0,
+          "maxHp": 123
+        },
+        {
+          "name": "小妖",
+          "hp": 46,
+          "block": 0,
+          "maxHp": 108
+        }
+      ],
+      "finalPlayerStatuses": {
+        "spirit": 4,
+        "battleIntent": 13
+      },
+      "battleIntentStacksAtDeath": 13,
+      "handCardIds": [],
+      "drawPileCardIds": [
+        "venomIncense",
+        "returnTalisman",
+        "bloodNeedle",
+        "xingtianCleave",
+        "meditate",
+        "flameTalisman"
+      ],
+      "discardPileCardIds": [
+        "xingtianCleave",
+        "guard",
+        "strike",
+        "thunderPool",
+        "traceCutter",
+        "traceCutter",
+        "strike",
+        "readyStance",
+        "guard",
+        "guard",
+        "meditate",
+        "thunderPool",
+        "strike",
+        "guard"
+      ],
+      "deckCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "guard",
+        "guard",
+        "guard",
+        "meditate",
+        "meditate",
+        "readyStance",
+        "bloodNeedle",
+        "flameTalisman",
+        "thunderPool",
+        "thunderPool",
+        "traceCutter",
+        "returnTalisman",
+        "traceCutter",
+        "xingtianCleave",
+        "venomIncense",
+        "xingtianCleave"
+      ],
+      "physicalCardCount": 8,
+      "battleIntentCardCount": 1,
+      "physicalDamageCardCount": 7,
+      "aoePhysicalCardCount": 0,
+      "executeCardCount": 2,
+      "blockCardCount": 4,
+      "basicStrikeCount": 3,
+      "basicGuardCount": 4,
+      "hasReadyStance": true,
+      "hasBattleCry": false,
+      "hasHeavySlash": false,
+      "hasChainBlade": false,
+      "hasTraceCutter": true,
+      "hasArmyBreaker": false,
+      "hasXingtianCleave": true,
+      "hasTiangangBreak": false,
+      "phase": "gameOver",
+      "steps": 381
+    },
+    {
+      "seed": 2029951182,
+      "won": false,
+      "timedOut": false,
+      "deathFloor": 14,
+      "hp": 0,
+      "maxHp": 80,
+      "maxEnergy": 4,
+      "deckSize": 17,
+      "relicCount": 4,
+      "finalEnemyCount": 4,
+      "finalEnemyNames": [
+        "山魈",
+        "狐妖",
+        "水鬼",
+        "小妖"
+      ],
+      "finalEnemyHp": [
+        {
+          "name": "山魈",
+          "hp": 34,
+          "block": 8,
+          "maxHp": 91
+        },
+        {
+          "name": "狐妖",
+          "hp": 84,
+          "block": 0,
+          "maxHp": 84
+        },
+        {
+          "name": "水鬼",
+          "hp": 87,
+          "block": 0,
+          "maxHp": 87
+        },
+        {
+          "name": "小妖",
+          "hp": 78,
+          "block": 0,
+          "maxHp": 78
+        }
+      ],
+      "finalPlayerStatuses": {
+        "spirit": 3,
+        "spikes": 2,
+        "curse": 2,
+        "battleIntent": 8
+      },
+      "battleIntentStacksAtDeath": 8,
+      "handCardIds": [],
+      "drawPileCardIds": [
+        "flameTalisman",
+        "meditate"
+      ],
+      "discardPileCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "guard",
+        "thornMail",
+        "guard",
+        "returnTalisman",
+        "strike",
+        "guard",
+        "bloodDemonLoop",
+        "attractThunder",
+        "strike",
+        "strike",
+        "battleCry"
+      ],
+      "deckCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "guard",
+        "guard",
+        "guard",
+        "meditate",
+        "attractThunder",
+        "flameTalisman",
+        "strike",
+        "thornMail",
+        "battleCry",
+        "returnTalisman",
+        "bloodDemonLoop"
+      ],
+      "physicalCardCount": 7,
+      "battleIntentCardCount": 1,
+      "physicalDamageCardCount": 6,
+      "aoePhysicalCardCount": 0,
+      "executeCardCount": 0,
+      "blockCardCount": 5,
+      "basicStrikeCount": 6,
+      "basicGuardCount": 4,
+      "hasReadyStance": false,
+      "hasBattleCry": true,
+      "hasHeavySlash": false,
+      "hasChainBlade": false,
+      "hasTraceCutter": false,
+      "hasArmyBreaker": false,
+      "hasXingtianCleave": false,
+      "hasTiangangBreak": false,
+      "phase": "gameOver",
+      "steps": 412
+    },
+    {
+      "seed": 2030044003,
+      "won": false,
+      "timedOut": false,
+      "deathFloor": 10,
+      "hp": 0,
+      "maxHp": 72,
+      "maxEnergy": 3,
+      "deckSize": 13,
+      "relicCount": 3,
+      "finalEnemyCount": 1,
+      "finalEnemyNames": [
+        "铁尸"
+      ],
+      "finalEnemyHp": [
+        {
+          "name": "铁尸",
+          "hp": 60,
+          "block": 0,
+          "maxHp": 74
+        }
+      ],
+      "finalPlayerStatuses": {
+        "spirit": 2
+      },
+      "battleIntentStacksAtDeath": 0,
+      "handCardIds": [
+        "guard",
+        "guard",
+        "strike"
+      ],
+      "drawPileCardIds": [],
+      "discardPileCardIds": [
+        "guard",
+        "meditate",
+        "dragonRain",
+        "strike",
+        "shanHaiCall",
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "bloodDemonLoop"
+      ],
+      "deckCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "guard",
+        "guard",
+        "guard",
+        "meditate",
+        "dragonRain",
+        "shanHaiCall",
+        "bloodDemonLoop"
+      ],
+      "physicalCardCount": 5,
+      "battleIntentCardCount": 0,
+      "physicalDamageCardCount": 5,
+      "aoePhysicalCardCount": 0,
+      "executeCardCount": 0,
+      "blockCardCount": 4,
+      "basicStrikeCount": 5,
+      "basicGuardCount": 4,
+      "hasReadyStance": false,
+      "hasBattleCry": false,
+      "hasHeavySlash": false,
+      "hasChainBlade": false,
+      "hasTraceCutter": false,
+      "hasArmyBreaker": false,
+      "hasXingtianCleave": false,
+      "hasTiangangBreak": false,
+      "phase": "gameOver",
+      "steps": 246
+    },
+    {
+      "seed": 2030136824,
+      "won": false,
+      "timedOut": false,
+      "deathFloor": 10,
+      "hp": 0,
+      "maxHp": 72,
+      "maxEnergy": 3,
+      "deckSize": 14,
+      "relicCount": 5,
+      "finalEnemyCount": 1,
+      "finalEnemyNames": [
+        "水鬼"
+      ],
+      "finalEnemyHp": [
+        {
+          "name": "水鬼",
+          "hp": 12,
+          "block": 0,
+          "maxHp": 62
+        }
+      ],
+      "finalPlayerStatuses": {
+        "curse": 3,
+        "spirit": 4,
+        "battleIntent": 36
+      },
+      "battleIntentStacksAtDeath": 36,
+      "handCardIds": [
+        "strike",
+        "strike"
+      ],
+      "drawPileCardIds": [
+        "meditate",
+        "guard",
+        "strike",
+        "guard",
+        "battleCry",
+        "readyStance"
+      ],
+      "discardPileCardIds": [
+        "guard",
+        "kunlunBreath",
+        "guard",
+        "strike",
+        "strike",
+        "strike"
+      ],
+      "deckCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "guard",
+        "guard",
+        "guard",
+        "meditate",
+        "strike",
+        "readyStance",
+        "kunlunBreath",
+        "battleCry"
+      ],
+      "physicalCardCount": 8,
+      "battleIntentCardCount": 2,
+      "physicalDamageCardCount": 6,
+      "aoePhysicalCardCount": 0,
+      "executeCardCount": 0,
+      "blockCardCount": 4,
+      "basicStrikeCount": 6,
+      "basicGuardCount": 4,
+      "hasReadyStance": true,
+      "hasBattleCry": true,
+      "hasHeavySlash": false,
+      "hasChainBlade": false,
+      "hasTraceCutter": false,
+      "hasArmyBreaker": false,
+      "hasXingtianCleave": false,
+      "hasTiangangBreak": false,
+      "phase": "gameOver",
+      "steps": 205
+    },
+    {
+      "seed": 2030229645,
+      "won": false,
+      "timedOut": false,
+      "deathFloor": 10,
+      "hp": 0,
+      "maxHp": 72,
+      "maxEnergy": 3,
+      "deckSize": 15,
+      "relicCount": 4,
+      "finalEnemyCount": 2,
+      "finalEnemyNames": [
+        "铁尸",
+        "铁尸"
+      ],
+      "finalEnemyHp": [
+        {
+          "name": "铁尸",
+          "hp": 64,
+          "block": 0,
+          "maxHp": 80
+        },
+        {
+          "name": "铁尸",
+          "hp": 80,
+          "block": 0,
+          "maxHp": 80
+        }
+      ],
+      "finalPlayerStatuses": {
+        "spirit": 3
+      },
+      "battleIntentStacksAtDeath": 0,
+      "handCardIds": [
+        "heavySlash",
+        "strike"
+      ],
+      "drawPileCardIds": [
+        "strike"
+      ],
+      "discardPileCardIds": [
+        "xingtianCleave",
+        "heavySlash",
+        "strike",
+        "attractThunder",
+        "guard",
+        "guard",
+        "strike",
+        "meditate",
+        "strike",
+        "guard",
+        "guard",
+        "strike"
+      ],
+      "deckCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "guard",
+        "guard",
+        "guard",
+        "meditate",
+        "attractThunder",
+        "heavySlash",
+        "strike",
+        "heavySlash",
+        "xingtianCleave"
+      ],
+      "physicalCardCount": 9,
+      "battleIntentCardCount": 0,
+      "physicalDamageCardCount": 9,
+      "aoePhysicalCardCount": 0,
+      "executeCardCount": 1,
+      "blockCardCount": 4,
+      "basicStrikeCount": 6,
+      "basicGuardCount": 4,
+      "hasReadyStance": false,
+      "hasBattleCry": false,
+      "hasHeavySlash": true,
+      "hasChainBlade": false,
+      "hasTraceCutter": false,
+      "hasArmyBreaker": false,
+      "hasXingtianCleave": true,
+      "hasTiangangBreak": false,
+      "phase": "gameOver",
+      "steps": 260
+    },
+    {
+      "seed": 2030322466,
+      "won": false,
+      "timedOut": false,
+      "deathFloor": 11,
+      "hp": 0,
+      "maxHp": 72,
+      "maxEnergy": 3,
+      "deckSize": 14,
+      "relicCount": 4,
+      "finalEnemyCount": 3,
+      "finalEnemyNames": [
+        "铁尸",
+        "水鬼",
+        "铁尸"
+      ],
+      "finalEnemyHp": [
+        {
+          "name": "铁尸",
+          "hp": 13,
+          "block": 0,
+          "maxHp": 79
+        },
+        {
+          "name": "水鬼",
+          "hp": 65,
+          "block": 0,
+          "maxHp": 65
+        },
+        {
+          "name": "铁尸",
+          "hp": 79,
+          "block": 20,
+          "maxHp": 79
+        }
+      ],
+      "finalPlayerStatuses": {
+        "spirit": 2,
+        "curse": 4
+      },
+      "battleIntentStacksAtDeath": 0,
+      "handCardIds": [
+        "heavySlash",
+        "heavySlash"
+      ],
+      "drawPileCardIds": [
+        "strike",
+        "meditate",
+        "strike",
+        "guard",
+        "strike",
+        "guard",
+        "guard",
+        "strike",
+        "meditate"
+      ],
+      "discardPileCardIds": [
+        "guard",
+        "strike",
+        "strike"
+      ],
+      "deckCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "guard",
+        "guard",
+        "guard",
+        "meditate",
+        "heavySlash",
+        "strike",
+        "heavySlash",
+        "meditate"
+      ],
+      "physicalCardCount": 8,
+      "battleIntentCardCount": 0,
+      "physicalDamageCardCount": 8,
+      "aoePhysicalCardCount": 0,
+      "executeCardCount": 0,
+      "blockCardCount": 4,
+      "basicStrikeCount": 6,
+      "basicGuardCount": 4,
+      "hasReadyStance": false,
+      "hasBattleCry": false,
+      "hasHeavySlash": true,
+      "hasChainBlade": false,
+      "hasTraceCutter": false,
+      "hasArmyBreaker": false,
+      "hasXingtianCleave": false,
+      "hasTiangangBreak": false,
+      "phase": "gameOver",
+      "steps": 248
+    },
+    {
+      "seed": 2030415287,
+      "won": false,
+      "timedOut": false,
+      "deathFloor": 16,
+      "hp": 0,
+      "maxHp": 80,
+      "maxEnergy": 3,
+      "deckSize": 19,
+      "relicCount": 5,
+      "finalEnemyCount": 2,
+      "finalEnemyNames": [
+        "狐妖",
+        "山魈"
+      ],
+      "finalEnemyHp": [
+        {
+          "name": "狐妖",
+          "hp": 32,
+          "block": 0,
+          "maxHp": 113
+        },
+        {
+          "name": "山魈",
+          "hp": 82,
+          "block": 0,
+          "maxHp": 121
+        }
+      ],
+      "finalPlayerStatuses": {
+        "curse": 4,
+        "spirit": 2
+      },
+      "battleIntentStacksAtDeath": 0,
+      "handCardIds": [
+        "strike",
+        "guard"
+      ],
+      "drawPileCardIds": [
+        "numbingThorn",
+        "battleCry",
+        "strike",
+        "strike",
+        "readyStance",
+        "strike",
+        "numbingThorn"
+      ],
+      "discardPileCardIds": [
+        "armyBreaker",
+        "meditate",
+        "tiangangBreak",
+        "xingtianCleave",
+        "guard",
+        "guard",
+        "chainBlade",
+        "guard",
+        "guard",
+        "fireRite"
+      ],
+      "deckCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "guard",
+        "guard",
+        "guard",
+        "meditate",
+        "numbingThorn",
+        "readyStance",
+        "guard",
+        "numbingThorn",
+        "fireRite",
+        "chainBlade",
+        "battleCry",
+        "tiangangBreak",
+        "xingtianCleave",
+        "armyBreaker"
+      ],
+      "physicalCardCount": 10,
+      "battleIntentCardCount": 2,
+      "physicalDamageCardCount": 8,
+      "aoePhysicalCardCount": 1,
+      "executeCardCount": 1,
+      "blockCardCount": 6,
+      "basicStrikeCount": 4,
+      "basicGuardCount": 5,
+      "hasReadyStance": true,
+      "hasBattleCry": true,
+      "hasHeavySlash": false,
+      "hasChainBlade": true,
+      "hasTraceCutter": false,
+      "hasArmyBreaker": true,
+      "hasXingtianCleave": true,
+      "hasTiangangBreak": true,
+      "phase": "gameOver",
+      "steps": 325
+    },
+    {
+      "seed": 2030508108,
+      "won": false,
+      "timedOut": false,
+      "deathFloor": 13,
+      "hp": 0,
+      "maxHp": 72,
+      "maxEnergy": 4,
+      "deckSize": 19,
+      "relicCount": 5,
+      "finalEnemyCount": 2,
+      "finalEnemyNames": [
+        "水鬼",
+        "山魈"
+      ],
+      "finalEnemyHp": [
+        {
+          "name": "水鬼",
+          "hp": 43,
+          "block": 0,
+          "maxHp": 86
+        },
+        {
+          "name": "山魈",
+          "hp": 70,
+          "block": 0,
+          "maxHp": 90
+        }
+      ],
+      "finalPlayerStatuses": {
+        "curse": 4,
+        "spirit": 1
+      },
+      "battleIntentStacksAtDeath": 0,
+      "handCardIds": [],
+      "drawPileCardIds": [
+        "chainBlade",
+        "guard",
+        "meditate",
+        "breakArmor",
+        "strike",
+        "mountainEcho",
+        "guard",
+        "guard",
+        "strike",
+        "guard",
+        "strike",
+        "foxFire",
+        "strike"
+      ],
+      "discardPileCardIds": [
+        "fiveThunder",
+        "meditate",
+        "fireRite",
+        "meditate",
+        "fireRite",
+        "strike"
+      ],
+      "deckCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "guard",
+        "guard",
+        "guard",
+        "meditate",
+        "meditate",
+        "breakArmor",
+        "foxFire",
+        "meditate",
+        "chainBlade",
+        "fireRite",
+        "mountainEcho",
+        "fireRite",
+        "fiveThunder"
+      ],
+      "physicalCardCount": 6,
+      "battleIntentCardCount": 0,
+      "physicalDamageCardCount": 6,
+      "aoePhysicalCardCount": 0,
+      "executeCardCount": 0,
+      "blockCardCount": 5,
+      "basicStrikeCount": 5,
+      "basicGuardCount": 4,
+      "hasReadyStance": false,
+      "hasBattleCry": false,
+      "hasHeavySlash": false,
+      "hasChainBlade": true,
+      "hasTraceCutter": false,
+      "hasArmyBreaker": false,
+      "hasXingtianCleave": false,
+      "hasTiangangBreak": false,
+      "phase": "gameOver",
+      "steps": 438
+    },
+    {
+      "seed": 2030600929,
+      "won": false,
+      "timedOut": false,
+      "deathFloor": 16,
+      "hp": 0,
+      "maxHp": 72,
+      "maxEnergy": 3,
+      "deckSize": 18,
+      "relicCount": 5,
+      "finalEnemyCount": 1,
+      "finalEnemyNames": [
+        "小妖"
+      ],
+      "finalEnemyHp": [
+        {
+          "name": "小妖",
+          "hp": 10,
+          "block": 0,
+          "maxHp": 97
+        }
+      ],
+      "finalPlayerStatuses": {
+        "curse": 7,
+        "spirit": 5,
+        "battleIntent": 31
+      },
+      "battleIntentStacksAtDeath": 31,
+      "handCardIds": [
+        "nineHeavenTribulation",
+        "strike"
+      ],
+      "drawPileCardIds": [
+        "strike",
+        "strike",
+        "meditate",
+        "guard",
+        "returnTalisman",
+        "guard",
+        "readyStance",
+        "strike",
+        "fiveThunder",
+        "guard",
+        "strike",
+        "thunderCharm",
+        "yellowCharm",
+        "guard"
+      ],
+      "discardPileCardIds": [
+        "thunderCharm",
+        "thunderPool"
+      ],
+      "deckCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "guard",
+        "guard",
+        "guard",
+        "meditate",
+        "thunderCharm",
+        "thunderCharm",
+        "readyStance",
+        "yellowCharm",
+        "returnTalisman",
+        "thunderPool",
+        "fiveThunder",
+        "nineHeavenTribulation"
+      ],
+      "physicalCardCount": 6,
+      "battleIntentCardCount": 1,
+      "physicalDamageCardCount": 5,
+      "aoePhysicalCardCount": 0,
+      "executeCardCount": 0,
+      "blockCardCount": 4,
+      "basicStrikeCount": 5,
+      "basicGuardCount": 4,
+      "hasReadyStance": true,
+      "hasBattleCry": false,
+      "hasHeavySlash": false,
+      "hasChainBlade": false,
+      "hasTraceCutter": false,
+      "hasArmyBreaker": false,
+      "hasXingtianCleave": false,
+      "hasTiangangBreak": false,
+      "phase": "gameOver",
+      "steps": 355
+    },
+    {
+      "seed": 2030693750,
+      "won": false,
+      "timedOut": false,
+      "deathFloor": 13,
+      "hp": 0,
+      "maxHp": 72,
+      "maxEnergy": 3,
+      "deckSize": 17,
+      "relicCount": 5,
+      "finalEnemyCount": 3,
+      "finalEnemyNames": [
+        "铁尸",
+        "水鬼",
+        "小妖"
+      ],
+      "finalEnemyHp": [
+        {
+          "name": "铁尸",
+          "hp": 61,
+          "block": 0,
+          "maxHp": 93
+        },
+        {
+          "name": "水鬼",
+          "hp": 78,
+          "block": 0,
+          "maxHp": 78
+        },
+        {
+          "name": "小妖",
+          "hp": 70,
+          "block": 0,
+          "maxHp": 70
+        }
+      ],
+      "finalPlayerStatuses": {
+        "curse": 5,
+        "spirit": 2,
+        "battleIntent": 8
+      },
+      "battleIntentStacksAtDeath": 8,
+      "handCardIds": [],
+      "drawPileCardIds": [
+        "returnTalisman",
+        "ghostNeedle",
+        "poisonPowder",
+        "strike",
+        "meditate",
+        "returnTalisman",
+        "strike",
+        "guard",
+        "guard",
+        "strike",
+        "meditate",
+        "guard"
+      ],
+      "discardPileCardIds": [
+        "guard",
+        "strike",
+        "strike",
+        "battleCry",
+        "flameTalisman"
+      ],
+      "deckCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "guard",
+        "guard",
+        "guard",
+        "meditate",
+        "ghostNeedle",
+        "meditate",
+        "poisonPowder",
+        "flameTalisman",
+        "returnTalisman",
+        "returnTalisman",
+        "battleCry"
+      ],
+      "physicalCardCount": 6,
+      "battleIntentCardCount": 1,
+      "physicalDamageCardCount": 5,
+      "aoePhysicalCardCount": 0,
+      "executeCardCount": 0,
+      "blockCardCount": 4,
+      "basicStrikeCount": 5,
+      "basicGuardCount": 4,
+      "hasReadyStance": false,
+      "hasBattleCry": true,
+      "hasHeavySlash": false,
+      "hasChainBlade": false,
+      "hasTraceCutter": false,
+      "hasArmyBreaker": false,
+      "hasXingtianCleave": false,
+      "hasTiangangBreak": false,
+      "phase": "gameOver",
+      "steps": 328
+    },
+    {
+      "seed": 2030786571,
+      "won": false,
+      "timedOut": false,
+      "deathFloor": 17,
+      "hp": 0,
+      "maxHp": 72,
+      "maxEnergy": 5,
+      "deckSize": 19,
+      "relicCount": 4,
+      "finalEnemyCount": 4,
+      "finalEnemyNames": [
+        "狐妖",
+        "小妖",
+        "水鬼",
+        "狐妖"
+      ],
+      "finalEnemyHp": [
+        {
+          "name": "狐妖",
+          "hp": 74,
+          "block": 0,
+          "maxHp": 129
+        },
+        {
+          "name": "小妖",
+          "hp": 119,
+          "block": 0,
+          "maxHp": 120
+        },
+        {
+          "name": "水鬼",
+          "hp": 130,
+          "block": 0,
+          "maxHp": 131
+        },
+        {
+          "name": "狐妖",
+          "hp": 128,
+          "block": 0,
+          "maxHp": 129
+        }
+      ],
+      "finalPlayerStatuses": {
+        "spirit": 2,
+        "spikes": 4
+      },
+      "battleIntentStacksAtDeath": 0,
+      "handCardIds": [
+        "guard",
+        "strike",
+        "armyBreaker",
+        "strike"
+      ],
+      "drawPileCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "battleCry",
+        "guard",
+        "tiangangBreak"
+      ],
+      "discardPileCardIds": [
+        "strike",
+        "meditate",
+        "thornMail",
+        "thornMail",
+        "guard",
+        "guard",
+        "xingtianCleave",
+        "mountainEcho"
+      ],
+      "deckCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "guard",
+        "guard",
+        "guard",
+        "meditate",
+        "strike",
+        "thornMail",
+        "thornMail",
+        "strike",
+        "xingtianCleave",
+        "mountainEcho",
+        "battleCry",
+        "tiangangBreak",
+        "armyBreaker"
+      ],
+      "physicalCardCount": 11,
+      "battleIntentCardCount": 1,
+      "physicalDamageCardCount": 10,
+      "aoePhysicalCardCount": 1,
+      "executeCardCount": 1,
+      "blockCardCount": 8,
+      "basicStrikeCount": 7,
+      "basicGuardCount": 4,
+      "hasReadyStance": false,
+      "hasBattleCry": true,
+      "hasHeavySlash": false,
+      "hasChainBlade": false,
+      "hasTraceCutter": false,
+      "hasArmyBreaker": true,
+      "hasXingtianCleave": true,
+      "hasTiangangBreak": true,
+      "phase": "gameOver",
+      "steps": 447
+    },
+    {
+      "seed": 2030879392,
+      "won": false,
+      "timedOut": false,
+      "deathFloor": 16,
+      "hp": 0,
+      "maxHp": 72,
+      "maxEnergy": 3,
+      "deckSize": 18,
+      "relicCount": 5,
+      "finalEnemyCount": 4,
+      "finalEnemyNames": [
+        "山魈",
+        "小妖",
+        "铁尸",
+        "小妖"
+      ],
+      "finalEnemyHp": [
+        {
+          "name": "山魈",
+          "hp": 57,
+          "block": 0,
+          "maxHp": 107
+        },
+        {
+          "name": "小妖",
+          "hp": 93,
+          "block": 0,
+          "maxHp": 93
+        },
+        {
+          "name": "铁尸",
+          "hp": 119,
+          "block": 13,
+          "maxHp": 119
+        },
+        {
+          "name": "小妖",
+          "hp": 93,
+          "block": 0,
+          "maxHp": 93
+        }
+      ],
+      "finalPlayerStatuses": {
+        "curse": 3,
+        "spirit": 2
+      },
+      "battleIntentStacksAtDeath": 0,
+      "handCardIds": [],
+      "drawPileCardIds": [
+        "chainBlade",
+        "thornMail",
+        "strike",
+        "guard",
+        "guard",
+        "returnTalisman",
+        "meditate",
+        "guard",
+        "strike",
+        "strike",
+        "strike",
+        "chainBlade"
+      ],
+      "discardPileCardIds": [
+        "xingtianCleave",
+        "attractThunder",
+        "meditate",
+        "meditate",
+        "strike",
+        "guard"
+      ],
+      "deckCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "guard",
+        "guard",
+        "guard",
+        "meditate",
+        "meditate",
+        "attractThunder",
+        "meditate",
+        "thornMail",
+        "chainBlade",
+        "chainBlade",
+        "returnTalisman",
+        "xingtianCleave"
+      ],
+      "physicalCardCount": 8,
+      "battleIntentCardCount": 0,
+      "physicalDamageCardCount": 8,
+      "aoePhysicalCardCount": 0,
+      "executeCardCount": 1,
+      "blockCardCount": 5,
+      "basicStrikeCount": 5,
+      "basicGuardCount": 4,
+      "hasReadyStance": false,
+      "hasBattleCry": false,
+      "hasHeavySlash": false,
+      "hasChainBlade": true,
+      "hasTraceCutter": false,
+      "hasArmyBreaker": false,
+      "hasXingtianCleave": true,
+      "hasTiangangBreak": false,
+      "phase": "gameOver",
+      "steps": 453
+    },
+    {
+      "seed": 2030972213,
+      "won": false,
+      "timedOut": false,
+      "deathFloor": 12,
+      "hp": 0,
+      "maxHp": 72,
+      "maxEnergy": 3,
+      "deckSize": 15,
+      "relicCount": 3,
+      "finalEnemyCount": 1,
+      "finalEnemyNames": [
+        "判官"
+      ],
+      "finalEnemyHp": [
+        {
+          "name": "判官",
+          "hp": 84,
+          "block": 0,
+          "maxHp": 210
+        }
+      ],
+      "finalPlayerStatuses": {
+        "spirit": 4,
+        "battleIntent": 32
+      },
+      "battleIntentStacksAtDeath": 32,
+      "handCardIds": [
+        "strike",
+        "guard"
+      ],
+      "drawPileCardIds": [
+        "guard",
+        "guard",
+        "readyStance",
+        "strike",
+        "kunlunBreath",
+        "strike",
+        "battleCry",
+        "meditate",
+        "readyStance"
+      ],
+      "discardPileCardIds": [
+        "xingtianCleave",
+        "guard",
+        "ghostNeedle",
+        "strike"
+      ],
+      "deckCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "guard",
+        "guard",
+        "guard",
+        "meditate",
+        "readyStance",
+        "ghostNeedle",
+        "strike",
+        "kunlunBreath",
+        "readyStance",
+        "battleCry",
+        "xingtianCleave"
+      ],
+      "physicalCardCount": 8,
+      "battleIntentCardCount": 3,
+      "physicalDamageCardCount": 5,
+      "aoePhysicalCardCount": 0,
+      "executeCardCount": 1,
+      "blockCardCount": 4,
+      "basicStrikeCount": 4,
+      "basicGuardCount": 4,
+      "hasReadyStance": true,
+      "hasBattleCry": true,
+      "hasHeavySlash": false,
+      "hasChainBlade": false,
+      "hasTraceCutter": false,
+      "hasArmyBreaker": false,
+      "hasXingtianCleave": true,
+      "hasTiangangBreak": false,
+      "phase": "gameOver",
+      "steps": 244
+    },
+    {
+      "seed": 2031065034,
+      "won": false,
+      "timedOut": false,
+      "deathFloor": 14,
+      "hp": 0,
+      "maxHp": 80,
+      "maxEnergy": 3,
+      "deckSize": 16,
+      "relicCount": 5,
+      "finalEnemyCount": 4,
+      "finalEnemyNames": [
+        "水鬼",
+        "小妖",
+        "小妖",
+        "狐妖"
+      ],
+      "finalEnemyHp": [
+        {
+          "name": "水鬼",
+          "hp": 32,
+          "block": 0,
+          "maxHp": 84
+        },
+        {
+          "name": "小妖",
+          "hp": 75,
+          "block": 0,
+          "maxHp": 75
+        },
+        {
+          "name": "小妖",
+          "hp": 75,
+          "block": 0,
+          "maxHp": 75
+        },
+        {
+          "name": "狐妖",
+          "hp": 82,
+          "block": 0,
+          "maxHp": 82
+        }
+      ],
+      "finalPlayerStatuses": {
+        "spirit": 3,
+        "curse": 2
+      },
+      "battleIntentStacksAtDeath": 0,
+      "handCardIds": [
+        "heavySlash"
+      ],
+      "drawPileCardIds": [
+        "guard",
+        "strike",
+        "centipedeJar",
+        "guard",
+        "guard",
+        "battleCry",
+        "meditate"
+      ],
+      "discardPileCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "guard",
+        "attractThunder",
+        "strike",
+        "strike"
+      ],
+      "deckCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "guard",
+        "guard",
+        "guard",
+        "meditate",
+        "attractThunder",
+        "heavySlash",
+        "guard",
+        "strike",
+        "battleCry",
+        "centipedeJar"
+      ],
+      "physicalCardCount": 8,
+      "battleIntentCardCount": 1,
+      "physicalDamageCardCount": 7,
+      "aoePhysicalCardCount": 0,
+      "executeCardCount": 0,
+      "blockCardCount": 5,
+      "basicStrikeCount": 6,
+      "basicGuardCount": 5,
+      "hasReadyStance": false,
+      "hasBattleCry": true,
+      "hasHeavySlash": true,
+      "hasChainBlade": false,
+      "hasTraceCutter": false,
+      "hasArmyBreaker": false,
+      "hasXingtianCleave": false,
+      "hasTiangangBreak": false,
+      "phase": "gameOver",
+      "steps": 317
+    },
+    {
+      "seed": 2031157855,
+      "won": false,
+      "timedOut": false,
+      "deathFloor": 14,
+      "hp": 0,
+      "maxHp": 72,
+      "maxEnergy": 3,
+      "deckSize": 18,
+      "relicCount": 5,
+      "finalEnemyCount": 3,
+      "finalEnemyNames": [
+        "水鬼",
+        "小妖",
+        "狐妖"
+      ],
+      "finalEnemyHp": [
+        {
+          "name": "水鬼",
+          "hp": 36,
+          "block": 0,
+          "maxHp": 90
+        },
+        {
+          "name": "小妖",
+          "hp": 81,
+          "block": 0,
+          "maxHp": 81
+        },
+        {
+          "name": "狐妖",
+          "hp": 88,
+          "block": 0,
+          "maxHp": 88
+        }
+      ],
+      "finalPlayerStatuses": {
+        "spirit": 2,
+        "spikes": 2,
+        "curse": 2
+      },
+      "battleIntentStacksAtDeath": 0,
+      "handCardIds": [
+        "heavySlash"
+      ],
+      "drawPileCardIds": [
+        "readyStance",
+        "guard",
+        "guard",
+        "strike",
+        "chainBlade",
+        "guard",
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "chainBlade"
+      ],
+      "discardPileCardIds": [
+        "xingtianCleave",
+        "reflectArt",
+        "guard",
+        "guard",
+        "meditate",
+        "strike"
+      ],
+      "deckCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "guard",
+        "guard",
+        "guard",
+        "meditate",
+        "heavySlash",
+        "guard",
+        "guard",
+        "readyStance",
+        "reflectArt",
+        "chainBlade",
+        "chainBlade",
+        "xingtianCleave"
+      ],
+      "physicalCardCount": 10,
+      "battleIntentCardCount": 1,
+      "physicalDamageCardCount": 9,
+      "aoePhysicalCardCount": 0,
+      "executeCardCount": 1,
+      "blockCardCount": 7,
+      "basicStrikeCount": 5,
+      "basicGuardCount": 6,
+      "hasReadyStance": true,
+      "hasBattleCry": false,
+      "hasHeavySlash": true,
+      "hasChainBlade": true,
+      "hasTraceCutter": false,
+      "hasArmyBreaker": false,
+      "hasXingtianCleave": true,
+      "hasTiangangBreak": false,
+      "phase": "gameOver",
+      "steps": 354
+    },
+    {
+      "seed": 2031250676,
+      "won": false,
+      "timedOut": false,
+      "deathFloor": 7,
+      "hp": 0,
+      "maxHp": 72,
+      "maxEnergy": 3,
+      "deckSize": 14,
+      "relicCount": 2,
+      "finalEnemyCount": 2,
+      "finalEnemyNames": [
+        "铁尸",
+        "小妖"
+      ],
+      "finalEnemyHp": [
+        {
+          "name": "铁尸",
+          "hp": 9,
+          "block": 0,
+          "maxHp": 61
+        },
+        {
+          "name": "小妖",
+          "hp": 40,
+          "block": 0,
+          "maxHp": 40
+        }
+      ],
+      "finalPlayerStatuses": {
+        "spirit": 1
+      },
+      "battleIntentStacksAtDeath": 0,
+      "handCardIds": [],
+      "drawPileCardIds": [
+        "strike"
+      ],
+      "discardPileCardIds": [
+        "heavySlash",
+        "guard",
+        "guard",
+        "ghostNeedle",
+        "strike",
+        "guard",
+        "strike",
+        "strike",
+        "guard",
+        "meditate",
+        "strike",
+        "strike",
+        "flameTalisman"
+      ],
+      "deckCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "guard",
+        "guard",
+        "guard",
+        "meditate",
+        "flameTalisman",
+        "strike",
+        "heavySlash",
+        "ghostNeedle"
+      ],
+      "physicalCardCount": 7,
+      "battleIntentCardCount": 0,
+      "physicalDamageCardCount": 7,
+      "aoePhysicalCardCount": 0,
+      "executeCardCount": 0,
+      "blockCardCount": 4,
+      "basicStrikeCount": 6,
+      "basicGuardCount": 4,
+      "hasReadyStance": false,
+      "hasBattleCry": false,
+      "hasHeavySlash": true,
+      "hasChainBlade": false,
+      "hasTraceCutter": false,
+      "hasArmyBreaker": false,
+      "hasXingtianCleave": false,
+      "hasTiangangBreak": false,
+      "phase": "gameOver",
+      "steps": 137
+    },
+    {
+      "seed": 2031343497,
+      "won": false,
+      "timedOut": false,
+      "deathFloor": 10,
+      "hp": 0,
+      "maxHp": 72,
+      "maxEnergy": 3,
+      "deckSize": 14,
+      "relicCount": 4,
+      "finalEnemyCount": 3,
+      "finalEnemyNames": [
+        "水鬼",
+        "铁尸",
+        "狐妖"
+      ],
+      "finalEnemyHp": [
+        {
+          "name": "水鬼",
+          "hp": 25,
+          "block": 0,
+          "maxHp": 60
+        },
+        {
+          "name": "铁尸",
+          "hp": 74,
+          "block": 0,
+          "maxHp": 74
+        },
+        {
+          "name": "狐妖",
+          "hp": 58,
+          "block": 0,
+          "maxHp": 58
+        }
+      ],
+      "finalPlayerStatuses": {
+        "curse": 2,
+        "spirit": 1,
+        "battleIntent": 6,
+        "burn": 1
+      },
+      "battleIntentStacksAtDeath": 6,
+      "handCardIds": [
+        "guard",
+        "guard"
+      ],
+      "drawPileCardIds": [
+        "readyStance",
+        "guard",
+        "chainBlade",
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "heavySlash",
+        "meditate"
+      ],
+      "discardPileCardIds": [
+        "heavySlash",
+        "strike",
+        "readyStance"
+      ],
+      "deckCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "guard",
+        "guard",
+        "guard",
+        "meditate",
+        "heavySlash",
+        "readyStance",
+        "heavySlash",
+        "readyStance",
+        "chainBlade"
+      ],
+      "physicalCardCount": 9,
+      "battleIntentCardCount": 2,
+      "physicalDamageCardCount": 7,
+      "aoePhysicalCardCount": 0,
+      "executeCardCount": 0,
+      "blockCardCount": 4,
+      "basicStrikeCount": 4,
+      "basicGuardCount": 4,
+      "hasReadyStance": true,
+      "hasBattleCry": false,
+      "hasHeavySlash": true,
+      "hasChainBlade": true,
+      "hasTraceCutter": false,
+      "hasArmyBreaker": false,
+      "hasXingtianCleave": false,
+      "hasTiangangBreak": false,
+      "phase": "gameOver",
+      "steps": 147
+    },
+    {
+      "seed": 2031436318,
+      "won": false,
+      "timedOut": false,
+      "deathFloor": 9,
+      "hp": 0,
+      "maxHp": 72,
+      "maxEnergy": 3,
+      "deckSize": 16,
+      "relicCount": 2,
+      "finalEnemyCount": 1,
+      "finalEnemyNames": [
+        "鬼将"
+      ],
+      "finalEnemyHp": [
+        {
+          "name": "鬼将",
+          "hp": 30,
+          "block": 0,
+          "maxHp": 79
+        }
+      ],
+      "finalPlayerStatuses": {
+        "curse": 4
+      },
+      "battleIntentStacksAtDeath": 0,
+      "handCardIds": [
+        "strike",
+        "miasma",
+        "readyStance",
+        "returnTalisman",
+        "strike"
+      ],
+      "drawPileCardIds": [
+        "strike",
+        "strike",
+        "guard",
+        "fireRite",
+        "guard",
+        "guard",
+        "thunderCharm",
+        "strike",
+        "meditate",
+        "guard"
+      ],
+      "discardPileCardIds": [
+        "returnTalisman"
+      ],
+      "deckCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "guard",
+        "guard",
+        "guard",
+        "meditate",
+        "thunderCharm",
+        "miasma",
+        "fireRite",
+        "readyStance",
+        "strike",
+        "returnTalisman",
+        "returnTalisman"
+      ],
+      "physicalCardCount": 6,
+      "battleIntentCardCount": 1,
+      "physicalDamageCardCount": 5,
+      "aoePhysicalCardCount": 0,
+      "executeCardCount": 0,
+      "blockCardCount": 4,
+      "basicStrikeCount": 5,
+      "basicGuardCount": 4,
+      "hasReadyStance": true,
+      "hasBattleCry": false,
+      "hasHeavySlash": false,
+      "hasChainBlade": false,
+      "hasTraceCutter": false,
+      "hasArmyBreaker": false,
+      "hasXingtianCleave": false,
+      "hasTiangangBreak": false,
+      "phase": "gameOver",
+      "steps": 361
+    },
+    {
+      "seed": 2031529139,
+      "won": false,
+      "timedOut": false,
+      "deathFloor": 13,
+      "hp": 0,
+      "maxHp": 72,
+      "maxEnergy": 3,
+      "deckSize": 18,
+      "relicCount": 5,
+      "finalEnemyCount": 3,
+      "finalEnemyNames": [
+        "狐妖",
+        "铁尸",
+        "狐妖"
+      ],
+      "finalEnemyHp": [
+        {
+          "name": "狐妖",
+          "hp": 17,
+          "block": 0,
+          "maxHp": 124
+        },
+        {
+          "name": "铁尸",
+          "hp": 148,
+          "block": 21,
+          "maxHp": 148
+        },
+        {
+          "name": "狐妖",
+          "hp": 124,
+          "block": 9,
+          "maxHp": 124
+        }
+      ],
+      "finalPlayerStatuses": {
+        "spirit": 2,
+        "spikes": 1,
+        "battleIntent": 19
+      },
+      "battleIntentStacksAtDeath": 19,
+      "handCardIds": [
+        "heavySlash",
+        "strike"
+      ],
+      "drawPileCardIds": [
+        "strike"
+      ],
+      "discardPileCardIds": [
+        "xingtianCleave",
+        "strike",
+        "thornMail",
+        "meditate",
+        "guard",
+        "guard",
+        "guard",
+        "stoneShell",
+        "guard",
+        "strike",
+        "strike",
+        "readyStance",
+        "underworldPen",
+        "strike",
+        "readyStance"
+      ],
+      "deckCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "guard",
+        "guard",
+        "guard",
+        "meditate",
+        "readyStance",
+        "readyStance",
+        "strike",
+        "thornMail",
+        "heavySlash",
+        "stoneShell",
+        "xingtianCleave",
+        "underworldPen"
+      ],
+      "physicalCardCount": 10,
+      "battleIntentCardCount": 2,
+      "physicalDamageCardCount": 8,
+      "aoePhysicalCardCount": 0,
+      "executeCardCount": 1,
+      "blockCardCount": 6,
+      "basicStrikeCount": 6,
+      "basicGuardCount": 4,
+      "hasReadyStance": true,
+      "hasBattleCry": false,
+      "hasHeavySlash": true,
+      "hasChainBlade": false,
+      "hasTraceCutter": false,
+      "hasArmyBreaker": false,
+      "hasXingtianCleave": true,
+      "hasTiangangBreak": false,
+      "phase": "gameOver",
+      "steps": 240
+    },
+    {
+      "seed": 2031621960,
+      "won": false,
+      "timedOut": false,
+      "deathFloor": 8,
+      "hp": 0,
+      "maxHp": 72,
+      "maxEnergy": 3,
+      "deckSize": 14,
+      "relicCount": 2,
+      "finalEnemyCount": 2,
+      "finalEnemyNames": [
+        "狐妖",
+        "铁尸"
+      ],
+      "finalEnemyHp": [
+        {
+          "name": "狐妖",
+          "hp": 21,
+          "block": 0,
+          "maxHp": 47
+        },
+        {
+          "name": "铁尸",
+          "hp": 61,
+          "block": 10,
+          "maxHp": 61
+        }
+      ],
+      "finalPlayerStatuses": {
+        "burn": 1
+      },
+      "battleIntentStacksAtDeath": 0,
+      "handCardIds": [
+        "heavySlash",
+        "strike"
+      ],
+      "drawPileCardIds": [
+        "strike",
+        "guard",
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "meditate",
+        "strike",
+        "guard"
+      ],
+      "discardPileCardIds": [
+        "guard",
+        "numbingThorn",
+        "strike"
+      ],
+      "deckCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "guard",
+        "guard",
+        "guard",
+        "meditate",
+        "numbingThorn",
+        "heavySlash",
+        "strike",
+        "strike"
+      ],
+      "physicalCardCount": 8,
+      "battleIntentCardCount": 0,
+      "physicalDamageCardCount": 8,
+      "aoePhysicalCardCount": 0,
+      "executeCardCount": 0,
+      "blockCardCount": 4,
+      "basicStrikeCount": 7,
+      "basicGuardCount": 4,
+      "hasReadyStance": false,
+      "hasBattleCry": false,
+      "hasHeavySlash": true,
+      "hasChainBlade": false,
+      "hasTraceCutter": false,
+      "hasArmyBreaker": false,
+      "hasXingtianCleave": false,
+      "hasTiangangBreak": false,
+      "phase": "gameOver",
+      "steps": 151
+    },
+    {
+      "seed": 2031714781,
+      "won": false,
+      "timedOut": false,
+      "deathFloor": 14,
+      "hp": 0,
+      "maxHp": 72,
+      "maxEnergy": 3,
+      "deckSize": 17,
+      "relicCount": 5,
+      "finalEnemyCount": 3,
+      "finalEnemyNames": [
+        "山魈",
+        "铁尸",
+        "水鬼"
+      ],
+      "finalEnemyHp": [
+        {
+          "name": "山魈",
+          "hp": 7,
+          "block": 8,
+          "maxHp": 94
+        },
+        {
+          "name": "铁尸",
+          "hp": 106,
+          "block": 12,
+          "maxHp": 106
+        },
+        {
+          "name": "水鬼",
+          "hp": 89,
+          "block": 0,
+          "maxHp": 89
+        }
+      ],
+      "finalPlayerStatuses": {
+        "curse": 8,
+        "spirit": 2,
+        "battleIntent": 33
+      },
+      "battleIntentStacksAtDeath": 33,
+      "handCardIds": [
+        "panguMark"
+      ],
+      "drawPileCardIds": [
+        "strike",
+        "heavySlash"
+      ],
+      "discardPileCardIds": [
+        "strike",
+        "strike",
+        "battleCry",
+        "guard",
+        "fiveThunder",
+        "guard",
+        "meditate",
+        "guard",
+        "guard",
+        "returnTalisman",
+        "strike",
+        "strike",
+        "readyStance",
+        "readyStance"
+      ],
+      "deckCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "guard",
+        "guard",
+        "guard",
+        "meditate",
+        "heavySlash",
+        "panguMark",
+        "strike",
+        "readyStance",
+        "returnTalisman",
+        "battleCry",
+        "readyStance",
+        "fiveThunder"
+      ],
+      "physicalCardCount": 9,
+      "battleIntentCardCount": 3,
+      "physicalDamageCardCount": 6,
+      "aoePhysicalCardCount": 0,
+      "executeCardCount": 0,
+      "blockCardCount": 4,
+      "basicStrikeCount": 5,
+      "basicGuardCount": 4,
+      "hasReadyStance": true,
+      "hasBattleCry": true,
+      "hasHeavySlash": true,
+      "hasChainBlade": false,
+      "hasTraceCutter": false,
+      "hasArmyBreaker": false,
+      "hasXingtianCleave": false,
+      "hasTiangangBreak": false,
+      "phase": "gameOver",
+      "steps": 311
+    },
+    {
+      "seed": 2031807602,
+      "won": false,
+      "timedOut": false,
+      "deathFloor": 17,
+      "hp": 0,
+      "maxHp": 80,
+      "maxEnergy": 3,
+      "deckSize": 17,
+      "relicCount": 5,
+      "finalEnemyCount": 4,
+      "finalEnemyNames": [
+        "铁尸",
+        "水鬼",
+        "铁尸",
+        "山魈"
+      ],
+      "finalEnemyHp": [
+        {
+          "name": "铁尸",
+          "hp": 37,
+          "block": 12,
+          "maxHp": 122
+        },
+        {
+          "name": "水鬼",
+          "hp": 106,
+          "block": 0,
+          "maxHp": 106
+        },
+        {
+          "name": "铁尸",
+          "hp": 122,
+          "block": 0,
+          "maxHp": 122
+        },
+        {
+          "name": "山魈",
+          "hp": 110,
+          "block": 8,
+          "maxHp": 110
+        }
+      ],
+      "finalPlayerStatuses": {
+        "curse": 4,
+        "spirit": 2,
+        "battleIntent": 13
+      },
+      "battleIntentStacksAtDeath": 13,
+      "handCardIds": [
+        "strike",
+        "armyBreaker"
+      ],
+      "drawPileCardIds": [
+        "guard",
+        "yellowCharm",
+        "strike",
+        "chainBlade",
+        "guard",
+        "strike",
+        "traceCutter",
+        "meditate"
+      ],
+      "discardPileCardIds": [
+        "strike",
+        "readyStance",
+        "guard",
+        "guard",
+        "returnTalisman",
+        "foxFire",
+        "strike"
+      ],
+      "deckCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "guard",
+        "guard",
+        "guard",
+        "meditate",
+        "foxFire",
+        "readyStance",
+        "yellowCharm",
+        "strike",
+        "chainBlade",
+        "returnTalisman",
+        "traceCutter",
+        "armyBreaker"
+      ],
+      "physicalCardCount": 9,
+      "battleIntentCardCount": 1,
+      "physicalDamageCardCount": 8,
+      "aoePhysicalCardCount": 0,
+      "executeCardCount": 0,
+      "blockCardCount": 4,
+      "basicStrikeCount": 5,
+      "basicGuardCount": 4,
+      "hasReadyStance": true,
+      "hasBattleCry": false,
+      "hasHeavySlash": false,
+      "hasChainBlade": true,
+      "hasTraceCutter": true,
+      "hasArmyBreaker": true,
+      "hasXingtianCleave": false,
+      "hasTiangangBreak": false,
+      "phase": "gameOver",
+      "steps": 428
+    },
+    {
+      "seed": 2031900423,
+      "won": false,
+      "timedOut": false,
+      "deathFloor": 14,
+      "hp": 0,
+      "maxHp": 72,
+      "maxEnergy": 3,
+      "deckSize": 19,
+      "relicCount": 5,
+      "finalEnemyCount": 3,
+      "finalEnemyNames": [
+        "山魈",
+        "铁尸",
+        "水鬼"
+      ],
+      "finalEnemyHp": [
+        {
+          "name": "山魈",
+          "hp": 14,
+          "block": 0,
+          "maxHp": 88
+        },
+        {
+          "name": "铁尸",
+          "hp": 99,
+          "block": 22,
+          "maxHp": 99
+        },
+        {
+          "name": "水鬼",
+          "hp": 84,
+          "block": 0,
+          "maxHp": 84
+        }
+      ],
+      "finalPlayerStatuses": {
+        "curse": 7,
+        "spirit": 3,
+        "battleIntent": 13
+      },
+      "battleIntentStacksAtDeath": 13,
+      "handCardIds": [
+        "bloodNet"
+      ],
+      "drawPileCardIds": [
+        "strike",
+        "guard",
+        "strike",
+        "ghostNeedle",
+        "meditate",
+        "bloodDemonLoop",
+        "strike",
+        "bloodDemonLoop"
+      ],
+      "discardPileCardIds": [
+        "bloodDemonLoop",
+        "bloodOath",
+        "strike",
+        "readyStance",
+        "guard",
+        "guard",
+        "guard",
+        "yellowCharm",
+        "attractThunder",
+        "strike"
+      ],
+      "deckCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "guard",
+        "guard",
+        "guard",
+        "meditate",
+        "readyStance",
+        "ghostNeedle",
+        "yellowCharm",
+        "attractThunder",
+        "bloodDemonLoop",
+        "bloodNet",
+        "bloodOath",
+        "bloodDemonLoop",
+        "bloodDemonLoop"
+      ],
+      "physicalCardCount": 6,
+      "battleIntentCardCount": 1,
+      "physicalDamageCardCount": 5,
+      "aoePhysicalCardCount": 0,
+      "executeCardCount": 0,
+      "blockCardCount": 4,
+      "basicStrikeCount": 5,
+      "basicGuardCount": 4,
+      "hasReadyStance": true,
+      "hasBattleCry": false,
+      "hasHeavySlash": false,
+      "hasChainBlade": false,
+      "hasTraceCutter": false,
+      "hasArmyBreaker": false,
+      "hasXingtianCleave": false,
+      "hasTiangangBreak": false,
+      "phase": "gameOver",
+      "steps": 280
+    },
+    {
+      "seed": 2031993244,
+      "won": false,
+      "timedOut": false,
+      "deathFloor": 11,
+      "hp": 0,
+      "maxHp": 72,
+      "maxEnergy": 3,
+      "deckSize": 16,
+      "relicCount": 5,
+      "finalEnemyCount": 3,
+      "finalEnemyNames": [
+        "小妖",
+        "水鬼",
+        "铁尸"
+      ],
+      "finalEnemyHp": [
+        {
+          "name": "小妖",
+          "hp": 38,
+          "block": 0,
+          "maxHp": 59
+        },
+        {
+          "name": "水鬼",
+          "hp": 66,
+          "block": 0,
+          "maxHp": 67
+        },
+        {
+          "name": "铁尸",
+          "hp": 81,
+          "block": 9,
+          "maxHp": 81
+        }
+      ],
+      "finalPlayerStatuses": {
+        "curse": 12,
+        "spirit": 2,
+        "battleIntent": 6
+      },
+      "battleIntentStacksAtDeath": 6,
+      "handCardIds": [
+        "shellTap",
+        "strike",
+        "guard"
+      ],
+      "drawPileCardIds": [
+        "meditate",
+        "strike",
+        "mountainEcho",
+        "strike",
+        "strike",
+        "guard"
+      ],
+      "discardPileCardIds": [
+        "strike",
+        "strike",
+        "meditate",
+        "readyStance",
+        "guard",
+        "mountainEcho",
+        "guard"
+      ],
+      "deckCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "guard",
+        "guard",
+        "guard",
+        "meditate",
+        "strike",
+        "meditate",
+        "readyStance",
+        "shellTap",
+        "mountainEcho",
+        "mountainEcho"
+      ],
+      "physicalCardCount": 7,
+      "battleIntentCardCount": 1,
+      "physicalDamageCardCount": 6,
+      "aoePhysicalCardCount": 0,
+      "executeCardCount": 0,
+      "blockCardCount": 7,
+      "basicStrikeCount": 6,
+      "basicGuardCount": 4,
+      "hasReadyStance": true,
+      "hasBattleCry": false,
+      "hasHeavySlash": false,
+      "hasChainBlade": false,
+      "hasTraceCutter": false,
+      "hasArmyBreaker": false,
+      "hasXingtianCleave": false,
+      "hasTiangangBreak": false,
+      "phase": "gameOver",
+      "steps": 212
+    },
+    {
+      "seed": 2032086065,
+      "won": false,
+      "timedOut": false,
+      "deathFloor": 16,
+      "hp": 0,
+      "maxHp": 72,
+      "maxEnergy": 4,
+      "deckSize": 16,
+      "relicCount": 4,
+      "finalEnemyCount": 3,
+      "finalEnemyNames": [
+        "铁尸",
+        "狐妖",
+        "铁尸"
+      ],
+      "finalEnemyHp": [
+        {
+          "name": "铁尸",
+          "hp": 118,
+          "block": 13,
+          "maxHp": 124
+        },
+        {
+          "name": "狐妖",
+          "hp": 104,
+          "block": 0,
+          "maxHp": 104
+        },
+        {
+          "name": "铁尸",
+          "hp": 124,
+          "block": 13,
+          "maxHp": 124
+        }
+      ],
+      "finalPlayerStatuses": {
+        "curse": 1,
+        "spirit": 2,
+        "burn": 4
+      },
+      "battleIntentStacksAtDeath": 0,
+      "handCardIds": [
+        "heavySlash",
+        "heavySlash"
+      ],
+      "drawPileCardIds": [
+        "guard",
+        "strike",
+        "guard",
+        "heavySlash",
+        "guard",
+        "guard",
+        "readyStance",
+        "guard"
+      ],
+      "discardPileCardIds": [
+        "armyBreaker",
+        "strike",
+        "strike",
+        "armyBreaker",
+        "meditate",
+        "underworldPen"
+      ],
+      "deckCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "guard",
+        "guard",
+        "guard",
+        "meditate",
+        "readyStance",
+        "heavySlash",
+        "guard",
+        "heavySlash",
+        "heavySlash",
+        "underworldPen",
+        "armyBreaker",
+        "armyBreaker"
+      ],
+      "physicalCardCount": 9,
+      "battleIntentCardCount": 1,
+      "physicalDamageCardCount": 8,
+      "aoePhysicalCardCount": 0,
+      "executeCardCount": 0,
+      "blockCardCount": 5,
+      "basicStrikeCount": 3,
+      "basicGuardCount": 5,
+      "hasReadyStance": true,
+      "hasBattleCry": false,
+      "hasHeavySlash": true,
+      "hasChainBlade": false,
+      "hasTraceCutter": false,
+      "hasArmyBreaker": true,
+      "hasXingtianCleave": false,
+      "hasTiangangBreak": false,
+      "phase": "gameOver",
+      "steps": 364
+    },
+    {
+      "seed": 2032178886,
+      "won": false,
+      "timedOut": false,
+      "deathFloor": 12,
+      "hp": 0,
+      "maxHp": 72,
+      "maxEnergy": 3,
+      "deckSize": 14,
+      "relicCount": 5,
+      "finalEnemyCount": 1,
+      "finalEnemyNames": [
+        "判官"
+      ],
+      "finalEnemyHp": [
+        {
+          "name": "判官",
+          "hp": 14,
+          "block": 0,
+          "maxHp": 160
+        }
+      ],
+      "finalPlayerStatuses": {
+        "spirit": 4
+      },
+      "battleIntentStacksAtDeath": 0,
+      "handCardIds": [
+        "guard",
+        "guard",
+        "strike"
+      ],
+      "drawPileCardIds": [
+        "strike",
+        "poisonPowder",
+        "strike"
+      ],
+      "discardPileCardIds": [
+        "yellowCharm",
+        "meditate",
+        "strike",
+        "flameTalisman",
+        "gatherAsh",
+        "guard",
+        "guard",
+        "bloodDemonLoop"
+      ],
+      "deckCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "guard",
+        "guard",
+        "guard",
+        "meditate",
+        "yellowCharm",
+        "gatherAsh",
+        "flameTalisman",
+        "poisonPowder",
+        "bloodDemonLoop"
+      ],
+      "physicalCardCount": 4,
+      "battleIntentCardCount": 0,
+      "physicalDamageCardCount": 4,
+      "aoePhysicalCardCount": 0,
+      "executeCardCount": 0,
+      "blockCardCount": 4,
+      "basicStrikeCount": 4,
+      "basicGuardCount": 4,
+      "hasReadyStance": false,
+      "hasBattleCry": false,
+      "hasHeavySlash": false,
+      "hasChainBlade": false,
+      "hasTraceCutter": false,
+      "hasArmyBreaker": false,
+      "hasXingtianCleave": false,
+      "hasTiangangBreak": false,
+      "phase": "gameOver",
+      "steps": 361
+    },
+    {
+      "seed": 2032271707,
+      "won": false,
+      "timedOut": false,
+      "deathFloor": 14,
+      "hp": 0,
+      "maxHp": 72,
+      "maxEnergy": 4,
+      "deckSize": 17,
+      "relicCount": 5,
+      "finalEnemyCount": 3,
+      "finalEnemyNames": [
+        "铁尸",
+        "山魈",
+        "水鬼"
+      ],
+      "finalEnemyHp": [
+        {
+          "name": "铁尸",
+          "hp": 21,
+          "block": 0,
+          "maxHp": 105
+        },
+        {
+          "name": "山魈",
+          "hp": 93,
+          "block": 0,
+          "maxHp": 93
+        },
+        {
+          "name": "水鬼",
+          "hp": 88,
+          "block": 0,
+          "maxHp": 88
+        }
+      ],
+      "finalPlayerStatuses": {
+        "curse": 10,
+        "spirit": 2,
+        "battleIntent": 20
+      },
+      "battleIntentStacksAtDeath": 20,
+      "handCardIds": [],
+      "drawPileCardIds": [
+        "strike",
+        "ghostNeedle",
+        "strike",
+        "guard",
+        "guard",
+        "demonMirror"
+      ],
+      "discardPileCardIds": [
+        "bloodNeedle",
+        "strike",
+        "strike",
+        "readyStance",
+        "guard",
+        "guard",
+        "guard",
+        "stoneShell",
+        "meditate",
+        "strike",
+        "heavySlash"
+      ],
+      "deckCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "guard",
+        "guard",
+        "guard",
+        "meditate",
+        "readyStance",
+        "bloodNeedle",
+        "ghostNeedle",
+        "guard",
+        "heavySlash",
+        "stoneShell",
+        "demonMirror"
+      ],
+      "physicalCardCount": 7,
+      "battleIntentCardCount": 1,
+      "physicalDamageCardCount": 6,
+      "aoePhysicalCardCount": 0,
+      "executeCardCount": 0,
+      "blockCardCount": 7,
+      "basicStrikeCount": 5,
+      "basicGuardCount": 5,
+      "hasReadyStance": true,
+      "hasBattleCry": false,
+      "hasHeavySlash": true,
+      "hasChainBlade": false,
+      "hasTraceCutter": false,
+      "hasArmyBreaker": false,
+      "hasXingtianCleave": false,
+      "hasTiangangBreak": false,
+      "phase": "gameOver",
+      "steps": 351
+    },
+    {
+      "seed": 2032364528,
+      "won": false,
+      "timedOut": false,
+      "deathFloor": 13,
+      "hp": 0,
+      "maxHp": 72,
+      "maxEnergy": 3,
+      "deckSize": 18,
+      "relicCount": 5,
+      "finalEnemyCount": 3,
+      "finalEnemyNames": [
+        "铁尸",
+        "铁尸",
+        "山魈"
+      ],
+      "finalEnemyHp": [
+        {
+          "name": "铁尸",
+          "hp": 49,
+          "block": 0,
+          "maxHp": 93
+        },
+        {
+          "name": "铁尸",
+          "hp": 92,
+          "block": 22,
+          "maxHp": 93
+        },
+        {
+          "name": "山魈",
+          "hp": 82,
+          "block": 14,
+          "maxHp": 82
+        }
+      ],
+      "finalPlayerStatuses": {
+        "curse": 2,
+        "spirit": 3,
+        "spikes": 3
+      },
+      "battleIntentStacksAtDeath": 0,
+      "handCardIds": [
+        "heavySlash"
+      ],
+      "drawPileCardIds": [
+        "reflectArt",
+        "strike",
+        "reflectArt",
+        "strike",
+        "strike",
+        "yellowCharm",
+        "guard",
+        "guard",
+        "strike",
+        "returnTalisman",
+        "meditate"
+      ],
+      "discardPileCardIds": [
+        "guard",
+        "strike",
+        "guard",
+        "guard",
+        "meditate",
+        "flameTalisman"
+      ],
+      "deckCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "guard",
+        "guard",
+        "guard",
+        "meditate",
+        "yellowCharm",
+        "guard",
+        "meditate",
+        "flameTalisman",
+        "returnTalisman",
+        "reflectArt",
+        "reflectArt",
+        "heavySlash"
+      ],
+      "physicalCardCount": 6,
+      "battleIntentCardCount": 0,
+      "physicalDamageCardCount": 6,
+      "aoePhysicalCardCount": 0,
+      "executeCardCount": 0,
+      "blockCardCount": 7,
+      "basicStrikeCount": 5,
+      "basicGuardCount": 5,
+      "hasReadyStance": false,
+      "hasBattleCry": false,
+      "hasHeavySlash": true,
+      "hasChainBlade": false,
+      "hasTraceCutter": false,
+      "hasArmyBreaker": false,
+      "hasXingtianCleave": false,
+      "hasTiangangBreak": false,
+      "phase": "gameOver",
+      "steps": 449
+    },
+    {
+      "seed": 2032457349,
+      "won": false,
+      "timedOut": false,
+      "deathFloor": 13,
+      "hp": 0,
+      "maxHp": 72,
+      "maxEnergy": 3,
+      "deckSize": 17,
+      "relicCount": 5,
+      "finalEnemyCount": 3,
+      "finalEnemyNames": [
+        "水鬼",
+        "水鬼",
+        "山魈"
+      ],
+      "finalEnemyHp": [
+        {
+          "name": "水鬼",
+          "hp": 12,
+          "block": 0,
+          "maxHp": 118
+        },
+        {
+          "name": "水鬼",
+          "hp": 108,
+          "block": 0,
+          "maxHp": 118
+        },
+        {
+          "name": "山魈",
+          "hp": 118,
+          "block": 2,
+          "maxHp": 123
+        }
+      ],
+      "finalPlayerStatuses": {
+        "curse": 10,
+        "spirit": 3,
+        "spikes": 1
+      },
+      "battleIntentStacksAtDeath": 0,
+      "handCardIds": [],
+      "drawPileCardIds": [
+        "guard"
+      ],
+      "discardPileCardIds": [
+        "heavySlash",
+        "softBoneSmoke",
+        "reflectArt",
+        "meditate",
+        "mountainEcho",
+        "guard",
+        "guard",
+        "attractThunder",
+        "strike",
+        "strike",
+        "guard",
+        "meditate",
+        "strike",
+        "strike",
+        "gatherAsh",
+        "strike"
+      ],
+      "deckCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "guard",
+        "guard",
+        "guard",
+        "meditate",
+        "gatherAsh",
+        "attractThunder",
+        "heavySlash",
+        "meditate",
+        "reflectArt",
+        "softBoneSmoke",
+        "mountainEcho"
+      ],
+      "physicalCardCount": 6,
+      "battleIntentCardCount": 0,
+      "physicalDamageCardCount": 6,
+      "aoePhysicalCardCount": 0,
+      "executeCardCount": 0,
+      "blockCardCount": 7,
+      "basicStrikeCount": 5,
+      "basicGuardCount": 4,
+      "hasReadyStance": false,
+      "hasBattleCry": false,
+      "hasHeavySlash": true,
+      "hasChainBlade": false,
+      "hasTraceCutter": false,
+      "hasArmyBreaker": false,
+      "hasXingtianCleave": false,
+      "hasTiangangBreak": false,
+      "phase": "gameOver",
+      "steps": 369
+    },
+    {
+      "seed": 2032550170,
+      "won": false,
+      "timedOut": false,
+      "deathFloor": 10,
+      "hp": 0,
+      "maxHp": 72,
+      "maxEnergy": 3,
+      "deckSize": 14,
+      "relicCount": 5,
+      "finalEnemyCount": 3,
+      "finalEnemyNames": [
+        "铁尸",
+        "狐妖",
+        "狐妖"
+      ],
+      "finalEnemyHp": [
+        {
+          "name": "铁尸",
+          "hp": 56,
+          "block": 0,
+          "maxHp": 76
+        },
+        {
+          "name": "狐妖",
+          "hp": 60,
+          "block": 0,
+          "maxHp": 60
+        },
+        {
+          "name": "狐妖",
+          "hp": 60,
+          "block": 0,
+          "maxHp": 60
+        }
+      ],
+      "finalPlayerStatuses": {
+        "curse": 2,
+        "spirit": 1
+      },
+      "battleIntentStacksAtDeath": 0,
+      "handCardIds": [
+        "dragonRain"
+      ],
+      "drawPileCardIds": [
+        "strike",
+        "strike",
+        "traceCutter",
+        "yellowCharm",
+        "guard",
+        "meditate",
+        "readyStance",
+        "thunderCharm",
+        "guard"
+      ],
+      "discardPileCardIds": [
+        "guard",
+        "guard",
+        "strike",
+        "strike"
+      ],
+      "deckCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "guard",
+        "guard",
+        "guard",
+        "meditate",
+        "dragonRain",
+        "thunderCharm",
+        "yellowCharm",
+        "readyStance",
+        "traceCutter"
+      ],
+      "physicalCardCount": 6,
+      "battleIntentCardCount": 1,
+      "physicalDamageCardCount": 5,
+      "aoePhysicalCardCount": 0,
+      "executeCardCount": 0,
+      "blockCardCount": 4,
+      "basicStrikeCount": 4,
+      "basicGuardCount": 4,
+      "hasReadyStance": true,
+      "hasBattleCry": false,
+      "hasHeavySlash": false,
+      "hasChainBlade": false,
+      "hasTraceCutter": true,
+      "hasArmyBreaker": false,
+      "hasXingtianCleave": false,
+      "hasTiangangBreak": false,
+      "phase": "gameOver",
+      "steps": 193
+    },
+    {
+      "seed": 2032642991,
+      "won": false,
+      "timedOut": false,
+      "deathFloor": 16,
+      "hp": 0,
+      "maxHp": 88,
+      "maxEnergy": 3,
+      "deckSize": 22,
+      "relicCount": 5,
+      "finalEnemyCount": 3,
+      "finalEnemyNames": [
+        "铁尸",
+        "铁尸",
+        "小妖"
+      ],
+      "finalEnemyHp": [
+        {
+          "name": "铁尸",
+          "hp": 86,
+          "block": 14,
+          "maxHp": 127
+        },
+        {
+          "name": "铁尸",
+          "hp": 127,
+          "block": 0,
+          "maxHp": 127
+        },
+        {
+          "name": "小妖",
+          "hp": 100,
+          "block": 0,
+          "maxHp": 100
+        }
+      ],
+      "finalPlayerStatuses": {
+        "curse": 3,
+        "spirit": 1
+      },
+      "battleIntentStacksAtDeath": 0,
+      "handCardIds": [
+        "strike",
+        "chainBlade",
+        "strike"
+      ],
+      "drawPileCardIds": [
+        "stoneShell",
+        "strike",
+        "guard",
+        "thunderPool",
+        "meditate",
+        "battleCry",
+        "guard",
+        "thunderPool",
+        "readyStance",
+        "traceCutter",
+        "heavySlash",
+        "guard",
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "nineHeavenTribulation"
+      ],
+      "discardPileCardIds": [
+        "xingtianCleave",
+        "guard"
+      ],
+      "deckCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "guard",
+        "guard",
+        "guard",
+        "meditate",
+        "heavySlash",
+        "strike",
+        "strike",
+        "readyStance",
+        "stoneShell",
+        "thunderPool",
+        "chainBlade",
+        "battleCry",
+        "traceCutter",
+        "thunderPool",
+        "nineHeavenTribulation",
+        "xingtianCleave"
+      ],
+      "physicalCardCount": 13,
+      "battleIntentCardCount": 2,
+      "physicalDamageCardCount": 11,
+      "aoePhysicalCardCount": 0,
+      "executeCardCount": 1,
+      "blockCardCount": 5,
+      "basicStrikeCount": 7,
+      "basicGuardCount": 4,
+      "hasReadyStance": true,
+      "hasBattleCry": true,
+      "hasHeavySlash": true,
+      "hasChainBlade": true,
+      "hasTraceCutter": true,
+      "hasArmyBreaker": false,
+      "hasXingtianCleave": true,
+      "hasTiangangBreak": false,
+      "phase": "gameOver",
+      "steps": 308
+    },
+    {
+      "seed": 2032735812,
+      "won": false,
+      "timedOut": false,
+      "deathFloor": 10,
+      "hp": 0,
+      "maxHp": 80,
+      "maxEnergy": 3,
+      "deckSize": 16,
+      "relicCount": 4,
+      "finalEnemyCount": 2,
+      "finalEnemyNames": [
+        "铁尸",
+        "小妖"
+      ],
+      "finalEnemyHp": [
+        {
+          "name": "铁尸",
+          "hp": 60,
+          "block": 0,
+          "maxHp": 74
+        },
+        {
+          "name": "小妖",
+          "hp": 53,
+          "block": 0,
+          "maxHp": 53
+        }
+      ],
+      "finalPlayerStatuses": {
+        "curse": 3,
+        "spirit": 3,
+        "battleIntent": 19
+      },
+      "battleIntentStacksAtDeath": 19,
+      "handCardIds": [
+        "strike",
+        "strike"
+      ],
+      "drawPileCardIds": [
+        "strike",
+        "meditate"
+      ],
+      "discardPileCardIds": [
+        "strike",
+        "strike",
+        "readyStance",
+        "guard",
+        "guard",
+        "guard",
+        "thunderCharm",
+        "guard",
+        "returnTalisman",
+        "yellowCharm",
+        "strike",
+        "strike"
+      ],
+      "deckCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "guard",
+        "guard",
+        "guard",
+        "meditate",
+        "strike",
+        "readyStance",
+        "thunderCharm",
+        "yellowCharm",
+        "returnTalisman",
+        "strike"
+      ],
+      "physicalCardCount": 8,
+      "battleIntentCardCount": 1,
+      "physicalDamageCardCount": 7,
+      "aoePhysicalCardCount": 0,
+      "executeCardCount": 0,
+      "blockCardCount": 4,
+      "basicStrikeCount": 7,
+      "basicGuardCount": 4,
+      "hasReadyStance": true,
+      "hasBattleCry": false,
+      "hasHeavySlash": false,
+      "hasChainBlade": false,
+      "hasTraceCutter": false,
+      "hasArmyBreaker": false,
+      "hasXingtianCleave": false,
+      "hasTiangangBreak": false,
+      "phase": "gameOver",
+      "steps": 215
+    },
+    {
+      "seed": 2032828633,
+      "won": false,
+      "timedOut": false,
+      "deathFloor": 16,
+      "hp": 0,
+      "maxHp": 80,
+      "maxEnergy": 3,
+      "deckSize": 18,
+      "relicCount": 5,
+      "finalEnemyCount": 3,
+      "finalEnemyNames": [
+        "水鬼",
+        "小妖",
+        "小妖"
+      ],
+      "finalEnemyHp": [
+        {
+          "name": "水鬼",
+          "hp": 17,
+          "block": 0,
+          "maxHp": 103
+        },
+        {
+          "name": "小妖",
+          "hp": 94,
+          "block": 0,
+          "maxHp": 94
+        },
+        {
+          "name": "小妖",
+          "hp": 94,
+          "block": 0,
+          "maxHp": 94
+        }
+      ],
+      "finalPlayerStatuses": {
+        "curse": 6,
+        "spirit": 2,
+        "battleIntent": 8
+      },
+      "battleIntentStacksAtDeath": 8,
+      "handCardIds": [
+        "guard"
+      ],
+      "drawPileCardIds": [
+        "meditate",
+        "strike",
+        "strike",
+        "readyStance",
+        "battleCry",
+        "guard",
+        "strike",
+        "armyBreaker",
+        "strike",
+        "strike"
+      ],
+      "discardPileCardIds": [
+        "armyBreaker",
+        "miasma",
+        "guard",
+        "strike",
+        "strike",
+        "battleCry",
+        "guard"
+      ],
+      "deckCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "guard",
+        "guard",
+        "guard",
+        "meditate",
+        "strike",
+        "readyStance",
+        "strike",
+        "miasma",
+        "battleCry",
+        "battleCry",
+        "armyBreaker",
+        "armyBreaker"
+      ],
+      "physicalCardCount": 12,
+      "battleIntentCardCount": 3,
+      "physicalDamageCardCount": 9,
+      "aoePhysicalCardCount": 0,
+      "executeCardCount": 0,
+      "blockCardCount": 4,
+      "basicStrikeCount": 7,
+      "basicGuardCount": 4,
+      "hasReadyStance": true,
+      "hasBattleCry": true,
+      "hasHeavySlash": false,
+      "hasChainBlade": false,
+      "hasTraceCutter": false,
+      "hasArmyBreaker": true,
+      "hasXingtianCleave": false,
+      "hasTiangangBreak": false,
+      "phase": "gameOver",
+      "steps": 292
+    },
+    {
+      "seed": 2032921454,
+      "won": false,
+      "timedOut": true,
+      "deathFloor": 12,
+      "hp": 35,
+      "maxHp": 72,
+      "maxEnergy": 3,
+      "deckSize": 17,
+      "relicCount": 5,
+      "finalEnemyCount": 1,
+      "finalEnemyNames": [
+        "判官"
+      ],
+      "finalEnemyHp": [
+        {
+          "name": "判官",
+          "hp": 160,
+          "block": 0,
+          "maxHp": 160
+        }
+      ],
+      "finalPlayerStatuses": {
+        "curse": 2,
+        "spirit": 1
+      },
+      "battleIntentStacksAtDeath": 0,
+      "handCardIds": [
+        "guard",
+        "meditate",
+        "guard"
+      ],
+      "drawPileCardIds": [
+        "strike",
+        "yellowCharm",
+        "strike",
+        "foxFire",
+        "guard",
+        "strike",
+        "guard",
+        "strike",
+        "strike",
+        "attractThunder",
+        "strike",
+        "returnTalisman"
+      ],
+      "discardPileCardIds": [
+        "returnTalisman",
+        "returnTalisman"
+      ],
+      "deckCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "guard",
+        "guard",
+        "guard",
+        "meditate",
+        "foxFire",
+        "attractThunder",
+        "yellowCharm",
+        "strike",
+        "returnTalisman",
+        "returnTalisman",
+        "returnTalisman"
+      ],
+      "physicalCardCount": 6,
+      "battleIntentCardCount": 0,
+      "physicalDamageCardCount": 6,
+      "aoePhysicalCardCount": 0,
+      "executeCardCount": 0,
+      "blockCardCount": 4,
+      "basicStrikeCount": 6,
+      "basicGuardCount": 4,
+      "hasReadyStance": false,
+      "hasBattleCry": false,
+      "hasHeavySlash": false,
+      "hasChainBlade": false,
+      "hasTraceCutter": false,
+      "hasArmyBreaker": false,
+      "hasXingtianCleave": false,
+      "hasTiangangBreak": false,
+      "phase": "combat",
+      "steps": 5000
+    },
+    {
+      "seed": 2033014275,
+      "won": false,
+      "timedOut": false,
+      "deathFloor": 16,
+      "hp": 0,
+      "maxHp": 80,
+      "maxEnergy": 3,
+      "deckSize": 21,
+      "relicCount": 5,
+      "finalEnemyCount": 4,
+      "finalEnemyNames": [
+        "小妖",
+        "狐妖",
+        "山魈",
+        "铁尸"
+      ],
+      "finalEnemyHp": [
+        {
+          "name": "小妖",
+          "hp": 10,
+          "block": 0,
+          "maxHp": 96
+        },
+        {
+          "name": "狐妖",
+          "hp": 66,
+          "block": 0,
+          "maxHp": 103
+        },
+        {
+          "name": "山魈",
+          "hp": 73,
+          "block": 18,
+          "maxHp": 110
+        },
+        {
+          "name": "铁尸",
+          "hp": 86,
+          "block": 0,
+          "maxHp": 123
+        }
+      ],
+      "finalPlayerStatuses": {
+        "curse": 2,
+        "spirit": 2,
+        "burn": 3
+      },
+      "battleIntentStacksAtDeath": 0,
+      "handCardIds": [
+        "guard",
+        "guard"
+      ],
+      "drawPileCardIds": [
+        "meditate",
+        "strike",
+        "kunlunBreath",
+        "guard",
+        "strike",
+        "strike",
+        "chainBlade",
+        "yellowCharm",
+        "traceCutter",
+        "guard",
+        "underworldPen",
+        "bloodOath",
+        "chainBlade",
+        "strike"
+      ],
+      "discardPileCardIds": [
+        "tiangangBreak",
+        "strike",
+        "strike",
+        "traceCutter",
+        "strike"
+      ],
+      "deckCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "guard",
+        "guard",
+        "guard",
+        "meditate",
+        "yellowCharm",
+        "strike",
+        "strike",
+        "kunlunBreath",
+        "chainBlade",
+        "chainBlade",
+        "traceCutter",
+        "traceCutter",
+        "bloodOath",
+        "underworldPen",
+        "tiangangBreak"
+      ],
+      "physicalCardCount": 12,
+      "battleIntentCardCount": 0,
+      "physicalDamageCardCount": 12,
+      "aoePhysicalCardCount": 1,
+      "executeCardCount": 0,
+      "blockCardCount": 5,
+      "basicStrikeCount": 7,
+      "basicGuardCount": 4,
+      "hasReadyStance": false,
+      "hasBattleCry": false,
+      "hasHeavySlash": false,
+      "hasChainBlade": true,
+      "hasTraceCutter": true,
+      "hasArmyBreaker": false,
+      "hasXingtianCleave": false,
+      "hasTiangangBreak": true,
+      "phase": "gameOver",
+      "steps": 341
+    },
+    {
+      "seed": 2033107096,
+      "won": false,
+      "timedOut": false,
+      "deathFloor": 12,
+      "hp": 0,
+      "maxHp": 72,
+      "maxEnergy": 3,
+      "deckSize": 15,
+      "relicCount": 4,
+      "finalEnemyCount": 1,
+      "finalEnemyNames": [
+        "判官"
+      ],
+      "finalEnemyHp": [
+        {
+          "name": "判官",
+          "hp": 90,
+          "block": 0,
+          "maxHp": 157
+        }
+      ],
+      "finalPlayerStatuses": {
+        "curse": 4,
+        "spirit": 2
+      },
+      "battleIntentStacksAtDeath": 0,
+      "handCardIds": [
+        "heavySlash"
+      ],
+      "drawPileCardIds": [
+        "fireRite",
+        "strike",
+        "meditate",
+        "strike",
+        "strike",
+        "bloodDemonLoop",
+        "guard",
+        "strike",
+        "guard",
+        "meditate"
+      ],
+      "discardPileCardIds": [
+        "guard",
+        "meditate",
+        "strike",
+        "guard"
+      ],
+      "deckCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "guard",
+        "guard",
+        "guard",
+        "meditate",
+        "heavySlash",
+        "meditate",
+        "meditate",
+        "fireRite",
+        "bloodDemonLoop"
+      ],
+      "physicalCardCount": 6,
+      "battleIntentCardCount": 0,
+      "physicalDamageCardCount": 6,
+      "aoePhysicalCardCount": 0,
+      "executeCardCount": 0,
+      "blockCardCount": 4,
+      "basicStrikeCount": 5,
+      "basicGuardCount": 4,
+      "hasReadyStance": false,
+      "hasBattleCry": false,
+      "hasHeavySlash": true,
+      "hasChainBlade": false,
+      "hasTraceCutter": false,
+      "hasArmyBreaker": false,
+      "hasXingtianCleave": false,
+      "hasTiangangBreak": false,
+      "phase": "gameOver",
+      "steps": 310
+    },
+    {
+      "seed": 2033199917,
+      "won": false,
+      "timedOut": false,
+      "deathFloor": 8,
+      "hp": 0,
+      "maxHp": 72,
+      "maxEnergy": 3,
+      "deckSize": 13,
+      "relicCount": 3,
+      "finalEnemyCount": 2,
+      "finalEnemyNames": [
+        "山魈",
+        "铁尸"
+      ],
+      "finalEnemyHp": [
+        {
+          "name": "山魈",
+          "hp": 27,
+          "block": 0,
+          "maxHp": 53
+        },
+        {
+          "name": "铁尸",
+          "hp": 62,
+          "block": 20,
+          "maxHp": 62
+        }
+      ],
+      "finalPlayerStatuses": {
+        "spirit": 10,
+        "curse": 1
+      },
+      "battleIntentStacksAtDeath": 0,
+      "handCardIds": [
+        "heavySlash",
+        "strike",
+        "strike"
+      ],
+      "drawPileCardIds": [
+        "guard",
+        "meditate",
+        "guard",
+        "strike"
+      ],
+      "discardPileCardIds": [
+        "guard",
+        "guard",
+        "kunlunBreath",
+        "kunlunBreath",
+        "ghostNeedle",
+        "strike"
+      ],
+      "deckCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "guard",
+        "guard",
+        "guard",
+        "meditate",
+        "ghostNeedle",
+        "heavySlash",
+        "kunlunBreath",
+        "kunlunBreath"
+      ],
+      "physicalCardCount": 5,
+      "battleIntentCardCount": 0,
+      "physicalDamageCardCount": 5,
+      "aoePhysicalCardCount": 0,
+      "executeCardCount": 0,
+      "blockCardCount": 4,
+      "basicStrikeCount": 4,
+      "basicGuardCount": 4,
+      "hasReadyStance": false,
+      "hasBattleCry": false,
+      "hasHeavySlash": true,
+      "hasChainBlade": false,
+      "hasTraceCutter": false,
+      "hasArmyBreaker": false,
+      "hasXingtianCleave": false,
+      "hasTiangangBreak": false,
+      "phase": "gameOver",
+      "steps": 158
+    },
+    {
+      "seed": 2033292738,
+      "won": false,
+      "timedOut": false,
+      "deathFloor": 8,
+      "hp": 0,
+      "maxHp": 72,
+      "maxEnergy": 3,
+      "deckSize": 13,
+      "relicCount": 3,
+      "finalEnemyCount": 1,
+      "finalEnemyNames": [
+        "山魈"
+      ],
+      "finalEnemyHp": [
+        {
+          "name": "山魈",
+          "hp": 25,
+          "block": 0,
+          "maxHp": 53
+        }
+      ],
+      "finalPlayerStatuses": {
+        "spirit": 2
+      },
+      "battleIntentStacksAtDeath": 0,
+      "handCardIds": [
+        "guard",
+        "guard"
+      ],
+      "drawPileCardIds": [
+        "guard"
+      ],
+      "discardPileCardIds": [
+        "strike",
+        "heavySlash",
+        "meditate",
+        "strike",
+        "strike",
+        "guard",
+        "strike",
+        "strike",
+        "gatherAsh",
+        "gatherAsh"
+      ],
+      "deckCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "guard",
+        "guard",
+        "guard",
+        "meditate",
+        "gatherAsh",
+        "gatherAsh",
+        "heavySlash",
+        "strike"
+      ],
+      "physicalCardCount": 6,
+      "battleIntentCardCount": 0,
+      "physicalDamageCardCount": 6,
+      "aoePhysicalCardCount": 0,
+      "executeCardCount": 0,
+      "blockCardCount": 4,
+      "basicStrikeCount": 5,
+      "basicGuardCount": 4,
+      "hasReadyStance": false,
+      "hasBattleCry": false,
+      "hasHeavySlash": true,
+      "hasChainBlade": false,
+      "hasTraceCutter": false,
+      "hasArmyBreaker": false,
+      "hasXingtianCleave": false,
+      "hasTiangangBreak": false,
+      "phase": "gameOver",
+      "steps": 275
+    },
+    {
+      "seed": 2033385559,
+      "won": false,
+      "timedOut": false,
+      "deathFloor": 14,
+      "hp": 0,
+      "maxHp": 88,
+      "maxEnergy": 5,
+      "deckSize": 18,
+      "relicCount": 5,
+      "finalEnemyCount": 4,
+      "finalEnemyNames": [
+        "小妖",
+        "铁尸",
+        "铁尸",
+        "小妖"
+      ],
+      "finalEnemyHp": [
+        {
+          "name": "小妖",
+          "hp": 23,
+          "block": 0,
+          "maxHp": 95
+        },
+        {
+          "name": "铁尸",
+          "hp": 125,
+          "block": 0,
+          "maxHp": 125
+        },
+        {
+          "name": "铁尸",
+          "hp": 125,
+          "block": 0,
+          "maxHp": 125
+        },
+        {
+          "name": "小妖",
+          "hp": 95,
+          "block": 0,
+          "maxHp": 95
+        }
+      ],
+      "finalPlayerStatuses": {
+        "curse": 5,
+        "spirit": 2
+      },
+      "battleIntentStacksAtDeath": 0,
+      "handCardIds": [
+        "readyStance",
+        "battleCry",
+        "nineHeavenTribulation"
+      ],
+      "drawPileCardIds": [
+        "traceCutter",
+        "battleCry",
+        "readyStance",
+        "strike",
+        "strike",
+        "strike",
+        "guard"
+      ],
+      "discardPileCardIds": [
+        "nineHeavenTribulation",
+        "meditate",
+        "strike",
+        "jiaoScale",
+        "guard",
+        "guard",
+        "guard",
+        "bloodDemonLoop"
+      ],
+      "deckCardIds": [
+        "strike",
+        "strike",
+        "strike",
+        "guard",
+        "guard",
+        "guard",
+        "guard",
+        "meditate",
+        "strike",
+        "jiaoScale",
+        "readyStance",
+        "readyStance",
+        "battleCry",
+        "battleCry",
+        "traceCutter",
+        "nineHeavenTribulation",
+        "nineHeavenTribulation",
+        "bloodDemonLoop"
+      ],
+      "physicalCardCount": 9,
+      "battleIntentCardCount": 4,
+      "physicalDamageCardCount": 5,
+      "aoePhysicalCardCount": 0,
+      "executeCardCount": 0,
+      "blockCardCount": 5,
+      "basicStrikeCount": 4,
+      "basicGuardCount": 4,
+      "hasReadyStance": true,
+      "hasBattleCry": true,
+      "hasHeavySlash": false,
+      "hasChainBlade": false,
+      "hasTraceCutter": true,
+      "hasArmyBreaker": false,
+      "hasXingtianCleave": false,
+      "hasTiangangBreak": false,
+      "phase": "gameOver",
+      "steps": 336
+    }
+  ]
+}

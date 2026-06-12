@@ -1,0 +1,29 @@
+
+入门 / normal:
+  ✅ 物理 15.4% avgFloor=14.9 timeout=2 (target: 15%-30%) PASS
+  ✅ 法术 26.3% avgFloor=15.7 timeout=4 (target: 15%-30%) PASS
+  ✅ 流血 17.5% avgFloor=15.4 timeout=0 (target: 15%-30%) PASS
+  ❌ 龟壳 10.1% avgFloor=14.2 timeout=1 (target: 15%-30%) FAIL
+  ✅ 中毒 15.4% avgFloor=15.4 timeout=2 (target: 15%-30%) PASS
+  ✅ 控制 20.6% avgFloor=14.4 timeout=12 (target: 15%-30%) PASS
+
+常规 / regular:
+  ❌ 物理 0.0% avgFloor=12.6 timeout=1 (target: 5%-10%) FAIL
+  ✅ 法术 5.5% avgFloor=14.4 timeout=7 (target: 5%-10%) PASS
+  ❌ 流血 3.8% avgFloor=13.0 timeout=1 (target: 5%-10%) FAIL
+  ✅ 龟壳 5.3% avgFloor=13.7 timeout=5 (target: 5%-10%) PASS
+  ✅ 中毒 5.3% avgFloor=13.7 timeout=4 (target: 5%-10%) PASS
+  ❌ 控制 2.7% avgFloor=13.5 timeout=7 (target: 5%-10%) FAIL
+
+真武 / trueMartial:
+  ✅ 物理 0.0% avgFloor=12.9 timeout=1 (target: 0%-2%) PASS
+  ✅ 法术 0.0% avgFloor=14.2 timeout=1 (target: 0%-2%) PASS
+  ✅ 流血 0.0% avgFloor=11.3 timeout=1 (target: 0%-2%) PASS
+  ✅ 龟壳 0.0% avgFloor=11.9 timeout=2 (target: 0%-2%) PASS
+  ✅ 中毒 0.0% avgFloor=9.6 timeout=0 (target: 0%-2%) PASS
+  ✅ 控制 1.4% avgFloor=11.6 timeout=7 (target: 0%-2%) PASS
+
+❌ Some targets failed — review above.
+
+Wrote _ai_review/BALANCE_GATE_REPORT.md
+Wrote _ai_review/BALANCE_GATE_RESULTS.json

@@ -1,0 +1,10 @@
+{
+  "label": "smoke",
+  "command": "npm run smoke",
+  "exitCode": 0,
+  "error": null,
+  "stdout": "L5_PHYSICAL_LATE_PACKAGE_MED_smoke.stdout.txt",
+  "stderr": "L5_PHYSICAL_LATE_PACKAGE_MED_smoke.stderr.txt",
+  "startedAt": "2026-06-10T10:04:25.973Z",
+  "finishedAt": "2026-06-10T10:04:26.303Z"
+}

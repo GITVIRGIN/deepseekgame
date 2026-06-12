@@ -4,6 +4,7 @@ import { prepareRouteChoice } from "../src/core/nodes.js";
 import { reduceGame } from "../src/core/reducer.js";
 import { createInitialState, startRun } from "../src/core/state.js";
 import { effectiveCardCost, MYTH_FACTIONS, MYTH_MASTERY_MAX, MYTH_MASTERY_TOTAL } from "../src/core/myth.js";
+import { MIN_DECK_SIZE } from "../src/core/types.js";
 
 const STYLE_IDS = ["physical", "spell", "bleed", "shell", "poison", "control"];
 const args = parseArgs(process.argv.slice(2));
@@ -41,9 +42,21 @@ function runOne(seed) {
     turns: 0,
   };
 
-  while (state.phase !== "gameOver" && steps < 2500) {
+  while (state.phase !== "gameOver" && steps < 3500) {
     steps += 1;
     collectMetrics(state, metrics);
+
+    // Handle pendingPurge first (blocks all other actions)
+    if (state.run?.pendingPurge) {
+      const cardUid = pickPurgeCard(state.run);
+      if (cardUid) {
+        state = reduceGame(state, { type: "confirmPurge", cardUid });
+      } else {
+        // No valid card to delete — skip (shouldn't happen with proper pre-checks)
+        state = reduceGame(state, { type: "confirmPurge", cardUid: null });
+      }
+      continue;
+    }
 
     if (state.phase === "route") {
       recordFinalRouteSeen(state.run, metrics);
@@ -80,11 +93,33 @@ function runOne(seed) {
 
   collectMetrics(state, metrics);
 
+  // V1.8.2: timeout — return timedOut marker, don't pollute win rate
+  if (steps >= 3500 && state.phase !== "gameOver") {
+    return {
+      seed,
+      phase: state.phase,
+      floor: state.run?.floor ?? 0,
+      won: false,
+      timedOut: true,
+      completedBy: "timeout",
+      mythAwardTags: [],
+      mythAwardPoints: 0,
+      deckSize: state.run?.deck.length ?? 0,
+      relics: state.run?.relics.length ?? 0,
+      maxEnergy: metrics.maxEnergy,
+      steps,
+      ...metrics,
+    };
+  }
+  // V1.8: validate terminal state consistency (enhanced)
+  assertTerminalState(state);
+
   return {
     seed,
     phase: state.phase,
     floor: state.run?.floor ?? 0,
-    won: Boolean(state.run?.goal?.completedBy),
+    won: isVictory(state.run),
+    timedOut: false,
     completedBy: state.run?.goal?.completedBy ?? "loss",
     mythAwardTags: state.run?.mythStats?.lastAward?.allocations?.map((item) => item.tag) ?? [],
     mythAwardPoints: state.run?.mythStats?.lastAward?.allocations?.length ?? 0,
@@ -197,6 +232,17 @@ function rewardScore(run, reward) {
   if (reward.type === "specialFragment") return 88;
   if (reward.type === "relic") return 74;
   if (reward.type === "gold") return 28;
+  if (reward.type === "purge") {
+    // Score purge based on deck quality: higher if we have many basic/low-value cards
+    if (run.deck.length <= MIN_DECK_SIZE) return -10;
+    const hasPurgeable = run.deck.some(c => {
+      const def = cards[c.cardId];
+      if (!def) return false;
+      if (def.undeletable || def.isCurse) return false;
+      return true;
+    });
+    return hasPurgeable ? 60 : -10;
+  }
 
   const card = cards[reward.value];
   let score = profileScore(card, 36) + rarityScore(card.rarity) + (card.grade ?? 1) * 10;
@@ -290,6 +336,68 @@ function recordReward(metrics, reward) {
   metrics.rewardPicks[style] = (metrics.rewardPicks[style] ?? 0) + 1;
 }
 
+function pickPurgeCard(run) {
+  const purge = run.pendingPurge;
+  if (!purge) return null;
+  let filter = typeof purge === "object" ? (purge.filter || "any") : String(purge || "any");
+
+  const deck = run.deck;
+  if (deck.length <= MIN_DECK_SIZE) return null;
+
+  const basicIds = ["strike", "guard", "yellowCharm", "meditate"];
+  const purgeable = deck.filter(c => {
+    const def = cards[c.cardId];
+    if (!def) return false;
+    if (def.undeletable || def.isCurse) return false;
+    if (filter === "basic" && !basicIds.includes(c.cardId)) return false;
+    return true;
+  });
+
+  if (purgeable.length === 0) return null;
+
+  // Prioritize: basic cards first, then low-grade cards, then low-rarity
+  purgeable.sort((a, b) => {
+    const defA = cards[a.cardId];
+    const defB = cards[b.cardId];
+    const aBasic = basicIds.includes(a.cardId) ? 0 : 1;
+    const bBasic = basicIds.includes(b.cardId) ? 0 : 1;
+    if (aBasic !== bBasic) return aBasic - bBasic;
+    const gradeA = defA?.grade ?? 1;
+    const gradeB = defB?.grade ?? 1;
+    if (gradeA !== gradeB) return gradeA - gradeB;
+    return 0;
+  });
+
+  return purgeable[0].uid;
+}
+
+// V1.8: Only boss/special count as victory
+function isVictory(run) {
+  const cb = run?.goal?.completedBy;
+  return cb === "boss" || cb === "special";
+}
+
+// V1.8: Terminal state consistency check (enhanced)
+function assertTerminalState(state) {
+  const run = state.run;
+  if (!run) return;
+  const completedBy = run.goal?.completedBy;
+  const hasCompletedBy = Boolean(completedBy);
+  const validVictory = completedBy === "boss" || completedBy === "special";
+  if (hasCompletedBy && !validVictory) {
+    throw new Error(`Terminal: invalid completedBy="${completedBy}"`);
+  }
+  if (state.phase === "gameOver" && run.finished !== true) {
+    throw new Error("Terminal: phase=gameOver but run.finished is not true");
+  }
+  if (validVictory && state.phase !== "gameOver") {
+    throw new Error(`Terminal: valid completedBy="${completedBy}" but phase="${state.phase}"`);
+  }
+  if (validVictory && run.finished !== true) {
+    throw new Error("Terminal: valid completedBy exists but run.finished is not true");
+  }
+}
+
 function summarize(items) {
   const count = (predicate) => items.filter(predicate).length;
   const avg = (values) => round(values.reduce((sum, value) => sum + value, 0) / values.length);
@@ -298,10 +406,13 @@ function summarize(items) {
     profile,
     mythMode,
     seed: baseSeed,
-    winRate: ratio(count((item) => item.won), items.length),
+    timeouts: count((item) => item.timedOut),
+    effectiveRuns: count((item) => !item.timedOut),
+    totalRuns: items.length,
+    winRate: ratio(count((item) => item.won), count((item) => !item.timedOut)),
     bossWinRate: ratio(count((item) => item.completedBy === "boss"), items.length),
     specialWinRate: ratio(count((item) => item.completedBy === "special"), items.length),
-    lossRate: ratio(count((item) => !item.won), items.length),
+    lossRate: ratio(count((item) => !item.won && !item.timedOut), items.length),
     avgFinalFloor: avg(items.map((item) => item.floor)),
     avgDeckSize: avg(items.map((item) => item.deckSize)),
     avgRelics: avg(items.map((item) => item.relics)),

@@ -1,0 +1,550 @@
+{
+  "rows": [
+    {
+      "id": "P0_BASELINE",
+      "description": "V3.13I-C12 baseline",
+      "changes": [],
+      "modCount": 0,
+      "combo": false,
+      "validatePass": true,
+      "smokePass": true,
+      "regular80": {
+        "style": "physical",
+        "winRate": 0,
+        "avgFloor": 13,
+        "timeouts": 3,
+        "exitCode": 0
+      },
+      "regular40": {
+        "style": "physical",
+        "winRate": 0,
+        "avgFloor": 13.1,
+        "timeouts": 2,
+        "exitCode": 0
+      },
+      "normal80": {
+        "style": "physical",
+        "winRate": 13,
+        "avgFloor": 15.2,
+        "timeouts": 3,
+        "exitCode": 0
+      },
+      "normal40": {
+        "style": "physical",
+        "winRate": 15.8,
+        "avgFloor": 14.7,
+        "timeouts": 2,
+        "exitCode": 0
+      },
+      "eliminationReasons": [
+        "regular physical both < 3%"
+      ],
+      "eliminated": true,
+      "entersStage2": false,
+      "sort": {
+        "reg": 10,
+        "norm": 2,
+        "timeout": 10
+      }
+    },
+    {
+      "id": "P1_PHYSICAL_REWARD_MED",
+      "description": "beginner physical 0.96, regular physical 1.55",
+      "changes": [
+        "rewardMed"
+      ],
+      "modCount": 2,
+      "combo": false,
+      "validatePass": true,
+      "smokePass": true,
+      "regular80": {
+        "style": "physical",
+        "winRate": 2.5,
+        "avgFloor": 12.9,
+        "timeouts": 1,
+        "exitCode": 0
+      },
+      "regular40": {
+        "style": "physical",
+        "winRate": 0,
+        "avgFloor": 12.6,
+        "timeouts": 1,
+        "exitCode": 0
+      },
+      "normal80": {
+        "style": "physical",
+        "winRate": 12.2,
+        "avgFloor": 15,
+        "timeouts": 6,
+        "exitCode": 0
+      },
+      "normal40": {
+        "style": "physical",
+        "winRate": 16.2,
+        "avgFloor": 14.4,
+        "timeouts": 3,
+        "exitCode": 0
+      },
+      "eliminationReasons": [
+        "regular physical both < 3%"
+      ],
+      "eliminated": true,
+      "entersStage2": false,
+      "sort": {
+        "reg": 7.5,
+        "norm": 2.8000000000000007,
+        "timeout": 11
+      }
+    },
+    {
+      "id": "P2_PHYSICAL_REWARD_BIG",
+      "description": "beginner physical 1.00, regular physical 1.85",
+      "changes": [
+        "rewardBig"
+      ],
+      "modCount": 2,
+      "combo": false,
+      "validatePass": true,
+      "smokePass": true,
+      "regular80": {
+        "style": "physical",
+        "winRate": 0,
+        "avgFloor": 13.3,
+        "timeouts": 0,
+        "exitCode": 0
+      },
+      "regular40": {
+        "style": "physical",
+        "winRate": 0,
+        "avgFloor": 12.6,
+        "timeouts": 1,
+        "exitCode": 0
+      },
+      "normal80": {
+        "style": "physical",
+        "winRate": 12.3,
+        "avgFloor": 15.1,
+        "timeouts": 7,
+        "exitCode": 0
+      },
+      "normal40": {
+        "style": "physical",
+        "winRate": 15.8,
+        "avgFloor": 14.8,
+        "timeouts": 2,
+        "exitCode": 0
+      },
+      "eliminationReasons": [
+        "regular physical both < 3%"
+      ],
+      "eliminated": true,
+      "entersStage2": false,
+      "sort": {
+        "reg": 10,
+        "norm": 2.6999999999999993,
+        "timeout": 10
+      }
+    },
+    {
+      "id": "P3_PHYSICAL_ARCHETYPE_LIGHT",
+      "description": "physical guarantee threshold 6 and physical reward base weights",
+      "changes": [
+        "archetypeLight"
+      ],
+      "modCount": 2,
+      "combo": false,
+      "validatePass": true,
+      "smokePass": true,
+      "regular80": {
+        "style": "physical",
+        "winRate": 1.3,
+        "avgFloor": 13,
+        "timeouts": 1,
+        "exitCode": 0
+      },
+      "regular40": {
+        "style": "physical",
+        "winRate": 0,
+        "avgFloor": 12.4,
+        "timeouts": 2,
+        "exitCode": 0
+      },
+      "normal80": {
+        "style": "physical",
+        "winRate": 12.2,
+        "avgFloor": 15.3,
+        "timeouts": 6,
+        "exitCode": 0
+      },
+      "normal40": {
+        "style": "physical",
+        "winRate": 7.9,
+        "avgFloor": 14.9,
+        "timeouts": 2,
+        "exitCode": 0
+      },
+      "eliminationReasons": [
+        "regular physical both < 3%"
+      ],
+      "eliminated": true,
+      "entersStage2": false,
+      "sort": {
+        "reg": 8.7,
+        "norm": 9.9,
+        "timeout": 11
+      }
+    },
+    {
+      "id": "P4_PHYSICAL_CARDS_LIGHT",
+      "description": "light physical card buffs",
+      "changes": [
+        "cardsLight"
+      ],
+      "modCount": 4,
+      "combo": false,
+      "validatePass": true,
+      "smokePass": true,
+      "regular80": {
+        "style": "physical",
+        "winRate": 0,
+        "avgFloor": 13.2,
+        "timeouts": 3,
+        "exitCode": 0
+      },
+      "regular40": {
+        "style": "physical",
+        "winRate": 0,
+        "avgFloor": 13,
+        "timeouts": 2,
+        "exitCode": 0
+      },
+      "normal80": {
+        "style": "physical",
+        "winRate": 11.8,
+        "avgFloor": 15.1,
+        "timeouts": 4,
+        "exitCode": 0
+      },
+      "normal40": {
+        "style": "physical",
+        "winRate": 10.8,
+        "avgFloor": 14.7,
+        "timeouts": 3,
+        "exitCode": 0
+      },
+      "eliminationReasons": [
+        "regular physical both < 3%",
+        "normal physical both < 12%"
+      ],
+      "eliminated": true,
+      "entersStage2": false,
+      "sort": {
+        "reg": 10,
+        "norm": 7.399999999999999,
+        "timeout": 12
+      }
+    },
+    {
+      "id": "P5_PHYSICAL_CARDS_MED",
+      "description": "medium physical card buffs",
+      "changes": [
+        "cardsMed"
+      ],
+      "modCount": 5,
+      "combo": false,
+      "validatePass": true,
+      "smokePass": true,
+      "regular80": {
+        "style": "physical",
+        "winRate": 1.3,
+        "avgFloor": 13.2,
+        "timeouts": 2,
+        "exitCode": 0
+      },
+      "regular40": {
+        "style": "physical",
+        "winRate": 0,
+        "avgFloor": 12.6,
+        "timeouts": 1,
+        "exitCode": 0
+      },
+      "normal80": {
+        "style": "physical",
+        "winRate": 11.7,
+        "avgFloor": 15.3,
+        "timeouts": 3,
+        "exitCode": 0
+      },
+      "normal40": {
+        "style": "physical",
+        "winRate": 10.5,
+        "avgFloor": 14.9,
+        "timeouts": 2,
+        "exitCode": 0
+      },
+      "eliminationReasons": [
+        "regular physical both < 3%",
+        "normal physical both < 12%"
+      ],
+      "eliminated": true,
+      "entersStage2": false,
+      "sort": {
+        "reg": 8.7,
+        "norm": 7.800000000000001,
+        "timeout": 8
+      }
+    },
+    {
+      "id": "P6_ARCHETYPE_PLUS_REWARD_MED",
+      "description": "P1 + P3",
+      "changes": [
+        "rewardMed",
+        "archetypeLight"
+      ],
+      "modCount": 4,
+      "combo": true,
+      "validatePass": true,
+      "smokePass": true,
+      "regular80": {
+        "style": "physical",
+        "winRate": 0,
+        "avgFloor": 13.2,
+        "timeouts": 1,
+        "exitCode": 0
+      },
+      "regular40": {
+        "style": "physical",
+        "winRate": 0,
+        "avgFloor": 12.3,
+        "timeouts": 1,
+        "exitCode": 0
+      },
+      "normal80": {
+        "style": "physical",
+        "winRate": 10.5,
+        "avgFloor": 15.3,
+        "timeouts": 4,
+        "exitCode": 0
+      },
+      "normal40": {
+        "style": "physical",
+        "winRate": 12.8,
+        "avgFloor": 15.1,
+        "timeouts": 1,
+        "exitCode": 0
+      },
+      "eliminationReasons": [
+        "regular physical both < 3%"
+      ],
+      "eliminated": true,
+      "entersStage2": false,
+      "sort": {
+        "reg": 10,
+        "norm": 6.699999999999999,
+        "timeout": 7
+      }
+    },
+    {
+      "id": "P7_ARCHETYPE_PLUS_CARDS_LIGHT",
+      "description": "P3 + P4",
+      "changes": [
+        "archetypeLight",
+        "cardsLight"
+      ],
+      "modCount": 6,
+      "combo": true,
+      "validatePass": true,
+      "smokePass": true,
+      "regular80": {
+        "style": "physical",
+        "winRate": 0,
+        "avgFloor": 13.3,
+        "timeouts": 0,
+        "exitCode": 0
+      },
+      "regular40": {
+        "style": "physical",
+        "winRate": 0,
+        "avgFloor": 12.5,
+        "timeouts": 2,
+        "exitCode": 0
+      },
+      "normal80": {
+        "style": "physical",
+        "winRate": 8.1,
+        "avgFloor": 15,
+        "timeouts": 6,
+        "exitCode": 0
+      },
+      "normal40": {
+        "style": "physical",
+        "winRate": 10.5,
+        "avgFloor": 14.9,
+        "timeouts": 2,
+        "exitCode": 0
+      },
+      "eliminationReasons": [
+        "regular physical both < 3%",
+        "normal physical both < 12%"
+      ],
+      "eliminated": true,
+      "entersStage2": false,
+      "sort": {
+        "reg": 10,
+        "norm": 11.4,
+        "timeout": 10
+      }
+    },
+    {
+      "id": "P8_REWARD_MED_PLUS_CARDS_LIGHT",
+      "description": "P1 + P4",
+      "changes": [
+        "rewardMed",
+        "cardsLight"
+      ],
+      "modCount": 6,
+      "combo": true,
+      "validatePass": true,
+      "smokePass": true,
+      "regular80": {
+        "style": "physical",
+        "winRate": 0,
+        "avgFloor": 13.3,
+        "timeouts": 0,
+        "exitCode": 0
+      },
+      "regular40": {
+        "style": "physical",
+        "winRate": 0,
+        "avgFloor": 12.7,
+        "timeouts": 1,
+        "exitCode": 0
+      },
+      "normal80": {
+        "style": "physical",
+        "winRate": 10.7,
+        "avgFloor": 14.9,
+        "timeouts": 5,
+        "exitCode": 0
+      },
+      "normal40": {
+        "style": "physical",
+        "winRate": 16.2,
+        "avgFloor": 14.6,
+        "timeouts": 3,
+        "exitCode": 0
+      },
+      "eliminationReasons": [
+        "regular physical both < 3%"
+      ],
+      "eliminated": true,
+      "entersStage2": false,
+      "sort": {
+        "reg": 10,
+        "norm": 4.300000000000001,
+        "timeout": 9
+      }
+    },
+    {
+      "id": "P9_PHYSICAL_FULL_SAFE",
+      "description": "P1 + P3 + P4",
+      "changes": [
+        "rewardMed",
+        "archetypeLight",
+        "cardsLight"
+      ],
+      "modCount": 8,
+      "combo": true,
+      "validatePass": true,
+      "smokePass": true,
+      "regular80": {
+        "style": "physical",
+        "winRate": 0,
+        "avgFloor": 13.3,
+        "timeouts": 2,
+        "exitCode": 0
+      },
+      "regular40": {
+        "style": "physical",
+        "winRate": 0,
+        "avgFloor": 12.5,
+        "timeouts": 2,
+        "exitCode": 0
+      },
+      "normal80": {
+        "style": "physical",
+        "winRate": 10.8,
+        "avgFloor": 15.3,
+        "timeouts": 6,
+        "exitCode": 0
+      },
+      "normal40": {
+        "style": "physical",
+        "winRate": 10.5,
+        "avgFloor": 14.9,
+        "timeouts": 2,
+        "exitCode": 0
+      },
+      "eliminationReasons": [
+        "regular physical both < 3%",
+        "normal physical both < 12%"
+      ],
+      "eliminated": true,
+      "entersStage2": false,
+      "sort": {
+        "reg": 10,
+        "norm": 8.7,
+        "timeout": 12
+      }
+    },
+    {
+      "id": "P10_PHYSICAL_FULL_STRONG",
+      "description": "P2 + P3 + P5",
+      "changes": [
+        "rewardBig",
+        "archetypeLight",
+        "cardsMed"
+      ],
+      "modCount": 9,
+      "combo": true,
+      "validatePass": true,
+      "smokePass": true,
+      "regular80": {
+        "style": "physical",
+        "winRate": 1.3,
+        "avgFloor": 13.5,
+        "timeouts": 0,
+        "exitCode": 0
+      },
+      "regular40": {
+        "style": "physical",
+        "winRate": 5.1,
+        "avgFloor": 13.3,
+        "timeouts": 1,
+        "exitCode": 0
+      },
+      "normal80": {
+        "style": "physical",
+        "winRate": 9.6,
+        "avgFloor": 15,
+        "timeouts": 7,
+        "exitCode": 0
+      },
+      "normal40": {
+        "style": "physical",
+        "winRate": 13.5,
+        "avgFloor": 14.9,
+        "timeouts": 3,
+        "exitCode": 0
+      },
+      "eliminationReasons": [],
+      "eliminated": false,
+      "entersStage2": true,
+      "sort": {
+        "reg": 3.7,
+        "norm": 6.9,
+        "timeout": 11
+      }
+    }
+  ]
+}
