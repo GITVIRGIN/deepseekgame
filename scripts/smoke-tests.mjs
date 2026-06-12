@@ -1930,6 +1930,37 @@ test("CQC: 非法 trueMartialStyle 不 fallback 到 physical", () => {
   assert(!r.run, "bad TM style should not create run");
 });
 
+// T0B: trueMartial startCombat null combat guard regression
+test("T0B: trueMartial开局DOT死亡不访问null combat", () => {
+  let s = createInitialState();
+  // Start a trueMartial shell run (has turtleShell relic +30 block in startCombat)
+  s = startRun(s, "shell");
+  // Make player near death with poison, so startPlayerTurn tickDamageStatus kills them
+  s.run.hp = 2;
+  s.run.maxHp = 72;
+  // Add poison that will kill on next tick
+  s.run.statuses = [{ id: "poison", stacks: 3 }];
+  // Also add asuraHeart relic which causes read of combat.flags in startCombat
+  if (!s.run.relics.includes("asuraHeart")) {
+    s.run.relics.push("asuraHeart");
+  }
+  // Enter combat via route choice — this triggers startCombat internally
+  let main = s.run.nodeChoices.find(n => n.type === "main");
+  let didThrow = false;
+  try {
+    s = reduceGame(s, { type: "chooseNode", nodeId: main.id });
+  } catch (e) {
+    didThrow = true;
+  }
+  assert(!didThrow, "startCombat should not throw on DOT death");
+  assert(s.phase === "gameOver" || s.run.finished === true || s.phase === "combat",
+    `expected gameOver/finished or survived combat, got phase=${s.phase}`);
+  // If player survived: combat should exist. If died: run.combat should be null.
+  if (s.phase === "gameOver") {
+    assert(s.run.combat === null, "combat should be null after gameOver");
+  }
+});
+
 // ===== pendingPurge regression tests =====
 
 function forcePendingPurge(state, source = "shop") {

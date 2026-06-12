@@ -1343,16 +1343,31 @@ p {
     scroll-snap-type: x proximity;
     -webkit-overflow-scrolling: touch;
   }
-  .combat-layout .hand .game-card {
+  .combat-layout .hand .hand-card-slot {
+    display: grid;
+    grid-template-rows: 122px 22px;
+    gap: 4px;
+    min-width: 0;
+    height: 148px;
+    min-height: 148px;
+    scroll-snap-align: start;
+  }
+  .combat-layout .hand .hand-card-slot .game-card {
     width: 100%; min-width: 0; max-width: 100%;
-    height: 148px; min-height: 148px;
+    height: 122px; min-height: 122px;
     padding: 5px; font-size: 9px;
     overflow: hidden;
-    scroll-snap-align: start;
+    scroll-snap-align: none;
   }
   .combat-layout .hand .game-card strong { font-size: 10px; line-height: 1.2; }
   .combat-layout .hand .game-card .card-body { display: none; }
   .combat-layout .hand .game-card .card-tags { font-size: 7px; line-height: 1.1; }
+  .combat-layout .hand .hand-card-slot .discard-action {
+    height: 22px; min-height: 22px;
+    font-size: 9px; padding: 1px 2px;
+    width: 100%; margin: 0;
+    border-radius: 3px;
+  }
   /* HF9: scroll hint — mobile-only swipe indicator */
   .hand-swipe-hint {
     display: block;

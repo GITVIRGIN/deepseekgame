@@ -3,7 +3,7 @@ import { createRunGoal, markSpecialGoalBaseline } from "../src/core/goals.js";
 import { prepareRouteChoice } from "../src/core/nodes.js";
 import { reduceGame } from "../src/core/reducer.js";
 import { createInitialState, startRun } from "../src/core/state.js";
-import { DIFFICULTY_REGULAR } from "../src/core/types.js";
+import { DIFFICULTY_REGULAR, DIFFICULTY_TRUE_MARTIAL } from "../src/core/types.js";
 
 // ============ GAME CONSTANTS (must match src/core/effects.js) ============
 const TM_POJUN_TRUE_DAMAGE = 9;
@@ -58,6 +58,19 @@ function statusStacks(fighter, id) { return fighter?.statuses?.find(s => s.id ==
 
 // ============ SEEDED RUN SETUP ============
 function seededRun(seed, tmStyle = null, difficulty = null) {
+  // T0 guard: trueMartial requires explicit trueMartialStyle in tool layer
+  if (difficulty === DIFFICULTY_TRUE_MARTIAL && !tmStyle) {
+    throw new Error(
+      "trueMartial requires explicit trueMartialStyle. " +
+      "Must be one of: physical, spell, bleed, shell, poison, control"
+    );
+  }
+  if (tmStyle && !STYLES.includes(tmStyle)) {
+    throw new Error(
+      `Invalid trueMartialStyle "${tmStyle}". ` +
+      "Must be one of: physical, spell, bleed, shell, poison, control"
+    );
+  }
   // startRun internally uses Date.now() for seed, which would make
   // shopTiers and other derived state non-deterministic. Override
   // Date.now to return a deterministic timestamp from our seed,

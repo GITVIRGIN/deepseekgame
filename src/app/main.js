@@ -325,7 +325,7 @@ function renderReward() {
     button("跳过拿牌", "ghost", () => dispatch({ type: "skipReward" })),
     rollRemaining > 0
       ? button(`刷新机缘 (${rollRemaining} 次)`, "ghost", () => dispatch({ type: "rollRewards" }))
-      : button(`刷新已用完 (${run.rollsMax ?? 3})`, "ghost disabled", null),
+      : button("刷新已用完", "ghost disabled", null),
   ].filter(Boolean)));
   return view;
 }
@@ -752,7 +752,7 @@ function renderCard(definition, onClick, options = {}) {
     el("span", "card-rarity", rarityInfo[definition.rarity].label),
     el("strong", "", definition.name),
     el("span", "card-cost", costText),
-    el("p", "", definition.text),
+    el("p", "card-body", definition.text),
     renderCardStyle(definition),
     renderEffectBadges(definition),
     el("span", "myth-tags", definition.mythTags.join(" / ")),

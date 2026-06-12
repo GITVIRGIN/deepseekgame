@@ -48,6 +48,12 @@ export function startCombat(state) {
   state.phase = "combat";
   startPlayerTurn(state);
 
+  // T0B guard: startPlayerTurn may cause death via DOT (poison/bleed/burn),
+  // which calls finishDefeat → sets run.combat = null. Guard against null access.
+  if (state.phase !== "combat" || !run.combat) {
+    return state;
+  }
+
   const combat = run.combat;
 
   // V3.13M: regular-only physical momentum relief.
