@@ -25,7 +25,15 @@
     "sim:shell": "node scripts/simulate-runs.mjs --runs=100 --profile=shell",
     "sim:poison": "node scripts/simulate-runs.mjs --runs=100 --profile=poison",
     "smoke": "node scripts/smoke-tests.mjs",
-    "sim:control": "node scripts/simulate-runs.mjs --runs=100 --profile=control"
+    "sim:control": "node scripts/simulate-runs.mjs --runs=100 --profile=control",
+    "rc3:diagnose": "node scripts/diagnose-release-rc-winrate.mjs",
+    "rc3:verify": "node scripts/verify-release-rc3-evidence.mjs",
+    "rc3:harness": "node scripts/harness-release-rc.mjs",
+    "rc3:pack": "node scripts/create-rc3-staging-pack.mjs",
+    "rc3-fix1:diagnose": "node scripts/diagnose-release-rc-winrate.mjs",
+    "rc3-fix1:verify": "node scripts/verify-release-rc3-evidence.mjs",
+    "rc3-fix1:harness": "node scripts/harness-release-rc.mjs",
+    "rc3-fix1:pack": "node scripts/create-rc3-staging-pack.mjs"
   },
   "devDependencies": {
     "playwright": "^1.60.0"

@@ -1,0 +1,20 @@
+{
+  "verdict": "ACCEPTED_FOR_RELEASE",
+  "sourceVerdict": "RC3-FIX1 BLOCKED",
+  "manualWaiver": true,
+  "waivedItems": ["regular-overall-winrate", "regular-control-winrate"],
+  "normalRawLines": 9000,
+  "regularRawLines": 9000,
+  "normalWinRate": 0.2144,
+  "regularWinRate": 0.0910,
+  "normalTimeoutRate": 0,
+  "regularTimeoutRate": 0,
+  "normalCrash": 0,
+  "regularCrash": 0,
+  "t2a5Verify": "PASS",
+  "check": "PASS",
+  "smoke": "PASS",
+  "releaseHarness": "48/48 PASS",
+  "pageErrors": 0,
+  "consoleErrors": 0
+}

@@ -1,0 +1,56 @@
+PASS: runs.jsonl exists (D:\workspace\deepseekgame\ai-review\truemartial-t2a5-fusion-mastery-tune\raw\runs.jsonl)
+PASS: runs.jsonl line count >= 18000 (18000)
+PASS: fusionStateBucket legal (0 invalid)
+PASS: routeProgressFinal exists (0 missing)
+PASS: routeProgressFinal contains all 6 routes (0 missing route keys)
+PASS: firstDualFormedFloor >= 10 (0 violations)
+PASS: firstHeavenlyTriggerPickedFloor >= 15 (0 violations)
+PASS: firstTripleFusionFloor >= 15 (0 violations)
+PASS: no floor <=4 fusion route pick (0 violations)
+PASS: tripleFormed requires heavenlyTrigger pick (0 violations)
+PASS: tripleFormed deck has triple ultimate (0 violations)
+PASS: heavenlyTrigger cards never enter deck (0 runs)
+PASS: triple ultimate never directly offered (0 runs)
+PASS: tripleFormed requires true mastered route (0 violations)
+PASS: bucket recomputation matches raw (0 mismatches)
+PASS: run.violations empty (0 runs)
+PASS: offeredRouteCardCount sum > 0 (38798)
+PASS: masteryPickCount sum > 0 (296)
+PASS: true dualMastered runs > 0 (252)
+PASS: offeredHeavenlyTriggerCount sum > 0 (83)
+PASS: heavenlyTriggerPickCount sum > 0 (75)
+PASS: tripleFormed runs > 0 (55)
+PASS: not dualMastered=0 with tripleFormed>0 (mastered=252 triple=55)
+PASS: PASS: runs.jsonl >= 18000 (18000)
+PASS: PASS: dualMastered cumulative rate >= 0.5% (1.40%)
+PASS: PASS: dualMastered cumulative rate <= 2.5% (1.40%)
+PASS: PASS: tripleFormed rate >= 0.2% (0.31%)
+PASS: PASS: tripleFormed rate <= 1.2% (0.31%)
+PASS: PASS: no invalid heavenly trigger
+PASS: PASS: no direct triple reward
+PASS: PASS: no heavenly trigger in deck
+PASS: formation-bucket-summary.csv exists
+PASS: style-summary.csv exists
+PASS: route-progress-summary.csv exists
+PASS: heavenly-trigger-summary.csv exists
+PASS: highroll-dual-samples.json exists
+PASS: highroll-triple-samples.json exists
+PASS: failed-formation-samples.json exists
+PASS: t2a5-fusion-mastery-tune-report.md exists
+PASS: formation CSV has 7 buckets
+PASS: style CSV has 6 styles
+PASS: route CSV has 6 routes
+PASS: trigger CSV has 6 triggers
+PASS: normal/regular helper excludes TM/fusion/trigger tier=1 premium=false
+PASS: normal/regular helper excludes TM/fusion/trigger tier=1 premium=true
+PASS: normal/regular helper excludes TM/fusion/trigger tier=2 premium=false
+PASS: normal/regular helper excludes TM/fusion/trigger tier=2 premium=true
+PASS: normal/regular helper excludes TM/fusion/trigger tier=3 premium=false
+PASS: normal/regular helper excludes TM/fusion/trigger tier=3 premium=true
+PASS: normal/regular helper excludes TM/fusion/trigger tier=4 premium=false
+PASS: normal/regular helper excludes TM/fusion/trigger tier=4 premium=true
+PASS: normal/regular helper excludes TM/fusion/trigger tier=5 premium=false
+PASS: normal/regular helper excludes TM/fusion/trigger tier=5 premium=true
+PASS: fusionCandidateCards tier 3 is empty
+
+PASS: ALL T2-A5 EVIDENCE CHECKS PASSED

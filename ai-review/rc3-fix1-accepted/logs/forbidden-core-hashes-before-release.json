@@ -1,0 +1,16 @@
+{
+  "src/core/data.js": "4c155146fe33ee7dd8cf4e8552fb61131873742db4dbc9d8f56b9ecfb36a66dc",
+  "src/core/rewards.js": "25326e133c03c66eeb90666caa40252e6e0ee15c1fb06dcf01573db0043444cb",
+  "src/core/archetypes.js": "270b42254b6301960a98fd904fd592c8f59f69ad2b1bf677199abc070b2f3bca",
+  "src/core/reducer.js": "a3704e91c27d31ec69487a4b987f957c406e258f27efdb5a5e0da3c6ba1bd6a3",
+  "src/core/effects.js": "6a241b63972f34d51c5dcd63337b1888da55d963e754f1f6587cf787f0459374",
+  "src/core/combat.js": "ceb3f5b7b8ab714ad86d9e664e40dd4b88daf5334b3602a67e80a7c9dbea3ec7",
+  "src/core/enemies.js": "MISSING",
+  "src/core/types.js": "ff7c57503a2f6bee6450392110124595e2eb20673b04914b4ea4b0ac9bd598a6",
+  "src/core/myth.js": "d3dd9270f2a0ff3db7625a3a92e86e562c12e3b91c5df49ca2a53de050b04657",
+  "src/core/nodes.js": "d586e6ef4cd2a8d965c290aabdb3374dec627c919ca11ff5cc07cd1ba102bc84",
+  "src/core/progression.js": "aec97cd73500f2a24127ae3855133eb8191a6a983ef20ffec67c7b37a4f0b241",
+  "src/core/status.js": "78cb73e4ee129a728eb7a6d2b87703d3728562f8431a63e0a044bfc8c004256e",
+  "src/core/shop.js": "b31c789e308e1ab0962e96a1f7516a1cbd0227ed310982036fd4b75d4b85e1b1",
+  "src/core/state.js": "ed304cda3ccd15e213a2d783868b0067992a89bc14a9f603db58599369973eea"
+}

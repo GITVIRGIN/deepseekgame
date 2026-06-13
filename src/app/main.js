@@ -158,6 +158,9 @@ function renderHome() {
           button("常规难度", "ghost", () => dispatch({ type: "startRegular" })),
           canShowTrueMartialEntry(state) ? button("真武模式", "danger", () => dispatch({ type: "martialSelect" })) : "",
         ].filter(Boolean)),
+        el("div", "release-link", [
+          el("a", "", { href: "release-v3.13n-tm-t2a5f.html", target: "_self" }, "📖 V3.13N 真武合流攻略 / 发布说明"),
+        ]),
       ]),
       renderCloudPanel(),
       renderProgression(),
