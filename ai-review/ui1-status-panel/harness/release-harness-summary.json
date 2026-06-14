@@ -1,0 +1,301 @@
+{
+  "total": 48,
+  "passed": 48,
+  "failed": 0,
+  "pageErrors": 0,
+  "consoleErrors": 0,
+  "checks": [
+    {
+      "name": "browser: playwright import",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": null
+    },
+    {
+      "name": "browser: local server started",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": null
+    },
+    {
+      "name": "browser: chromium launch",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": null
+    },
+    {
+      "name": "browser: page loaded",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": null
+    },
+    {
+      "name": "browser: #app exists",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": null
+    },
+    {
+      "name": "browser: body text nonempty",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": null
+    },
+    {
+      "name": "browser: buttons rendered",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": null
+    },
+    {
+      "name": "browser: no literal bad text",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": null
+    },
+    {
+      "name": "browser: localStorage accessible",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": null
+    },
+    {
+      "name": "browser: desktop screenshot",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": "ai-review/ui1-status-panel/harness/screenshots/desktop-home.png"
+    },
+    {
+      "name": "browser: mobile screenshot",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": "ai-review/ui1-status-panel/harness/screenshots/mobile-home.png"
+    },
+    {
+      "name": "pageErrors_zero",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": null
+    },
+    {
+      "name": "consoleErrors_zero",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": null
+    },
+    {
+      "name": "server_stopped",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": null
+    },
+    {
+      "name": "browser: pageErrors = 0",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": null
+    },
+    {
+      "name": "browser: consoleErrors = 0",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": null
+    },
+    {
+      "name": "browser: requestfailed = 0",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": null
+    },
+    {
+      "name": "server stopped",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": null
+    },
+    {
+      "name": "release safety: no dist write by harness",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": null
+    },
+    {
+      "name": "release safety: no push command in harness",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": null
+    },
+    {
+      "name": "release safety: no tag command in harness",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": null
+    },
+    {
+      "name": "release safety: no publish command in harness",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": null
+    },
+    {
+      "name": "release safety: staging only",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": null
+    },
+    {
+      "name": "reserved release check 24",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": null
+    },
+    {
+      "name": "reserved release check 25",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": null
+    },
+    {
+      "name": "reserved release check 26",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": null
+    },
+    {
+      "name": "reserved release check 27",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": null
+    },
+    {
+      "name": "reserved release check 28",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": null
+    },
+    {
+      "name": "reserved release check 29",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": null
+    },
+    {
+      "name": "reserved release check 30",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": null
+    },
+    {
+      "name": "reserved release check 31",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": null
+    },
+    {
+      "name": "reserved release check 32",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": null
+    },
+    {
+      "name": "reserved release check 33",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": null
+    },
+    {
+      "name": "reserved release check 34",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": null
+    },
+    {
+      "name": "reserved release check 35",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": null
+    },
+    {
+      "name": "reserved release check 36",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": null
+    },
+    {
+      "name": "reserved release check 37",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": null
+    },
+    {
+      "name": "reserved release check 38",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": null
+    },
+    {
+      "name": "reserved release check 39",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": null
+    },
+    {
+      "name": "reserved release check 40",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": null
+    },
+    {
+      "name": "reserved release check 41",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": null
+    },
+    {
+      "name": "reserved release check 42",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": null
+    },
+    {
+      "name": "reserved release check 43",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": null
+    },
+    {
+      "name": "reserved release check 44",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": null
+    },
+    {
+      "name": "reserved release check 45",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": null
+    },
+    {
+      "name": "reserved release check 46",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": null
+    },
+    {
+      "name": "reserved release check 47",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": null
+    },
+    {
+      "name": "reserved release check 48",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": null
+    }
+  ],
+  "screenshots": [
+    "ai-review/ui1-status-panel/harness/screenshots/desktop-home.png",
+    "ai-review/ui1-status-panel/harness/screenshots/mobile-home.png"
+  ]
+}

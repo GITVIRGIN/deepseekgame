@@ -1,114 +1,228 @@
 {
-  "total": 18,
-  "passed": 12,
-  "failed": 6,
+  "total": 37,
+  "passed": 37,
+  "failed": 0,
   "pageErrors": 0,
   "consoleErrors": 0,
   "checks": [
     {
-      "name": "playwright available",
+      "name": "playwright_available",
       "status": "PASS",
       "error": "",
       "screenshotPath": null
     },
     {
-      "name": "server started",
+      "name": "server_started",
       "status": "PASS",
       "error": "",
       "screenshotPath": null
     },
     {
-      "name": "chromium launched",
+      "name": "chromium_launched",
       "status": "PASS",
       "error": "",
       "screenshotPath": null
     },
     {
-      "name": "page loaded",
+      "name": "page_loaded_desktop",
       "status": "PASS",
       "error": "",
       "screenshotPath": null
     },
     {
-      "name": "harness state injected",
+      "name": "harness_ready_desktop",
       "status": "PASS",
       "error": "",
       "screenshotPath": null
     },
     {
-      "name": "desktop status panel screenshot",
+      "name": "enter_real_combat_desktop",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": null
+    },
+    {
+      "name": "desktop_endTurn_visible",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": null
+    },
+    {
+      "name": "desktop_hand_visible",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": null
+    },
+    {
+      "name": "harness_set_statuses_desktop",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": null
+    },
+    {
+      "name": "status_bar_exists_desktop",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": null
+    },
+    {
+      "name": "plusN_exists_desktop",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": null
+    },
+    {
+      "name": "desktop_status_panel_screenshot_created",
       "status": "PASS",
       "error": "",
       "screenshotPath": "ai-review/ui1-status-panel/harness/screenshots/desktop-status-panel.png"
     },
     {
-      "name": "mobile status panel screenshot",
+      "name": "click_plusN_opens_popover_desktop",
       "status": "PASS",
       "error": "",
-      "screenshotPath": "ai-review/ui1-status-panel/harness/screenshots/mobile-status-panel.png"
+      "screenshotPath": null
     },
     {
-      "name": "mobile status popover screenshot",
+      "name": "popover_contains_荆棘_2_desktop",
       "status": "PASS",
       "error": "",
-      "screenshotPath": "ai-review/ui1-status-panel/harness/screenshots/mobile-status-popover.png"
+      "screenshotPath": null
     },
     {
-      "name": "desktop status popover screenshot",
+      "name": "popover_contains_诅咒_5_desktop",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": null
+    },
+    {
+      "name": "popover_contains_灵气_1_desktop",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": null
+    },
+    {
+      "name": "popover_contains_受到攻击时反伤敌人_desktop",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": null
+    },
+    {
+      "name": "desktop_status_popover_screenshot_created",
       "status": "PASS",
       "error": "",
       "screenshotPath": "ai-review/ui1-status-panel/harness/screenshots/desktop-status-popover.png"
     },
     {
-      "name": "popover contains spikes 2",
-      "status": "FAIL",
-      "error": "",
-      "screenshotPath": null
-    },
-    {
-      "name": "popover contains curse 5",
-      "status": "FAIL",
-      "error": "",
-      "screenshotPath": null
-    },
-    {
-      "name": "popover contains spirit 1",
-      "status": "FAIL",
-      "error": "",
-      "screenshotPath": null
-    },
-    {
-      "name": "spikes description visible",
-      "status": "FAIL",
-      "error": "",
-      "screenshotPath": null
-    },
-    {
-      "name": "mobile endTurn visible",
-      "status": "FAIL",
-      "error": "",
-      "screenshotPath": null
-    },
-    {
-      "name": "hand visible",
-      "status": "FAIL",
-      "error": "",
-      "screenshotPath": null
-    },
-    {
-      "name": "pageErrors = 0",
+      "name": "Esc_closes_popover_desktop",
       "status": "PASS",
       "error": "",
       "screenshotPath": null
     },
     {
-      "name": "consoleErrors = 0",
+      "name": "page_loaded_mobile",
       "status": "PASS",
       "error": "",
       "screenshotPath": null
     },
     {
-      "name": "server stopped",
+      "name": "harness_ready_mobile",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": null
+    },
+    {
+      "name": "enter_real_combat_mobile",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": null
+    },
+    {
+      "name": "mobile_endTurn_visible",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": null
+    },
+    {
+      "name": "mobile_hand_visible",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": null
+    },
+    {
+      "name": "harness_set_statuses_mobile",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": null
+    },
+    {
+      "name": "status_bar_exists_mobile",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": null
+    },
+    {
+      "name": "plusN_exists_mobile",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": null
+    },
+    {
+      "name": "mobile_status_panel_screenshot_created",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": "ai-review/ui1-status-panel/harness/screenshots/mobile-status-panel.png"
+    },
+    {
+      "name": "click_plusN_opens_popover_mobile",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": null
+    },
+    {
+      "name": "popover_contains_荆棘_2_mobile",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": null
+    },
+    {
+      "name": "popover_contains_诅咒_5_mobile",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": null
+    },
+    {
+      "name": "popover_contains_灵气_1_mobile",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": null
+    },
+    {
+      "name": "popover_contains_受到攻击时反伤敌人_mobile",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": null
+    },
+    {
+      "name": "mobile_status_popover_screenshot_created",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": "ai-review/ui1-status-panel/harness/screenshots/mobile-status-popover.png"
+    },
+    {
+      "name": "pageErrors_zero",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": null
+    },
+    {
+      "name": "consoleErrors_zero",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": null
+    },
+    {
+      "name": "server_stopped",
       "status": "PASS",
       "error": "",
       "screenshotPath": null
@@ -116,8 +230,8 @@
   ],
   "screenshots": [
     "ai-review/ui1-status-panel/harness/screenshots/desktop-status-panel.png",
+    "ai-review/ui1-status-panel/harness/screenshots/desktop-status-popover.png",
     "ai-review/ui1-status-panel/harness/screenshots/mobile-status-panel.png",
-    "ai-review/ui1-status-panel/harness/screenshots/mobile-status-popover.png",
-    "ai-review/ui1-status-panel/harness/screenshots/desktop-status-popover.png"
+    "ai-review/ui1-status-panel/harness/screenshots/mobile-status-popover.png"
   ]
 }

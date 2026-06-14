@@ -50,19 +50,7 @@ function dispatch(action) {
 
   saveGame(state);
   scheduleCloudSync();
-  
-// UI1 harness: state injection hook (only active with ?harness=1)
-if (new URLSearchParams(window.location.search).get("harness") === "1") {
-  (function() {
-    window.__setHarnessState = function(mode, opts) {
-      if (opts.playerStatuses && state?.run) {
-        state.run.statuses = opts.playerStatuses.map(s => ({ id: s.id, stacks: s.stacks }));
-      }
-      render();
-    };
-  })();
-}
-render();
+  render();
 }
 
 function render() {
@@ -1659,5 +1647,64 @@ document.addEventListener("click", (e) => {
     detailInfo = null; render();
   }
 });
+
+// UI1 harness: deterministic browser API for status panel testing (only active with ?harness=1)
+if (new URLSearchParams(window.location.search).get("harness") === "1") {
+  window.__dsgHarness = {
+    ready() {
+      return { ok: true, harness: true };
+    },
+    getPhase() {
+      return state.phase;
+    },
+    getSnapshot() {
+      return {
+        phase: state.phase,
+        difficulty: state.run?.difficulty ?? null,
+        floor: state.run?.floor ?? null,
+        hasRun: Boolean(state.run),
+        statusCount: (state.run?.statuses || []).filter(s => s.stacks > 0).length,
+        statuses: (state.run?.statuses || []).filter(s => s.stacks > 0).map(s => ({ id: s.id, stacks: s.stacks })),
+        handCount: state.run?.combat?.hand?.length ?? 0,
+        enemyCount: (state.run?.combat?.enemies || []).filter(e => e.hp > 0).length,
+      };
+    },
+    startNormalRun() {
+      dispatch({ type: "startRun" });
+      return { ok: true, phase: state.phase };
+    },
+    enterFirstCombat() {
+      if (state.phase !== "route") return { ok: false, reason: "not-route", phase: state.phase };
+      const nodes = state.run?.nodeChoices || [];
+      if (nodes.length === 0) return { ok: false, reason: "no-nodes" };
+      const node = nodes.find(n => n.type === "main") || nodes[0];
+      dispatch({ type: "chooseNode", nodeId: node.id });
+      if (state.phase !== "combat") return { ok: false, reason: "not-combat-after-choose", phase: state.phase };
+      return { ok: true, phase: "combat" };
+    },
+    setPlayerStatuses(statuses) {
+      if (!state.run) return { ok: false, reason: "no-run" };
+      if (state.phase !== "combat") return { ok: false, reason: "not-combat", phase: state.phase };
+      const entries = Array.isArray(statuses)
+        ? statuses
+        : Object.entries(statuses).map(([id, stacks]) => ({ id, stacks }));
+      state.run.statuses = entries.map(s => ({ id: s.id, stacks: s.stacks }));
+      render();
+      const active = state.run.statuses.filter(s => s.stacks > 0);
+      return { ok: true, phase: "combat", statusCount: active.length, statuses: Object.fromEntries(active.map(s => [s.id, s.stacks])) };
+    },
+    openStatusPopover() {
+      if (!state.run) return { ok: false, reason: "no-run" };
+      detailInfo = { type: "playerStatuses", run: state.run, _fixed: true };
+      render();
+      return { ok: true };
+    },
+    closeStatusPopover() {
+      detailInfo = null;
+      render();
+      return { ok: true };
+    },
+  };
+}
 
 render();

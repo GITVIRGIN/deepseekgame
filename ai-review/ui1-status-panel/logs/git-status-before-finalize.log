@@ -1,0 +1,38 @@
+ M ai-review/ui1-status-panel/harness/screenshots/desktop-status-panel.png
+ M ai-review/ui1-status-panel/harness/screenshots/desktop-status-popover.png
+ M ai-review/ui1-status-panel/harness/screenshots/mobile-status-panel.png
+ M ai-review/ui1-status-panel/harness/screenshots/mobile-status-popover.png
+ M ai-review/ui1-status-panel/harness/status-panel-report.md
+ M ai-review/ui1-status-panel/harness/status-panel-summary.json
+ M ai-review/ui1-status-panel/logs/status-panel-harness.log
+ M ai-review/ui1-status-panel/status-panel-fix-report.json
+ M ai-review/ui1-status-panel/status-panel-fix-report.md
+ M scripts/harness-release-rc.mjs
+ M scripts/sim-ai.mjs
+ M scripts/smoke-tests.mjs
+ M scripts/validate-data.mjs
+ M src/app/main.js
+ M src/core/archetypes.js
+ M src/core/rewards.js
+ M src/core/version.js
+?? deepseekgame-v3.13n-truemartial-t2a5-fusion-mastery-tune-deepseek-review.tar.gz
+?? scripts/_rc2-patch.mjs
+?? scripts/_ui1-harness-fix2.mjs
+?? scripts/_ui1-harness-patch.mjs
+?? scripts/_ui1-harness-v3.mjs
+?? scripts/_ui1-hook-patch.mjs
+?? scripts/_ui1-popover-patch.mjs
+?? scripts/create-rc3-staging-pack.mjs
+?? scripts/create-ui1-review-pack.mjs
+?? scripts/diagnose-release-rc-winrate.mjs
+?? scripts/diagnose-truemartial-t2a2.mjs
+?? scripts/diagnose-truemartial-t2a3.mjs
+?? scripts/diagnose-truemartial-t2a4.mjs
+?? scripts/diagnose-truemartial-t2a5.mjs
+?? scripts/harness-t2a2-small.mjs
+?? scripts/harness-t2a4-small.mjs
+?? scripts/verify-release-rc3-evidence.mjs
+?? scripts/verify-t2a2-evidence.mjs
+?? scripts/verify-t2a3-evidence.mjs
+?? scripts/verify-t2a4-evidence.mjs
+?? scripts/verify-t2a5-evidence.mjs

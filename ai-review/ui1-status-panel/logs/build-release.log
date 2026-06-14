@@ -1,0 +1,5 @@
+
+> build:release
+> node scripts/build-release.mjs
+
+D:\workspace\deepseekgame\dist\xuanlu-V3.13N-TM-T2A5F-UI1

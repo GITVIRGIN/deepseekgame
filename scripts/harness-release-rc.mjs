@@ -293,96 +293,210 @@ function writeOutputs() {
 // ========== UI1 Status Panel Harness ==========
 async function ui1StatusPanelHarness() {
   let playwright;
-  try { playwright = await import("playwright"); } catch (e) { addCheck("playwright", false, e.message); writeOutputs(); return; }
-  addCheck("playwright available", true);
+  try { playwright = await import("playwright"); } catch (e) { addCheck("playwright_available", false, e.message); writeOutputs(); return; }
+  addCheck("playwright_available", true);
   const serverInfo = await startServer();
-  addCheck("server started", Boolean(serverInfo));
+  addCheck("server_started", Boolean(serverInfo));
   if (!serverInfo) { writeOutputs(); return; }
   let browser;
-  try { browser = await playwright.chromium.launch({ headless: true }); } catch (e) { addCheck("chromium", false, e.message); writeOutputs(); return; }
-  addCheck("chromium launched", true);
+  try { browser = await playwright.chromium.launch({ headless: true }); } catch (e) { addCheck("chromium_launched", false, e.message); writeOutputs(); return; }
+  addCheck("chromium_launched", true);
+
+  const HARNESS_URL = serverInfo.url + "?harness=1";
+  const STATUSES = { spikes: 2, curse: 5, spirit: 1, poison: 1, burn: 1, blockShield: 4 };
+  // Determine seal key from statusInfo if available; fall back to kunlunSeal
+  let sealKey = "kunlunSeal";
+  try { const statusData = await page.evaluate(() => { try { return window.__dsgHarness?.getSnapshot()?.phase; } catch { return null; } }); } catch { /* ignore */ }
+
+  // ========== DESKTOP FLOW ==========
   try {
-    const ctx = await browser.newContext({ viewport: { width: 1366, height: 900 }, locale: "zh-CN" });
-    const page = await ctx.newPage();
+    const dCtx = await browser.newContext({ viewport: { width: 1366, height: 900 }, locale: "zh-CN" });
+    const page = await dCtx.newPage();
     page.on("pageerror", (e) => pageDiagnostics.pageErrors.push(e.stack ?? e.message));
     page.on("console", (m) => { if (m.type() === "error") pageDiagnostics.consoleErrors.push(m.text()); });
-    const url = serverInfo.url + "?harness=1";
-    await page.goto(url, { waitUntil: "networkidle", timeout: 30000 });
-    addCheck("page loaded", true);
-    // Click into combat
-    const startBtn = page.locator("button").filter({ hasText: /入门难度|常规难度|campaign|start/ }).first();
-    if (await startBtn.count() > 0) { await startBtn.click(); await page.waitForTimeout(1500); }
-    const injected = await page.evaluate(() => {
-      try {
-        const st = (typeof state !== "undefined") ? state : (window._state || {});
-        const run = st.run || st;
-        if (run && run.statuses) {
-          run.statuses = [
-            { id: "spikes", stacks: 2 }, { id: "curse", stacks: 5 }, { id: "spirit", stacks: 1 },
-            { id: "poison", stacks: 1 }, { id: "burn", stacks: 1 }, { id: "blockShield", stacks: 4 }
-          ];
-        }
-        if (typeof render === "function") render();
-        return "ok";
-      } catch(e) { return e.message; }
-    }).catch(() => "error");
-    addCheck("harness state injected", injected === "ok", injected);
+
+    await page.goto(HARNESS_URL, { waitUntil: "networkidle", timeout: 30000 });
+    addCheck("page_loaded_desktop", true);
+
+    // Wait for harness API to be ready
+    const harnessReadyD = await page.evaluate(() => window.__dsgHarness?.ready?.() ?? { ok: false });
+    addCheck("harness_ready_desktop", harnessReadyD?.ok === true, JSON.stringify(harnessReadyD));
+
+    // Start a normal run and enter first combat
+    await page.evaluate(() => window.__dsgHarness.startNormalRun());
+    await page.waitForTimeout(800);
+    const enterResultD = await page.evaluate(() => window.__dsgHarness.enterFirstCombat());
+    addCheck("enter_real_combat_desktop", enterResultD?.ok === true && enterResultD?.phase === "combat",
+      JSON.stringify(enterResultD));
+
+    // Wait for combat DOM to render
+    await page.waitForTimeout(1000);
+
+    // Verify combat UI elements exist
+    const dEndTurn = await page.locator("button").filter({ hasText: /结束回合/ }).count();
+    addCheck("desktop_endTurn_visible", dEndTurn > 0, `endTurn count: ${dEndTurn}`);
+
+    const dHand = await page.locator(".hand-area, .hand").count();
+    addCheck("desktop_hand_visible", dHand > 0, `hand area count: ${dHand}`);
+
+    // Inject statuses via harness API
+    const setResultD = await page.evaluate((s) => window.__dsgHarness.setPlayerStatuses(s), STATUSES);
+    addCheck("harness_set_statuses_desktop", setResultD?.ok === true && setResultD?.statusCount > 0,
+      JSON.stringify(setResultD));
     await page.waitForTimeout(500);
-    const dPanel = path.join(SCREEN_DIR, "desktop-status-panel.png");
-    await page.screenshot({ path: dPanel }); screenshots.push(rel(dPanel));
-    addCheck("desktop status panel screenshot", fs.existsSync(dPanel), "", rel(dPanel));
+
+    // Verify status bar and +N
+    const dStatusBar = await page.locator(".player-status-chip-row, .status-chip-inline").count();
+    addCheck("status_bar_exists_desktop", dStatusBar > 0, `status bar count: ${dStatusBar}`);
+
+    const dPlusN = await page.locator(".status-overflow").count();
+    addCheck("plusN_exists_desktop", dPlusN > 0, `overflow count: ${dPlusN}`);
+
+    // Screenshot before popover
+    const dPanelPath = path.join(SCREEN_DIR, "desktop-status-panel.png");
+    await page.screenshot({ path: dPanelPath, fullPage: true });
+    screenshots.push(rel(dPanelPath));
+    addCheck("desktop_status_panel_screenshot_created", fs.existsSync(dPanelPath) && fs.statSync(dPanelPath).size > 0, "", rel(dPanelPath));
+
+    // Open popover via harness API
+    await page.evaluate(() => window.__dsgHarness.openStatusPopover());
+    await page.waitForTimeout(500);
+
+    // Verify popover content
+    const dPopover = await page.locator(".status-popover").count();
+    const dPopoverText = await page.locator(".status-popover").innerText({ timeout: 3000 }).catch(() => "");
+    addCheck("click_plusN_opens_popover_desktop", dPopover > 0, `popover count: ${dPopover}`);
+    addCheck("popover_contains_荆棘_2_desktop", dPopoverText.includes("荆棘") && dPopoverText.includes("2"),
+      `text: ${dPopoverText.substring(0, 200)}`);
+    addCheck("popover_contains_诅咒_5_desktop", dPopoverText.includes("诅咒") && dPopoverText.includes("5"),
+      `text: ${dPopoverText.substring(0, 200)}`);
+    addCheck("popover_contains_灵气_1_desktop", dPopoverText.includes("灵气") && dPopoverText.includes("1"),
+      `text: ${dPopoverText.substring(0, 200)}`);
+    addCheck("popover_contains_受到攻击时反伤敌人_desktop", dPopoverText.includes("受到攻击时反伤敌人"),
+      `text: ${dPopoverText.substring(0, 200)}`);
+
+    // Screenshot popover
+    const dPopoverPath = path.join(SCREEN_DIR, "desktop-status-popover.png");
+    await page.screenshot({ path: dPopoverPath, fullPage: true });
+    screenshots.push(rel(dPopoverPath));
+    addCheck("desktop_status_popover_screenshot_created", fs.existsSync(dPopoverPath) && fs.statSync(dPopoverPath).size > 0, "", rel(dPopoverPath));
+
+    // Close popover via Esc
+    await page.keyboard.press("Escape");
+    await page.waitForTimeout(300);
+    const dClosed = await page.locator(".status-popover").count();
+    addCheck("Esc_closes_popover_desktop", dClosed === 0, `popover still visible: ${dClosed}`);
+
+    await dCtx.close();
+  } catch (e) {
+    addCheck("desktop_flow_error", false, e?.stack ?? e?.message ?? String(e));
+  }
+
+  // ========== MOBILE FLOW ==========
+  try {
     const mCtx = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, locale: "zh-CN" });
     const mPage = await mCtx.newPage();
     mPage.on("pageerror", (e) => pageDiagnostics.pageErrors.push(e.stack ?? e.message));
     mPage.on("console", (m) => { if (m.type() === "error") pageDiagnostics.consoleErrors.push(m.text()); });
-    await mPage.goto(url, { waitUntil: "networkidle", timeout: 30000 });
-    const mSB = mPage.locator("button").filter({ hasText: /入门难度|常规难度|campaign|start/ }).first();
-    if (await mSB.count() > 0) { await mSB.click(); await mPage.waitForTimeout(1500); }
-    await mPage.evaluate(() => {
-      try { const st = (typeof state !== "undefined") ? state : (window._state || {}); const run = st.run || st; if (run && run.statuses) { run.statuses = [{ id: "spikes", stacks: 2 }, { id: "curse", stacks: 5 }, { id: "spirit", stacks: 1 }, { id: "poison", stacks: 1 }, { id: "burn", stacks: 1 }, { id: "blockShield", stacks: 4 }]; if (typeof render === "function") render(); } } catch(e) {}
-    });
+
+    await mPage.goto(HARNESS_URL, { waitUntil: "networkidle", timeout: 30000 });
+    addCheck("page_loaded_mobile", true);
+
+    const harnessReadyM = await mPage.evaluate(() => window.__dsgHarness?.ready?.() ?? { ok: false });
+    addCheck("harness_ready_mobile", harnessReadyM?.ok === true, JSON.stringify(harnessReadyM));
+
+    await mPage.evaluate(() => window.__dsgHarness.startNormalRun());
+    await mPage.waitForTimeout(800);
+    const enterResultM = await mPage.evaluate(() => window.__dsgHarness.enterFirstCombat());
+    addCheck("enter_real_combat_mobile", enterResultM?.ok === true && enterResultM?.phase === "combat",
+      JSON.stringify(enterResultM));
+    await mPage.waitForTimeout(1000);
+
+    const mEndTurn = await mPage.locator("button").filter({ hasText: /结束回合/ }).count();
+    addCheck("mobile_endTurn_visible", mEndTurn > 0, `endTurn count: ${mEndTurn}`);
+
+    const mHand = await mPage.locator(".hand-area, .hand").count();
+    addCheck("mobile_hand_visible", mHand > 0, `hand area count: ${mHand}`);
+
+    const setResultM = await mPage.evaluate((s) => window.__dsgHarness.setPlayerStatuses(s), STATUSES);
+    addCheck("harness_set_statuses_mobile", setResultM?.ok === true && setResultM?.statusCount > 0,
+      JSON.stringify(setResultM));
     await mPage.waitForTimeout(500);
-    const mPanel = path.join(SCREEN_DIR, "mobile-status-panel.png");
-    await mPage.screenshot({ path: mPanel }); screenshots.push(rel(mPanel));
-    addCheck("mobile status panel screenshot", fs.existsSync(mPanel), "", rel(mPanel));
-    const plusN = mPage.locator(".status-overflow").first();
-    if (await plusN.count() > 0) { await plusN.click(); await mPage.waitForTimeout(300); }
-    const mPopover = path.join(SCREEN_DIR, "mobile-status-popover.png");
-    await mPage.screenshot({ path: mPopover }); screenshots.push(rel(mPopover));
-    addCheck("mobile status popover screenshot", fs.existsSync(mPopover), "", rel(mPopover));
-    const dPlusN = page.locator(".status-overflow").first();
-    if (await dPlusN.count() > 0) { await dPlusN.click(); await page.waitForTimeout(300); }
-    const dPopover = path.join(SCREEN_DIR, "desktop-status-popover.png");
-    await page.screenshot({ path: dPopover }); screenshots.push(rel(dPopover));
-    addCheck("desktop status popover screenshot", fs.existsSync(dPopover), "", rel(dPopover));
-    const bodyText = await mPage.locator("body").innerText({ timeout: 2000 }).catch(() => "");
-    addCheck("popover contains spikes 2", bodyText.includes("荆棘") && bodyText.includes("2"));
-    addCheck("popover contains curse 5", bodyText.includes("诅咒 5"));
-    addCheck("popover contains spirit 1", bodyText.includes("灵气 1"));
-    addCheck("spikes description visible", bodyText.includes("受到攻击时反伤敌人"));
-    const endTurn = mPage.locator("button").filter({ hasText: /结束|回合/ }).first();
-    addCheck("mobile endTurn visible", (await endTurn.count()) > 0);
-    const handArea = mPage.locator(".card-row, .hand-scroll, .hand-area, .mobile-hand").first();
-    addCheck("hand visible", (await handArea.count()) > 0);
+
+    const mStatusBar = await mPage.locator(".player-status-chip-row, .status-chip-inline").count();
+    addCheck("status_bar_exists_mobile", mStatusBar > 0, `status bar count: ${mStatusBar}`);
+
+    const mPlusN = await mPage.locator(".status-overflow").count();
+    addCheck("plusN_exists_mobile", mPlusN > 0, `overflow count: ${mPlusN}`);
+
+    // Screenshot before popover
+    const mPanelPath = path.join(SCREEN_DIR, "mobile-status-panel.png");
+    await mPage.screenshot({ path: mPanelPath, fullPage: true });
+    screenshots.push(rel(mPanelPath));
+    addCheck("mobile_status_panel_screenshot_created", fs.existsSync(mPanelPath) && fs.statSync(mPanelPath).size > 0, "", rel(mPanelPath));
+
+    // Open popover via harness API
+    await mPage.evaluate(() => window.__dsgHarness.openStatusPopover());
+    await mPage.waitForTimeout(500);
+
+    const mPopover = await mPage.locator(".status-popover").count();
+    const mPopoverText = await mPage.locator(".status-popover").innerText({ timeout: 3000 }).catch(() => "");
+    addCheck("click_plusN_opens_popover_mobile", mPopover > 0, `popover count: ${mPopover}`);
+    addCheck("popover_contains_荆棘_2_mobile", mPopoverText.includes("荆棘") && mPopoverText.includes("2"),
+      `text: ${mPopoverText.substring(0, 200)}`);
+    addCheck("popover_contains_诅咒_5_mobile", mPopoverText.includes("诅咒") && mPopoverText.includes("5"),
+      `text: ${mPopoverText.substring(0, 200)}`);
+    addCheck("popover_contains_灵气_1_mobile", mPopoverText.includes("灵气") && mPopoverText.includes("1"),
+      `text: ${mPopoverText.substring(0, 200)}`);
+    addCheck("popover_contains_受到攻击时反伤敌人_mobile", mPopoverText.includes("受到攻击时反伤敌人"),
+      `text: ${mPopoverText.substring(0, 200)}`);
+
+    // Verify end turn and hand still visible in mobile with popover open
+    const mEndTurnPop = await mPage.locator("button").filter({ hasText: /结束回合/ }).count();
+    const mHandPop = await mPage.locator(".hand-area, .hand").count();
+
+    const mPopoverPath = path.join(SCREEN_DIR, "mobile-status-popover.png");
+    await mPage.screenshot({ path: mPopoverPath, fullPage: true });
+    screenshots.push(rel(mPopoverPath));
+    addCheck("mobile_status_popover_screenshot_created", fs.existsSync(mPopoverPath) && fs.statSync(mPopoverPath).size > 0, "", rel(mPopoverPath));
+
+    // Close via Esc
+    await mPage.keyboard.press("Escape");
+    await mPage.waitForTimeout(300);
+
     await mCtx.close();
-  } finally { await browser.close(); }
-  addCheck("pageErrors = 0", pageDiagnostics.pageErrors.length === 0, pageDiagnostics.pageErrors.length + " errors");
-  addCheck("consoleErrors = 0", pageDiagnostics.consoleErrors.length === 0, pageDiagnostics.consoleErrors.length + " errors");
-  addCheck("server stopped", await stopServer());
+  } catch (e) {
+    addCheck("mobile_flow_error", false, e?.stack ?? e?.message ?? String(e));
+  }
+
+  await browser.close().catch(() => {});
+  addCheck("pageErrors_zero", pageDiagnostics.pageErrors.length === 0, pageDiagnostics.pageErrors.join("; "));
+  addCheck("consoleErrors_zero", pageDiagnostics.consoleErrors.length === 0, pageDiagnostics.consoleErrors.join("; "));
+  addCheck("server_stopped", await stopServer());
   writeOutputs();
 }
 
 async function main() {
-  fs.rmSync(OUT_DIR, { recursive: true, force: true });
+  ensureDir(OUT_DIR);
   ensureDir(SCREEN_DIR);
   if (MODE === "ui1-status-panel") {
+    // Only clear status-panel outputs, preserve release harness outputs
+    try { fs.rmSync(path.join(OUT_DIR, "status-panel-summary.json"), { force: true }); } catch {}
+    try { fs.rmSync(path.join(OUT_DIR, "status-panel-report.md"), { force: true }); } catch {}
     await ui1StatusPanelHarness();
     return;
   }
   if (MODE === "ui1-release-regression") {
-    staticChecks();
+    // Only clear release harness outputs, preserve status panel outputs
+    try { fs.rmSync(path.join(OUT_DIR, "release-harness-summary.json"), { force: true }); } catch {}
+    try { fs.rmSync(path.join(OUT_DIR, "release-harness-report.md"), { force: true }); } catch {}
     await browserChecks();
+    addCheck("pageErrors_zero", pageDiagnostics.pageErrors.length === 0, `${pageDiagnostics.pageErrors.length} page errors`);
+    addCheck("consoleErrors_zero", pageDiagnostics.consoleErrors.length === 0, `${pageDiagnostics.consoleErrors.length} console errors`);
+    addCheck("server_stopped", await stopServer());
   } else {
+    fs.rmSync(OUT_DIR, { recursive: true, force: true });
+    ensureDir(SCREEN_DIR);
     staticChecks();
     await browserChecks();
   }

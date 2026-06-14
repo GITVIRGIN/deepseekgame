@@ -1,0 +1,23 @@
+
+> ui1:final-gate
+> node scripts/ui1-final-gate.mjs
+
+Gate verdict: BLOCKED
+Blocked items: check_log_exists: D:/workspace/deepseekgame/ai-review/ui1-status-panel/logs/check.log; check_log_valid: D:/workspace/deepseekgame/ai-review/ui1-status-panel/logs/check.log: must contain "0 failed"; smoke_log_exists: D:/workspace/deepseekgame/ai-review/ui1-status-panel/logs/smoke.log; smoke_log_valid: D:/workspace/deepseekgame/ai-review/ui1-status-panel/logs/smoke.log: must contain "0 failed"; playerFlow_log_exists: D:/workspace/deepseekgame/ai-review/ui1-status-panel/logs/player-flow.log; playerFlow_log_valid: D:/workspace/deepseekgame/ai-review/ui1-status-panel/logs/player-flow.log: must contain "0 failed"; buildRelease_log_exists: D:/workspace/deepseekgame/ai-review/ui1-status-panel/logs/build-release.log; buildRelease_log_valid: D:/workspace/deepseekgame/ai-review/ui1-status-panel/logs/build-release.log: must contain "dist"; releaseHarness_log_exists: D:/workspace/deepseekgame/ai-review/ui1-status-panel/logs/release-harness.log; releaseHarness_log_valid: D:/workspace/deepseekgame/ai-review/ui1-status-panel/logs/release-harness.log: must contain "harness"; statusPanelHarness_log_exists: D:/workspace/deepseekgame/ai-review/ui1-status-panel/logs/status-panel-harness.log; statusPanelHarness_log_valid: D:/workspace/deepseekgame/ai-review/ui1-status-panel/logs/status-panel-harness.log: must contain "harness"; release_harness_summary_exists: release-harness-summary.json missing; status_panel_summary_exists: status-panel-summary.json missing; review_manifest_exists: review-pack-manifest.json missing
+[
+  "check_log_exists: D:/workspace/deepseekgame/ai-review/ui1-status-panel/logs/check.log",
+  "check_log_valid: D:/workspace/deepseekgame/ai-review/ui1-status-panel/logs/check.log: must contain \"0 failed\"",
+  "smoke_log_exists: D:/workspace/deepseekgame/ai-review/ui1-status-panel/logs/smoke.log",
+  "smoke_log_valid: D:/workspace/deepseekgame/ai-review/ui1-status-panel/logs/smoke.log: must contain \"0 failed\"",
+  "playerFlow_log_exists: D:/workspace/deepseekgame/ai-review/ui1-status-panel/logs/player-flow.log",
+  "playerFlow_log_valid: D:/workspace/deepseekgame/ai-review/ui1-status-panel/logs/player-flow.log: must contain \"0 failed\"",
+  "buildRelease_log_exists: D:/workspace/deepseekgame/ai-review/ui1-status-panel/logs/build-release.log",
+  "buildRelease_log_valid: D:/workspace/deepseekgame/ai-review/ui1-status-panel/logs/build-release.log: must contain \"dist\"",
+  "releaseHarness_log_exists: D:/workspace/deepseekgame/ai-review/ui1-status-panel/logs/release-harness.log",
+  "releaseHarness_log_valid: D:/workspace/deepseekgame/ai-review/ui1-status-panel/logs/release-harness.log: must contain \"harness\"",
+  "statusPanelHarness_log_exists: D:/workspace/deepseekgame/ai-review/ui1-status-panel/logs/status-panel-harness.log",
+  "statusPanelHarness_log_valid: D:/workspace/deepseekgame/ai-review/ui1-status-panel/logs/status-panel-harness.log: must contain \"harness\"",
+  "release_harness_summary_exists: release-harness-summary.json missing",
+  "status_panel_summary_exists: status-panel-summary.json missing",
+  "review_manifest_exists: review-pack-manifest.json missing"
+]

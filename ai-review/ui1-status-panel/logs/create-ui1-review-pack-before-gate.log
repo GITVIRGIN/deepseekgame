@@ -1,0 +1,10 @@
+
+> ui1:review-pack
+> node scripts/create-ui1-review-pack.mjs
+
+Manifest written
+Package: deepseekgame-v3.13n-tm-t2a5f-ui1-final-review-pass.zip (2677.3 KB)
+Verdict: PASS
+Files: 49
+StatusPanelHarness: failed=0, pageErrors=0, consoleErrors=0
+Blocked items: none

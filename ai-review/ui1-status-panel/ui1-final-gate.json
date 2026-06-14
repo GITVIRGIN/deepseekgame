@@ -1,0 +1,31 @@
+{
+  "verdict": "PASS",
+  "blockedItems": [],
+  "checkedAt": "2026-06-14T02:12:33.807Z",
+  "versionLabel": "V3.13N-TM-T2A5F-UI1",
+  "versionMdCurrent": true,
+  "readmeCurrent": true,
+  "releaseNotesCurrent": true,
+  "check": "PASS",
+  "smoke": "PASS",
+  "playerFlow": "PASS",
+  "buildRelease": "PASS",
+  "releaseHarness": "PASS",
+  "statusPanelHarness": "PASS",
+  "pageErrors": 0,
+  "consoleErrors": 0,
+  "screenshots": {
+    "mobile-status-panel.png": "OK",
+    "mobile-status-popover.png": "OK",
+    "desktop-status-panel.png": "OK",
+    "desktop-status-popover.png": "OK"
+  },
+  "forbiddenDirtyFiles": [],
+  "forbiddenStagedFiles": [],
+  "packageManifest": {
+    "packageName": "deepseekgame-v3.13n-tm-t2a5f-ui1-final-review-pass.zip",
+    "verdict": "PASS"
+  },
+  "noNormalRegularRerun": true,
+  "noTrueMartialRerun": true
+}

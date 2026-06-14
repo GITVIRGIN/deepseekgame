@@ -33,7 +33,9 @@
     "rc3-fix1:diagnose": "node scripts/diagnose-release-rc-winrate.mjs",
     "rc3-fix1:verify": "node scripts/verify-release-rc3-evidence.mjs",
     "rc3-fix1:harness": "node scripts/harness-release-rc.mjs",
-    "rc3-fix1:pack": "node scripts/create-rc3-staging-pack.mjs"
+    "rc3-fix1:pack": "node scripts/create-rc3-staging-pack.mjs",
+    "ui1:final-gate": "node scripts/ui1-final-gate.mjs",
+    "ui1:review-pack": "node scripts/create-ui1-review-pack.mjs"
   },
   "devDependencies": {
     "playwright": "^1.60.0"
