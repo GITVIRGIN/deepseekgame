@@ -31,7 +31,7 @@ export const statusInfo = {
   stun: { label: "眩晕", text: "敌人行动前触发：跳过本次行动，然后减少 1 层。" },
   battleIntent: { label: "战意", text: "提高物理牌伤害；战意存在时，每打出一张物理伤害牌后继续增加战意。" },
   blockShield: { label: "格挡锁定", text: "格挡值不会被攻击消耗。回合结束时移除。" },
-  spikes: { label: "荆棘" },
+  spikes: { label: "荆棘", text: "受到攻击时反伤敌人。层数越高，反伤越强。" },
   controlResist: { label: "定力", text: "抵消即将施加的离间、禁锢、眩晕层数；每抵消 1 层消耗 1 层定力。敌人被控制影响行动后获得，正常行动后减少。" },
   thunderFireMark: { label: "雷火烙印", text: "由灼烧与雷痕共鸣形成。目标触发天劫时，每层雷火烙印使本次天劫额外造成 40 点无视格挡雷火伤害，然后消耗。" },
   clearMind: { label: "醒神", text: "下一次自身行动时，无视控制造成的行动跳过或转向。当前仅用于特殊机制。" },
@@ -932,6 +932,497 @@ export const cards = {
     effects: [
       { type: "status", target: "self", status: "spirit", stacks: 2 },
       { type: "recoverDiscard", value: 2 },
+    ],
+  },
+  // ===== T2-A3: 真武双合流路线牌 (36 cards: 6 routes x 6 stages) =====
+  // A. physical+spell 雷霆破军路线
+  thunderBreakArmyBase: {
+    id: "thunderBreakArmyBase", name: "雷引破军", rarity: "rare", cost: 1,
+    text: "【真武双合流·入门】出刀带雷，物理攻击触发雷霆爆发。造成 10 点伤害，施加 4 层雷痕。",
+    mythTags: ["天庭"], style: "physical", fusionTier: 2, fusionRoute: "physical+spell", fusionStage: "base", fusionStyles: ["physical", "spell"], fusionName: "雷霆破军路线", grade: 2, trueMartial: true,
+    effects: [
+      { type: "damage", target: "enemy", value: 10 },
+      { type: "thunderMark", target: "enemy", value: 4 },
+    ],
+  },
+  thunderBladeAwakening: {
+    id: "thunderBladeAwakening", name: "雷刀初鸣", rarity: "rare", cost: 1,
+    text: "【真武双合流·押注】雷刀初鸣，战意涌起。造成 12 点伤害，施加 5 层雷痕，获得 2 层战意。",
+    mythTags: ["天庭"], style: "physical", fusionTier: 2, fusionRoute: "physical+spell", fusionStage: "commit", fusionStyles: ["physical", "spell"], fusionName: "雷霆破军路线", grade: 2, trueMartial: true,
+    effects: [
+      { type: "damage", target: "enemy", value: 12 },
+      { type: "thunderMark", target: "enemy", value: 5 },
+      { type: "status", target: "self", status: "battleIntent", stacks: 2 },
+    ],
+  },
+  thunderBreakArmy: {
+    id: "thunderBreakArmy", name: "雷霆破军", rarity: "epic", cost: 2,
+    text: "【真武双合流·成型】雷霆破军，战意贯甲。造成 18 点伤害，施加 7 层雷痕，获得 4 层战意。",
+    mythTags: ["天庭"], style: "physical", fusionTier: 2, fusionRoute: "physical+spell", fusionStage: "formed", fusionStyles: ["physical", "spell"], fusionName: "雷霆破军路线", grade: 3, trueMartial: true,
+    effects: [
+      { type: "damage", target: "enemy", value: 18 },
+      { type: "thunderMark", target: "enemy", value: 7 },
+      { type: "status", target: "self", status: "battleIntent", stacks: 4 },
+    ],
+  },
+  thunderWarGodSlash: {
+    id: "thunderWarGodSlash", name: "雷武神斩", rarity: "epic", cost: 2,
+    text: "【真武双合流·胡牌】雷武神斩，扫阵回灵。对所有敌人造成 10 点伤害，施加 6 层雷痕，获得 1 点能量。",
+    mythTags: ["天庭"], style: "spell", fusionTier: 2, fusionRoute: "physical+spell", fusionStage: "highrollA", fusionStyles: ["physical", "spell"], fusionName: "雷霆破军路线", grade: 3, trueMartial: true,
+    effects: [
+      { type: "damage", target: "allEnemies", value: 10 },
+      { type: "thunderMark", target: "allEnemies", value: 6 },
+      { type: "gainEnergy", target: "self", value: 1 },
+    ],
+  },
+  breakArmyThunderMomentum: {
+    id: "breakArmyThunderMomentum", name: "破军雷势", rarity: "rare", cost: 1,
+    text: "【真武双合流·胡牌】破军雷势，战意雷引。对所有敌人施加 4 层雷痕，获得 5 层战意，抽 1 张牌。",
+    mythTags: ["天庭"], style: "physical", fusionTier: 2, fusionRoute: "physical+spell", fusionStage: "highrollB", fusionStyles: ["physical", "spell"], fusionName: "雷霆破军路线", grade: 2, trueMartial: true,
+    effects: [
+      { type: "thunderMark", target: "allEnemies", value: 4 },
+      { type: "status", target: "self", status: "battleIntent", stacks: 5 },
+      { type: "draw", value: 1 },
+    ],
+  },
+  thunderLordBreakArmy: {
+    id: "thunderLordBreakArmy", name: "雷尊破军", rarity: "legendary", cost: 2,
+    text: "【真武双合流·大成】雷尊破军，万雷归宗。对所有敌人造成 14 点伤害，施加 8 层雷痕，获得 6 层战意。",
+    mythTags: ["天庭"], style: "spell", fusionTier: 2, fusionRoute: "physical+spell", fusionStage: "mastery", fusionStyles: ["physical", "spell"], fusionName: "雷霆破军路线", grade: 3, trueMartial: true,
+    effects: [
+      { type: "damage", target: "allEnemies", value: 14 },
+      { type: "thunderMark", target: "allEnemies", value: 8 },
+      { type: "status", target: "self", status: "battleIntent", stacks: 6 },
+    ],
+  },
+  // B. spell+bleed 雷血天罚路线
+  thunderBloodBase: {
+    id: "thunderBloodBase", name: "雷血引", rarity: "rare", cost: 1,
+    text: "【真武双合流·入门】雷痕牵动流血，天罚群伤。施加 4 层雷痕和 4 层流血。",
+    mythTags: ["天庭"], style: "spell", fusionTier: 2, fusionRoute: "spell+bleed", fusionStage: "base", fusionStyles: ["spell", "bleed"], fusionName: "雷血天罚路线", grade: 2, trueMartial: true,
+    effects: [
+      { type: "thunderMark", target: "enemy", value: 4 },
+      { type: "status", target: "enemy", status: "bleed", stacks: 4 },
+    ],
+  },
+  thunderBloodPulse: {
+    id: "thunderBloodPulse", name: "雷血涌", rarity: "rare", cost: 1,
+    text: "【真武双合流·押注】雷血涌动，回生续命。施加 5 层雷痕和 5 层流血，回复 3 点生命。",
+    mythTags: ["幽冥"], style: "bleed", fusionTier: 2, fusionRoute: "spell+bleed", fusionStage: "commit", fusionStyles: ["spell", "bleed"], fusionName: "雷血天罚路线", grade: 2, trueMartial: true,
+    effects: [
+      { type: "thunderMark", target: "enemy", value: 5 },
+      { type: "status", target: "enemy", status: "bleed", stacks: 5 },
+      { type: "heal", target: "self", value: 3 },
+    ],
+  },
+  thunderBloodJudgement: {
+    id: "thunderBloodJudgement", name: "雷血天罚", rarity: "epic", cost: 2,
+    text: "【真武双合流·成型】雷血天罚，群伤齐下。对所有敌人施加 6 层雷痕和 6 层流血，造成 8 点伤害。",
+    mythTags: ["天庭"], style: "spell", fusionTier: 2, fusionRoute: "spell+bleed", fusionStage: "formed", fusionStyles: ["spell", "bleed"], fusionName: "雷血天罚路线", grade: 3, trueMartial: true,
+    effects: [
+      { type: "thunderMark", target: "allEnemies", value: 6 },
+      { type: "status", target: "allEnemies", status: "bleed", stacks: 6 },
+      { type: "damage", target: "allEnemies", value: 8 },
+    ],
+  },
+  thunderBloodExecution: {
+    id: "thunderBloodExecution", name: "雷血诛邪", rarity: "epic", cost: 2,
+    text: "【真武双合流·胡牌】雷血诛邪，血魄回魂。对所有敌人施加 7 层雷痕和 8 层流血，按流血 25% 汲血。",
+    mythTags: ["幽冥"], style: "bleed", fusionTier: 2, fusionRoute: "spell+bleed", fusionStage: "highrollA", fusionStyles: ["spell", "bleed"], fusionName: "雷血天罚路线", grade: 3, trueMartial: true,
+    effects: [
+      { type: "thunderMark", target: "allEnemies", value: 7 },
+      { type: "status", target: "allEnemies", status: "bleed", stacks: 8 },
+      { type: "bleedSiphon", target: "allEnemies", ratio: 4 },
+    ],
+  },
+  thunderBloodChain: {
+    id: "thunderBloodChain", name: "雷血连诛", rarity: "rare", cost: 1,
+    text: "【真武双合流·胡牌】雷血连诛，抽牌续势。对所有敌人施加 5 层流血和 5 层雷痕，抽 1 张牌。",
+    mythTags: ["天庭"], style: "spell", fusionTier: 2, fusionRoute: "spell+bleed", fusionStage: "highrollB", fusionStyles: ["spell", "bleed"], fusionName: "雷血天罚路线", grade: 2, trueMartial: true,
+    effects: [
+      { type: "status", target: "allEnemies", status: "bleed", stacks: 5 },
+      { type: "thunderMark", target: "allEnemies", value: 5 },
+      { type: "draw", value: 1 },
+    ],
+  },
+  thunderBloodSovereign: {
+    id: "thunderBloodSovereign", name: "雷血真君", rarity: "legendary", cost: 2,
+    text: "【真武双合流·大成】雷血真君，万血归雷。对所有敌人施加 8 层雷痕和 10 层流血，回复 6 点生命。",
+    mythTags: ["幽冥"], style: "bleed", fusionTier: 2, fusionRoute: "spell+bleed", fusionStage: "mastery", fusionStyles: ["spell", "bleed"], fusionName: "雷血天罚路线", grade: 3, trueMartial: true,
+    effects: [
+      { type: "thunderMark", target: "allEnemies", value: 8 },
+      { type: "status", target: "allEnemies", status: "bleed", stacks: 10 },
+      { type: "heal", target: "self", value: 6 },
+    ],
+  },
+  // C. bleed+poison 腐血毒潮路线
+  rottenBloodBase: {
+    id: "rottenBloodBase", name: "腐血引", rarity: "rare", cost: 1,
+    text: "【真武双合流·入门】毒血互催，持续伤害和续航。施加 4 层流血和 4 层毒瘴。",
+    mythTags: ["山海"], style: "bleed", fusionTier: 2, fusionRoute: "bleed+poison", fusionStage: "base", fusionStyles: ["bleed", "poison"], fusionName: "腐血毒潮路线", grade: 2, trueMartial: true,
+    effects: [
+      { type: "status", target: "enemy", status: "bleed", stacks: 4 },
+      { type: "status", target: "enemy", status: "poison", stacks: 4 },
+    ],
+  },
+  venomBloodPulse: {
+    id: "venomBloodPulse", name: "毒血滋生", rarity: "rare", cost: 1,
+    text: "【真武双合流·押注】毒血滋生，双毒并催。施加 5 层流血和 6 层毒瘴。",
+    mythTags: ["山海"], style: "poison", fusionTier: 2, fusionRoute: "bleed+poison", fusionStage: "commit", fusionStyles: ["bleed", "poison"], fusionName: "腐血毒潮路线", grade: 2, trueMartial: true,
+    effects: [
+      { type: "status", target: "enemy", status: "bleed", stacks: 5 },
+      { type: "status", target: "enemy", status: "poison", stacks: 6 },
+    ],
+  },
+  rottenBloodVenomTide: {
+    id: "rottenBloodVenomTide", name: "腐血毒潮", rarity: "epic", cost: 2,
+    text: "【真武双合流·成型】腐血毒潮，血毒并催。对所有敌人施加 6 层流血和 8 层毒瘴，流血毒瘴各增加 3 层。",
+    mythTags: ["山海"], style: "poison", fusionTier: 2, fusionRoute: "bleed+poison", fusionStage: "formed", fusionStyles: ["bleed", "poison"], fusionName: "腐血毒潮路线", grade: 3, trueMartial: true,
+    effects: [
+      { type: "status", target: "allEnemies", status: "bleed", stacks: 6 },
+      { type: "status", target: "allEnemies", status: "poison", stacks: 8 },
+      { type: "amplifyDebuffs", target: "allEnemies", statuses: ["bleed","poison"], value: 3 },
+    ],
+  },
+  rottenVenomSiphon: {
+    id: "rottenVenomSiphon", name: "腐血回魂", rarity: "epic", cost: 2,
+    text: "【真武双合流·胡牌】腐血回魂，毒血换生机。对所有敌人施加 7 层流血和 9 层毒瘴，回复 6 点生命。",
+    mythTags: ["山海"], style: "poison", fusionTier: 2, fusionRoute: "bleed+poison", fusionStage: "highrollA", fusionStyles: ["bleed", "poison"], fusionName: "腐血毒潮路线", grade: 3, trueMartial: true,
+    effects: [
+      { type: "status", target: "allEnemies", status: "bleed", stacks: 7 },
+      { type: "status", target: "allEnemies", status: "poison", stacks: 9 },
+      { type: "heal", target: "self", value: 6 },
+    ],
+  },
+  bloodVenomBloom: {
+    id: "bloodVenomBloom", name: "腐血盛放", rarity: "rare", cost: 1,
+    text: "【真武双合流·胡牌】腐血盛放，毒血齐开。对所有敌人施加 6 层流血和 6 层毒瘴，抽 1 张牌。",
+    mythTags: ["山海"], style: "bleed", fusionTier: 2, fusionRoute: "bleed+poison", fusionStage: "highrollB", fusionStyles: ["bleed", "poison"], fusionName: "腐血毒潮路线", grade: 2, trueMartial: true,
+    effects: [
+      { type: "status", target: "allEnemies", status: "bleed", stacks: 6 },
+      { type: "status", target: "allEnemies", status: "poison", stacks: 6 },
+      { type: "draw", value: 1 },
+    ],
+  },
+  rottenBloodSovereign: {
+    id: "rottenBloodSovereign", name: "腐血毒尊", rarity: "legendary", cost: 2,
+    text: "【真武双合流·大成】腐血毒尊，万毒归血。对所有敌人施加 9 层流血和 12 层毒瘴，流血毒瘴各增加 4 层。",
+    mythTags: ["山海"], style: "poison", fusionTier: 2, fusionRoute: "bleed+poison", fusionStage: "mastery", fusionStyles: ["bleed", "poison"], fusionName: "腐血毒潮路线", grade: 3, trueMartial: true,
+    effects: [
+      { type: "status", target: "allEnemies", status: "bleed", stacks: 9 },
+      { type: "status", target: "allEnemies", status: "poison", stacks: 12 },
+      { type: "amplifyDebuffs", target: "allEnemies", statuses: ["bleed","poison"], value: 4 },
+    ],
+  },
+  // D. poison+control 蛊禁大阵路线
+  guForbiddenBase: {
+    id: "guForbiddenBase", name: "蛊禁引", rarity: "rare", cost: 1,
+    text: "【真武双合流·入门】控制不是拖死，而是催发毒爆。施加 5 层毒瘴和 1 层禁锢。",
+    mythTags: ["山海"], style: "poison", fusionTier: 2, fusionRoute: "poison+control", fusionStage: "base", fusionStyles: ["poison", "control"], fusionName: "蛊禁大阵路线", grade: 2, trueMartial: true,
+    effects: [
+      { type: "status", target: "enemy", status: "poison", stacks: 5 },
+      { type: "status", target: "enemy", status: "bind", stacks: 1 },
+    ],
+  },
+  guLockPulse: {
+    id: "guLockPulse", name: "蛊锁生瘴", rarity: "rare", cost: 1,
+    text: "【真武双合流·押注】蛊锁生瘴，毒禁并起。施加 6 层毒瘴和 1 层禁锢，抽 1 张牌。",
+    mythTags: ["山海"], style: "control", fusionTier: 2, fusionRoute: "poison+control", fusionStage: "commit", fusionStyles: ["poison", "control"], fusionName: "蛊禁大阵路线", grade: 2, trueMartial: true,
+    effects: [
+      { type: "status", target: "enemy", status: "poison", stacks: 6 },
+      { type: "status", target: "enemy", status: "bind", stacks: 1 },
+      { type: "draw", value: 1 },
+    ],
+  },
+  guForbiddenArray: {
+    id: "guForbiddenArray", name: "蛊禁大阵", rarity: "epic", cost: 2,
+    text: "【真武双合流·成型】蛊禁大阵，禁制催毒爆。对所有敌人施加 8 层毒瘴、2 层禁锢、1 层离间，引爆毒瘴。",
+    mythTags: ["山海"], style: "poison", fusionTier: 2, fusionRoute: "poison+control", fusionStage: "formed", fusionStyles: ["poison", "control"], fusionName: "蛊禁大阵路线", grade: 3, trueMartial: true,
+    effects: [
+      { type: "status", target: "allEnemies", status: "poison", stacks: 8 },
+      { type: "status", target: "allEnemies", status: "bind", stacks: 2 },
+      { type: "status", target: "allEnemies", status: "chaos", stacks: 1 },
+      { type: "poisonBurst", target: "allEnemies" },
+    ],
+  },
+  guForbiddenDetonation: {
+    id: "guForbiddenDetonation", name: "蛊禁毒爆", rarity: "epic", cost: 2,
+    text: "【真武双合流·胡牌】蛊禁毒爆，禁阵催毒不拖长控。对所有敌人施加 10 层毒瘴，引爆毒瘴，抽 1 张牌。",
+    mythTags: ["山海"], style: "control", fusionTier: 2, fusionRoute: "poison+control", fusionStage: "highrollA", fusionStyles: ["poison", "control"], fusionName: "蛊禁大阵路线", grade: 3, trueMartial: true,
+    effects: [
+      { type: "status", target: "allEnemies", status: "poison", stacks: 10 },
+      { type: "poisonBurst", target: "allEnemies" },
+      { type: "draw", value: 1 },
+    ],
+  },
+  guPrisonCommand: {
+    id: "guPrisonCommand", name: "蛊狱敕令", rarity: "rare", cost: 1,
+    text: "【真武双合流·胡牌】蛊狱敕令，毒禁续势。对所有敌人施加 7 层毒瘴和 1 层禁锢，获得 1 点能量。",
+    mythTags: ["山海"], style: "poison", fusionTier: 2, fusionRoute: "poison+control", fusionStage: "highrollB", fusionStyles: ["poison", "control"], fusionName: "蛊禁大阵路线", grade: 2, trueMartial: true,
+    effects: [
+      { type: "status", target: "allEnemies", status: "poison", stacks: 7 },
+      { type: "status", target: "allEnemies", status: "bind", stacks: 1 },
+      { type: "gainEnergy", target: "self", value: 1 },
+    ],
+  },
+  guForbiddenSovereign: {
+    id: "guForbiddenSovereign", name: "蛊禁天阵", rarity: "legendary", cost: 2,
+    text: "【真武双合流·大成】蛊禁天阵，阵启万毒归元。对所有敌人施加 12 层毒瘴和 2 层禁锢，引爆毒瘴，回复 5 点生命。",
+    mythTags: ["山海"], style: "control", fusionTier: 2, fusionRoute: "poison+control", fusionStage: "mastery", fusionStyles: ["poison", "control"], fusionName: "蛊禁大阵路线", grade: 3, trueMartial: true,
+    effects: [
+      { type: "status", target: "allEnemies", status: "poison", stacks: 12 },
+      { type: "status", target: "allEnemies", status: "bind", stacks: 2 },
+      { type: "poisonBurst", target: "allEnemies" },
+      { type: "heal", target: "self", value: 5 },
+    ],
+  },
+  // E. control+shell 镇狱玄龟路线
+  prisonTurtleBase: {
+    id: "prisonTurtleBase", name: "镇狱引", rarity: "rare", cost: 1,
+    text: "【真武双合流·入门】镇压敌势，玄龟反震。获得 10 点格挡，施加 1 层禁锢。",
+    mythTags: ["人间"], style: "shell", fusionTier: 2, fusionRoute: "control+shell", fusionStage: "base", fusionStyles: ["control", "shell"], fusionName: "镇狱玄龟路线", grade: 2, trueMartial: true,
+    effects: [
+      { type: "block", target: "self", value: 10 },
+      { type: "status", target: "enemy", status: "bind", stacks: 1 },
+    ],
+  },
+  turtleSealGuard: {
+    id: "turtleSealGuard", name: "玄龟锁势", rarity: "rare", cost: 1,
+    text: "【真武双合流·押注】玄龟锁势，镇敌固己。获得 12 点格挡，施加 1 层禁锢，抽 1 张牌。",
+    mythTags: ["人间"], style: "control", fusionTier: 2, fusionRoute: "control+shell", fusionStage: "commit", fusionStyles: ["control", "shell"], fusionName: "镇狱玄龟路线", grade: 2, trueMartial: true,
+    effects: [
+      { type: "block", target: "self", value: 12 },
+      { type: "status", target: "enemy", status: "bind", stacks: 1 },
+      { type: "draw", value: 1 },
+    ],
+  },
+  prisonXuanTurtle: {
+    id: "prisonXuanTurtle", name: "镇狱玄龟", rarity: "epic", cost: 2,
+    text: "【真武双合流·成型】镇狱玄龟，格挡反震合一。获得 18 点格挡，所有敌人眩晕 1 层和禁锢 2 层，反震 16%。",
+    mythTags: ["人间"], style: "shell", fusionTier: 2, fusionRoute: "control+shell", fusionStage: "formed", fusionStyles: ["control", "shell"], fusionName: "镇狱玄龟路线", grade: 3, trueMartial: true,
+    effects: [
+      { type: "block", target: "self", value: 18 },
+      { type: "status", target: "allEnemies", status: "stun", stacks: 1 },
+      { type: "status", target: "allEnemies", status: "bind", stacks: 2 },
+      { type: "shellReflect", target: "allEnemies", ratio: 0.16, consumeRatio: 0 },
+    ],
+  },
+  prisonTurtleCounter: {
+    id: "prisonTurtleCounter", name: "玄龟镇魔", rarity: "epic", cost: 2,
+    text: "【真武双合流·胡牌】玄龟镇魔，反震压敌。获得 20 点格挡，反震 18%，施加 1 层禁锢。",
+    mythTags: ["人间"], style: "shell", fusionTier: 2, fusionRoute: "control+shell", fusionStage: "highrollA", fusionStyles: ["control", "shell"], fusionName: "镇狱玄龟路线", grade: 3, trueMartial: true,
+    effects: [
+      { type: "block", target: "self", value: 20 },
+      { type: "shellReflect", target: "allEnemies", ratio: 0.18, consumeRatio: 0 },
+      { type: "status", target: "allEnemies", status: "bind", stacks: 1 },
+    ],
+  },
+  prisonShellRebound: {
+    id: "prisonShellRebound", name: "镇狱反震", rarity: "rare", cost: 1,
+    text: "【真武双合流·胡牌】镇狱反震，格挡抽牌。获得 14 点格挡，反震 14%，抽 1 张牌。",
+    mythTags: ["人间"], style: "shell", fusionTier: 2, fusionRoute: "control+shell", fusionStage: "highrollB", fusionStyles: ["control", "shell"], fusionName: "镇狱玄龟路线", grade: 2, trueMartial: true,
+    effects: [
+      { type: "block", target: "self", value: 14 },
+      { type: "shellReflect", target: "allEnemies", ratio: 0.14, consumeRatio: 0 },
+      { type: "draw", value: 1 },
+    ],
+  },
+  prisonTurtleSovereign: {
+    id: "prisonTurtleSovereign", name: "镇狱玄尊", rarity: "legendary", cost: 2,
+    text: "【真武双合流·大成】镇狱玄尊，万狱归甲。获得 24 点格挡，反震 20%，施加 2 层禁锢。",
+    mythTags: ["人间"], style: "shell", fusionTier: 2, fusionRoute: "control+shell", fusionStage: "mastery", fusionStyles: ["control", "shell"], fusionName: "镇狱玄龟路线", grade: 3, trueMartial: true,
+    effects: [
+      { type: "block", target: "self", value: 24 },
+      { type: "shellReflect", target: "allEnemies", ratio: 0.20, consumeRatio: 0 },
+      { type: "status", target: "allEnemies", status: "bind", stacks: 2 },
+    ],
+  },
+  // F. physical+shell 玄甲破军路线
+  xuanArmorBase: {
+    id: "xuanArmorBase", name: "玄甲引", rarity: "rare", cost: 1,
+    text: "【真武双合流·入门】甲越厚，刀越狠。获得 10 点格挡，造成 8 点伤害。",
+    mythTags: ["人间"], style: "shell", fusionTier: 2, fusionRoute: "physical+shell", fusionStage: "base", fusionStyles: ["physical", "shell"], fusionName: "玄甲破军路线", grade: 2, trueMartial: true,
+    effects: [
+      { type: "block", target: "self", value: 10 },
+      { type: "damage", target: "enemy", value: 8 },
+    ],
+  },
+  armorBladeGuard: {
+    id: "armorBladeGuard", name: "甲刃并起", rarity: "rare", cost: 1,
+    text: "【真武双合流·押注】甲刃并起，攻防一体。获得 12 点格挡，造成 10 点伤害。",
+    mythTags: ["人间"], style: "physical", fusionTier: 2, fusionRoute: "physical+shell", fusionStage: "commit", fusionStyles: ["physical", "shell"], fusionName: "玄甲破军路线", grade: 2, trueMartial: true,
+    effects: [
+      { type: "block", target: "self", value: 12 },
+      { type: "damage", target: "enemy", value: 10 },
+    ],
+  },
+  xuanArmorBreakArmy: {
+    id: "xuanArmorBreakArmy", name: "玄甲破军", rarity: "epic", cost: 2,
+    text: "【真武双合流·成型】玄甲破军，甲厚刀狠。获得 14 点格挡，造成 16 点伤害，反震 18%。",
+    mythTags: ["人间"], style: "physical", fusionTier: 2, fusionRoute: "physical+shell", fusionStage: "formed", fusionStyles: ["physical", "shell"], fusionName: "玄甲破军路线", grade: 3, trueMartial: true,
+    effects: [
+      { type: "block", target: "self", value: 14 },
+      { type: "damage", target: "enemy", value: 16 },
+      { type: "shellReflect", target: "allEnemies", ratio: 0.18, consumeRatio: 0 },
+    ],
+  },
+  xuanArmorGodBreak: {
+    id: "xuanArmorGodBreak", name: "玄甲神破", rarity: "epic", cost: 2,
+    text: "【真武双合流·胡牌】玄甲神破，刀势再起。获得 18 点格挡，造成 20 点伤害，获得 1 点能量。",
+    mythTags: ["人间"], style: "physical", fusionTier: 2, fusionRoute: "physical+shell", fusionStage: "highrollA", fusionStyles: ["physical", "shell"], fusionName: "玄甲破军路线", grade: 3, trueMartial: true,
+    effects: [
+      { type: "block", target: "self", value: 18 },
+      { type: "damage", target: "enemy", value: 20 },
+      { type: "gainEnergy", target: "self", value: 1 },
+    ],
+  },
+  xuanArmorWarMomentum: {
+    id: "xuanArmorWarMomentum", name: "玄甲战势", rarity: "rare", cost: 1,
+    text: "【真武双合流·胡牌】玄甲战势，战意蓄甲。获得 16 点格挡，获得 4 层战意，抽 1 张牌。",
+    mythTags: ["人间"], style: "shell", fusionTier: 2, fusionRoute: "physical+shell", fusionStage: "highrollB", fusionStyles: ["physical", "shell"], fusionName: "玄甲破军路线", grade: 2, trueMartial: true,
+    effects: [
+      { type: "block", target: "self", value: 16 },
+      { type: "status", target: "self", status: "battleIntent", stacks: 4 },
+      { type: "draw", value: 1 },
+    ],
+  },
+  xuanArmorSovereign: {
+    id: "xuanArmorSovereign", name: "玄甲武尊", rarity: "legendary", cost: 2,
+    text: "【真武双合流·大成】玄甲武尊，甲破万军。获得 22 点格挡，造成 24 点伤害，反震 18%。",
+    mythTags: ["人间"], style: "physical", fusionTier: 2, fusionRoute: "physical+shell", fusionStage: "mastery", fusionStyles: ["physical", "shell"], fusionName: "玄甲破军路线", grade: 3, trueMartial: true,
+    effects: [
+      { type: "block", target: "self", value: 22 },
+      { type: "damage", target: "enemy", value: 24 },
+      { type: "shellReflect", target: "allEnemies", ratio: 0.18, consumeRatio: 0 },
+    ],
+  },
+  // ===== T2-A3: 6 天尊契机牌 (Heavenly Trigger Cards) =====
+  triggerThunderBloodBreakArmy: {
+    id: "triggerThunderBloodBreakArmy", name: "破军血雷契", rarity: "legendary", cost: 0,
+    text: "【天尊契机】若已大成「雷霆破军」或「雷血天罚」路线，选择后进化为【真武三合流：雷血破军】。",
+    mythTags: ["天庭"], trueMartial: true, heavenlyTrigger: true, fusionTier: 3,
+    triggerTripleCardId: "thunderBloodBreakArmy",
+    triggerRoutes: ["physical+spell", "spell+bleed"],
+    triggerStyles: ["physical", "spell", "bleed"],
+    triggerName: "破军血雷契",
+    effects: [],
+  },
+  triggerThreeCalamityTribulation: {
+    id: "triggerThreeCalamityTribulation", name: "三灾劫契", rarity: "legendary", cost: 0,
+    text: "【天尊契机】若已大成「雷血天罚」或「腐血毒潮」路线，选择后进化为【真武三合流：三灾雷血毒劫】。",
+    mythTags: ["山海"], trueMartial: true, heavenlyTrigger: true, fusionTier: 3,
+    triggerTripleCardId: "threeCalamityBloodVenomTribulation",
+    triggerRoutes: ["spell+bleed", "bleed+poison"],
+    triggerStyles: ["spell", "bleed", "poison"],
+    triggerName: "三灾劫契",
+    effects: [],
+  },
+  triggerRottenGuPrison: {
+    id: "triggerRottenGuPrison", name: "腐蛊狱契", rarity: "legendary", cost: 0,
+    text: "【天尊契机】若已大成「腐血毒潮」或「蛊禁大阵」路线，选择后进化为【真武三合流：腐血蛊狱】。",
+    mythTags: ["山海"], trueMartial: true, heavenlyTrigger: true, fusionTier: 3,
+    triggerTripleCardId: "rottenBloodGuPrison",
+    triggerRoutes: ["bleed+poison", "poison+control"],
+    triggerStyles: ["bleed", "poison", "control"],
+    triggerName: "腐蛊狱契",
+    effects: [],
+  },
+  triggerXuanGuPrison: {
+    id: "triggerXuanGuPrison", name: "玄蛊狱契", rarity: "legendary", cost: 0,
+    text: "【天尊契机】若已大成「蛊禁大阵」或「镇狱玄龟」路线，选择后进化为【真武三合流：玄蛊镇狱】。",
+    mythTags: ["山海"], trueMartial: true, heavenlyTrigger: true, fusionTier: 3,
+    triggerTripleCardId: "xuanGuPrisonSuppress",
+    triggerRoutes: ["poison+control", "control+shell"],
+    triggerStyles: ["poison", "control", "shell"],
+    triggerName: "玄蛊狱契",
+    effects: [],
+  },
+  triggerDemonSuppressArmor: {
+    id: "triggerDemonSuppressArmor", name: "镇魔甲契", rarity: "legendary", cost: 0,
+    text: "【天尊契机】若已大成「镇狱玄龟」或「玄甲破军」路线，选择后进化为【真武三合流：镇魔玄甲】。",
+    mythTags: ["人间"], trueMartial: true, heavenlyTrigger: true, fusionTier: 3,
+    triggerTripleCardId: "demonSuppressXuanArmor",
+    triggerRoutes: ["control+shell", "physical+shell"],
+    triggerStyles: ["physical", "control", "shell"],
+    triggerName: "镇魔甲契",
+    effects: [],
+  },
+  triggerXuanThunderArmy: {
+    id: "triggerXuanThunderArmy", name: "玄雷军契", rarity: "legendary", cost: 0,
+    text: "【天尊契机】若已大成「玄甲破军」或「雷霆破军」路线，选择后进化为【真武三合流：玄雷破军】。",
+    mythTags: ["天庭"], trueMartial: true, heavenlyTrigger: true, fusionTier: 3,
+    triggerTripleCardId: "xuanThunderBreakArmy",
+    triggerRoutes: ["physical+shell", "physical+spell"],
+    triggerStyles: ["physical", "spell", "shell"],
+    triggerName: "玄雷军契",
+    effects: [],
+  },
+  // ===== T2-A3: 6 张三合流终极牌 (Triple Fusion Ultimate Cards) =====
+  thunderBloodBreakArmy: {
+    id: "thunderBloodBreakArmy", name: "雷血破军", rarity: "legendary", cost: 2,
+    text: "【真武三合流：雷血破军】出刀、雷霆、流血合一，单体爆发与群体压制兼备。造成 22 点伤害，全体施加 7 层雷痕和 7 层流血，抽 1 张牌。",
+    mythTags: ["天庭"], style: "physical", fusionTier: 3, fusionStyles: ["physical", "spell", "bleed"], fusionName: "雷血破军", grade: 3, trueMartial: true,
+    effects: [
+      { type: "damage", target: "enemy", value: 22 },
+      { type: "thunderMark", target: "allEnemies", value: 7 },
+      { type: "status", target: "allEnemies", status: "bleed", stacks: 7 },
+      { type: "draw", value: 1 },
+    ],
+  },
+  threeCalamityBloodVenomTribulation: {
+    id: "threeCalamityBloodVenomTribulation", name: "三灾雷血毒劫", rarity: "legendary", cost: 2,
+    text: "【真武三合流：三灾雷血毒劫】雷、血、毒三灾共鸣，持续伤害爆炸。全体施加 6 层雷痕、7 层流血、8 层毒瘴，流血毒瘴雷痕各增加 3 层。",
+    mythTags: ["山海"], style: "spell", fusionTier: 3, fusionStyles: ["spell", "bleed", "poison"], fusionName: "三灾雷血毒劫", grade: 3, trueMartial: true,
+    effects: [
+      { type: "thunderMark", target: "allEnemies", value: 6 },
+      { type: "status", target: "allEnemies", status: "bleed", stacks: 7 },
+      { type: "status", target: "allEnemies", status: "poison", stacks: 8 },
+      { type: "amplifyDebuffs", target: "allEnemies", statuses: ["bleed","poison","thunderMark"], value: 3 },
+    ],
+  },
+  rottenBloodGuPrison: {
+    id: "rottenBloodGuPrison", name: "腐血蛊狱", rarity: "legendary", cost: 2,
+    text: "【真武三合流：腐血蛊狱】流血、毒、禁制连锁，控制转毒爆。全体施加 6 层流血、10 层毒瘴、2 层禁锢，引爆毒瘴，回复 5 点生命。",
+    mythTags: ["山海"], style: "poison", fusionTier: 3, fusionStyles: ["bleed", "poison", "control"], fusionName: "腐血蛊狱", grade: 3, trueMartial: true,
+    effects: [
+      { type: "status", target: "allEnemies", status: "bleed", stacks: 6 },
+      { type: "status", target: "allEnemies", status: "poison", stacks: 10 },
+      { type: "status", target: "allEnemies", status: "bind", stacks: 2 },
+      { type: "poisonBurst", target: "allEnemies" },
+      { type: "heal", target: "self", value: 5 },
+    ],
+  },
+  xuanGuPrisonSuppress: {
+    id: "xuanGuPrisonSuppress", name: "玄蛊镇狱", rarity: "legendary", cost: 2,
+    text: "【真武三合流：玄蛊镇狱】毒壳镇狱，敌人越拖越崩。获得 20 点格挡，全体施加 9 层毒瘴和 2 层禁锢，反震 18%。",
+    mythTags: ["山海"], style: "shell", fusionTier: 3, fusionStyles: ["poison", "control", "shell"], fusionName: "玄蛊镇狱", grade: 3, trueMartial: true,
+    effects: [
+      { type: "block", target: "self", value: 20 },
+      { type: "status", target: "allEnemies", status: "poison", stacks: 9 },
+      { type: "status", target: "allEnemies", status: "bind", stacks: 2 },
+      { type: "shellReflect", target: "allEnemies", ratio: 0.18, consumeRatio: 0 },
+    ],
+  },
+  demonSuppressXuanArmor: {
+    id: "demonSuppressXuanArmor", name: "镇魔玄甲", rarity: "legendary", cost: 2,
+    text: "【真武三合流：镇魔玄甲】镇压、格挡、破军合一，控后重斩。获得 18 点格挡，全体施加 2 层禁锢，造成 22 点伤害，生命低于 35% 斩杀否则追加 8 点伤害。",
+    mythTags: ["人间"], style: "physical", fusionTier: 3, fusionStyles: ["physical", "control", "shell"], fusionName: "镇魔玄甲", grade: 3, trueMartial: true,
+    effects: [
+      { type: "block", target: "self", value: 18 },
+      { type: "status", target: "allEnemies", status: "bind", stacks: 2 },
+      { type: "damage", target: "enemy", value: 22 },
+      { type: "execute", target: "enemy", threshold: 35, fallbackDamage: 8 },
+    ],
+  },
+  xuanThunderBreakArmy: {
+    id: "xuanThunderBreakArmy", name: "玄雷破军", rarity: "legendary", cost: 2,
+    text: "【真武三合流：玄雷破军】玄甲、破军、雷霆合一，攻防一体。获得 18 点格挡，全体造成 12 点伤害和 7 层雷痕，反震 16%。",
+    mythTags: ["天庭"], style: "spell", fusionTier: 3, fusionStyles: ["physical", "spell", "shell"], fusionName: "玄雷破军", grade: 3, trueMartial: true,
+    effects: [
+      { type: "block", target: "self", value: 18 },
+      { type: "damage", target: "allEnemies", value: 12 },
+      { type: "thunderMark", target: "allEnemies", value: 7 },
+      { type: "shellReflect", target: "allEnemies", ratio: 0.16, consumeRatio: 0 },
     ],
   },
   // 业障牌 — 不可通过普通删牌剔除，不进入普通奖励池

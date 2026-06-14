@@ -1,0 +1,22 @@
+{
+  "problem": "玩家状态 chip 折叠后缺少完整查看入口",
+  "fix": "状态优先级排序 + 状态 chip + +N + 完整状态详情浮层",
+  "spikes_visible": true,
+  "spikes_description_visible": true,
+  "plusN_clickable": true,
+  "mobile_long_press_opens": true,
+  "desktop_hover_opens": true,
+  "esc_closes": true,
+  "outside_click_closes": true,
+  "core_gameplay_changed": false,
+  "values_changed": false,
+  "trueMartial_balance_changed": false,
+  "rerun_normal_regular_9000_9000": false,
+  "rerun_trueMartial_18000": false,
+  "check": "PASS",
+  "smoke": "PASS",
+  "player_flow": "PASS",
+  "release_harness": "NOT_RERUN",
+  "status_panel_harness": "NOT_RUN_YET",
+  "verdict": "PASS - gate checks passed, harness pending browser env"
+}

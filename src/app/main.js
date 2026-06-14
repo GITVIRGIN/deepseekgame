@@ -497,7 +497,7 @@ function renderCloudOverlay() {
 
 function renderRunPanel(run) {
   const panel = el("aside", "run-panel");
-  const pChips = formatPlayerStatusChips(run, 3);
+  const pChips = formatPlayerStatusChips(run);
 
   // Difficulty badge
   const diffLabel = DIFFICULTY_LABELS[run.difficulty] || "未知";
@@ -543,7 +543,7 @@ function renderRunPanel(run) {
 function renderMobileRunSummary(run) {
   const maxFloor = run.trueMartial ? TRUE_MARTIAL_MAX_FLOOR : MAX_FLOOR;
   const diffLabel = DIFFICULTY_LABELS[run.difficulty] || "未知";
-  const pChips = formatPlayerStatusChips(run, 2);
+  const pChips = formatPlayerStatusChips(run);
   return el("div", "mobile-run-summary", [
     el("div", "ms-top", [
       el("span", "ms-floor", `第${run.floor}/${maxFloor}层`),
@@ -563,24 +563,80 @@ function renderMobileRunSummary(run) {
   ].filter(Boolean));
 }
 
-export function formatPlayerStatusChips(run, limit = 3) {
-  const statuses = (run?.statuses || []).filter(s => s.stacks > 0);
-  if (statuses.length === 0) return [];
-  const shown = statuses.slice(0, limit);
-  const allNames = statuses.map(s => `${statusInfo[s.id]?.label ?? s.id} ${s.stacks}`).join(", ");
+// UI1: status helper functions
+function getStatusPriority(id) {
+  const order = ["spikes","blockShield","curse","spirit",
+    "burn","poison","bleed","thunderMark","weak","vulnerable","brittle","bind","chaos","stun",
+    "ward","battleIntent","stasis","thunderFireMark","clearMind","controlResist"];
+  const idx = order.indexOf(id);
+  return idx >= 0 ? idx : 99;
+}
+function getStatusDisplayName(id) { return statusInfo[id]?.label ?? id; }
+function getStatusDescription(id) {
+  const s = statusInfo[id];
+  if (s?.text) return s.text;
+  // seal statuses and others with no text
+  if (id === "spikes") return "受到攻击时反伤敌人。层数越高，反伤越强。";
+  if (id === "blockShield") return "格挡值不会被攻击消耗，通常在回合结束时移除。";
+  if (id === "curse") return "受到的卡牌伤害增加。";
+  if (id === "spirit") return "提高卡牌伤害，战斗结束后清空。";
+  if (id === "burn") return "回合间受到持续伤害。";
+  if (id === "poison") return "回合间受到持续伤害，并可能削弱敌人攻击。";
+  if (id === "bleed") return "回合间和受到攻击时产生额外伤害，可与汲血联动。";
+  if (id === "thunderMark") return "雷法印记，达到阈值后触发天劫。";
+  if (id === "weak") return "降低造成的伤害。";
+  if (id === "vulnerable") return "受到更多伤害。";
+  if (id === "brittle") return "受到更多伤害。";
+  if (id === "bind") return "限制攻击或施法行动。";
+  if (id === "chaos") return "攻击可能转向同伴或空过。";
+  if (id === "stun") return "跳过行动。";
+  if (id === "ward") return "抵消即将受到的伤害。";
+  if (id === "battleIntent") return "提高物理牌伤害。";
+  if (id === "stasis") return "保留部分状态层数，延缓衰减。";
+  return "状态效果已生效，暂无说明。";
+}
+function getPlayerStatusEntries(run) {
+  return (run?.statuses || []).filter(s => s.stacks > 0)
+    .sort((a, b) => getStatusPriority(a.id) - getStatusPriority(b.id));
+}
+
+// Determine visible chip limit based on viewport
+function statusChipLimit() { return window.innerWidth <= 520 ? 2 : 3; }
+
+export function formatPlayerStatusChips(run) {
+  const entries = getPlayerStatusEntries(run);
+  if (entries.length === 0) return [];
+  const limit = statusChipLimit();
+  const shown = entries.slice(0, limit);
+  const allNames = entries.map(s => `${getStatusDisplayName(s.id)} ${s.stacks}`).join(", ");
   const chips = shown.map(s => {
-    const label = `${statusInfo[s.id]?.label ?? s.id} ${s.stacks}`;
+    const label = `${getStatusDisplayName(s.id)} ${s.stacks}`;
     const node = el("span", `status-chip-inline status-${s.id}`, label);
     node.title = allNames;
     node.style.cursor = "pointer";
+    // Click toggles popover
     node.addEventListener("click", (e) => { e.stopPropagation(); showPlayerStatusDetail(run); });
+    // Desktop hover opens, mouseleave closes if not fixed
+    node.addEventListener("mouseenter", () => { if (!detailInfo) openPlayerStatusDetail(run); });
+    node.addEventListener("mouseleave", () => {
+      if (detailInfo?.type === "playerStatuses" && !detailInfo._fixed) { detailInfo = null; render(); }
+    });
+    // Mobile long-press
+    let longTimer;
+    node.addEventListener("touchstart", () => { longTimer = setTimeout(() => { longTimer = null; showPlayerStatusDetail(run); }, 500); });
+    node.addEventListener("touchend", () => { if (longTimer) clearTimeout(longTimer); });
+    node.addEventListener("touchmove", () => { if (longTimer) clearTimeout(longTimer); });
     return node;
   });
-  if (statuses.length > limit) {
-    const overflow = el("span", "status-chip-inline status-overflow", `+${statuses.length - limit}`);
+  if (entries.length > limit) {
+    const overflow = el("span", "status-chip-inline status-overflow", `+${entries.length - limit}`);
     overflow.title = allNames;
     overflow.style.cursor = "pointer";
     overflow.addEventListener("click", (e) => { e.stopPropagation(); showPlayerStatusDetail(run); });
+    overflow.addEventListener("mouseenter", () => { if (!detailInfo) openPlayerStatusDetail(run); });
+    overflow.addEventListener("mouseleave", () => {
+      if (detailInfo?.type === "playerStatuses" && !detailInfo._fixed) { detailInfo = null; render(); }
+    });
     chips.push(overflow);
   }
   return chips;
@@ -588,7 +644,12 @@ export function formatPlayerStatusChips(run, limit = 3) {
 
 function showPlayerStatusDetail(run) {
   if (detailInfo?.type === "playerStatuses") { detailInfo = null; render(); return; }
-  detailInfo = { type: "playerStatuses", run };
+  detailInfo = { type: "playerStatuses", run, _fixed: true };
+  render();
+}
+function openPlayerStatusDetail(run) {
+  if (detailInfo?.type === "playerStatuses") return;
+  detailInfo = { type: "playerStatuses", run, _fixed: false };
   render();
 }
 
@@ -745,7 +806,7 @@ function renderMobilePlayerStrip(run) {
       el("span", "", `挡 ${run.combat?.block ?? 0}`),
       el("span", "", `气 ${run.energy}/${effectiveMaxEnergy(run)}`),
     ]),
-    el("div", "player-status-chip-row", formatPlayerStatusChips(run, 3)),
+    el("div", "player-status-chip-row", formatPlayerStatusChips(run)),
   ]);
 }
 
@@ -1257,39 +1318,24 @@ function renderDetailPanel(info) {
 
 // UI1: player status full popover
 function renderPlayerStatusPopover(run) {
-  const statuses = (run?.statuses || []).filter(s => s.stacks > 0);
-  // Priority order for display
-  const priority = ["spikes", "blockShield", "curse", "spirit", "burn", "poison", "bleed", "thunderMark", "ward", "battleIntent", "stasis", "thunderFireMark", "clearMind", "chaos", "bind", "stun"];
-  const getPriority = (id) => { const idx = priority.indexOf(id); return idx >= 0 ? idx : 99; };
-  const sorted = [...statuses].sort((a, b) => getPriority(a.id) - getPriority(b.id));
-
-  const items = sorted.map(s => {
-    const info = statusInfo[s.id];
-    const label = info?.label ?? s.id;
-    const text = info?.text ?? "状态效果已生效，暂无说明";
+  const entries = getPlayerStatusEntries(run);
+  const items = entries.map(s => {
+    const label = getStatusDisplayName(s.id);
+    const text = getStatusDescription(s.id);
     return el("div", `status-popover-item status-${s.id}`, [
       el("span", "status-popover-name", `${label} ${s.stacks}`),
       el("span", "status-popover-desc", text),
     ]);
   });
-
-  if (items.length === 0) {
-    items.push(el("div", "status-popover-item", [el("span", "", "无状态")]));
-  }
-
+  if (items.length === 0) items.push(el("div", "status-popover-item", [el("span", "", "无状态")]));
   const panel = el("aside", "detail-panel status-popover", [
     el("div", "detail-head", [
-      el("h2", "", `玩家状态 (${statuses.length})`),
+      el("h2", "", `玩家状态 (${entries.length})`),
       button("关闭", "ghost small", () => { detailInfo = null; render(); }),
     ]),
     el("div", "status-popover-list", items),
   ]);
-
-  // Close on outside click
-  setTimeout(() => {
-    panel.addEventListener("click", (e) => e.stopPropagation());
-  }, 0);
-
+  panel.addEventListener("click", (e) => e.stopPropagation());
   return panel;
 }
 
