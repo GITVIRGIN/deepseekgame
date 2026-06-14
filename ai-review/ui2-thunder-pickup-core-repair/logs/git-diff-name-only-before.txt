@@ -1,0 +1,16 @@
+ai-review/ui1-status-panel/deepseekgame-v3.13n-tm-t2a5f-ui1-final-review-pass.zip
+ai-review/ui1-status-panel/review-pack-manifest.json
+ai-review/ui1-status-panel/ui1-final-gate.json
+ai-review/ui1-status-panel/ui1-final-gate.md
+scripts/harness-release-rc.mjs
+scripts/sim-ai.mjs
+scripts/smoke-tests.mjs
+scripts/validate-data.mjs
+src/app/main.js
+src/core/archetypes.js
+src/core/combat.js
+src/core/data.js
+src/core/effects.js
+src/core/myth.js
+src/core/rewards.js
+src/core/version.js

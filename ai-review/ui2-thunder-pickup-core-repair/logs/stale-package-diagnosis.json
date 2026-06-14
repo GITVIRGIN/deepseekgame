@@ -1,0 +1,13 @@
+{
+  "inspectedZipPath": "ai-review/deepseekgame-v3.13n-tm-t2a5f-ui2-thunder-pickup-core-repair-repack-only-review-pass.zip",
+  "inspectedZipSha256": "8099983a5c12b7931c40f250c163d479bebfcb9843e6cc3b691e44dcdb5d0405",
+  "inspectedZipSizeBytes": 327954,
+  "inspectedZipEntryCount": 46,
+  "repackReportPackageNameInsideZip": "deepseekgame-v3.13n-tm-t2a5f-ui2-thunder-pickup-core-repair-repack-only-review-pass.zip",
+  "repackReportResultInsideZip": "PASS_FOR_GPT_AUDIT_PACKAGE_COMPLETENESS_ONLY",
+  "repackReportEvidenceDirInZipInsideZip": "True",
+  "repackReportHarnessRerunInsideZip": "False",
+  "zipEntryListLineCountInsideZip": "46",
+  "zipEntryListContainsSelfInsideZip": true,
+  "staleShaMatchedOldKnownBadSha": false
+}

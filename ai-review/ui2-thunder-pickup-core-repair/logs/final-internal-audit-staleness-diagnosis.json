@@ -1,0 +1,13 @@
+{
+  "inspectedPackagePath": "ai-review/deepseekgame-v3.13n-tm-t2a5f-ui2-thunder-pickup-core-repair-repack-only-review-pass.zip",
+  "inspectedPackageSha256FromExternalSidecar": "e02e6c54ee056f8d56a81cdb441cc9f558a53f52a267b93f70e071ccb92f6db4",
+  "auditFileExistsInsideZip": true,
+  "auditFileContainsReadFailed": true,
+  "auditFileFinalInternalAuditPassedValue": false,
+  "auditFileContainsIntermediateSha889859": true,
+  "auditFileContainsOldKnownBadSha673de": false,
+  "auditFileClaimsFinalZipShaInsideZip": true,
+  "repackReportInsideZipIsCorrect": true,
+  "zipEntryListInsideZipContainsSelf": true,
+  "diagnosis": "internal audit file is stale; final package content is otherwise correct"
+}

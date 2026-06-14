@@ -1,0 +1,158 @@
+{
+  "result": "PASS_FOR_GPT_AUDIT_THUNDER_CORE_REPAIR",
+  "startedAt": "2026-06-14T05:44:27.009Z",
+  "finishedAt": "2026-06-14T05:44:33.650Z",
+  "harnessExitCode": 0,
+  "runnerChecks": [
+    {
+      "name": "runner_started_at_written",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "old_harness_outputs_cleaned",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "harness_command_execution_attempted",
+      "status": "PASS",
+      "detail": "node scripts/harness-release-rc.mjs --ui2-thunder-pickup-real"
+    },
+    {
+      "name": "harness_command_executed",
+      "status": "PASS",
+      "detail": "exitCode=0"
+    },
+    {
+      "name": "summary_exists",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "summary_mtime_after_harness_started",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "summary_parsed",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "all_required_checks_present",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "screenshot_before",
+      "status": "PASS",
+      "detail": "112590 bytes"
+    },
+    {
+      "name": "screenshot_before_mtime",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "screenshot_afterKill",
+      "status": "PASS",
+      "detail": "61192 bytes"
+    },
+    {
+      "name": "screenshot_afterKill_mtime",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "screenshot_afterPickup",
+      "status": "PASS",
+      "detail": "61192 bytes"
+    },
+    {
+      "name": "screenshot_afterPickup_mtime",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "pageErrors_zero",
+      "status": "PASS",
+      "detail": "0 errors"
+    },
+    {
+      "name": "consoleErrors_zero",
+      "status": "PASS",
+      "detail": "0 errors"
+    },
+    {
+      "name": "commandExecuted",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "browserStarted",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "fn_final_enemy_killed_by_thunder_or_blocked_with_reason",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "fn_phase_after_thunder_not_combat_when_final_enemy_dead",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "fn_illegal_combat_zero_alive_enemies_absent",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "fn_page_not_blank_after_pickup_attempt",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "fn_thunder_triggered_or_blocked_with_reason",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "aliveEnemyCount_0",
+      "status": "PASS",
+      "detail": "aliveEnemyCount=0"
+    },
+    {
+      "name": "phase_not_combat",
+      "status": "PASS",
+      "detail": "phase=reward"
+    },
+    {
+      "name": "illegal_state_absent",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "screenshots_differ",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "summary_failed_0",
+      "status": "PASS",
+      "detail": "failed=0"
+    },
+    {
+      "name": "summary_result_PASS",
+      "status": "PASS",
+      "detail": "result=PASS"
+    },
+    {
+      "name": "runner_final_result",
+      "status": "PASS",
+      "detail": "PASS_FOR_GPT_AUDIT_THUNDER_CORE_REPAIR"
+    }
+  ]
+}

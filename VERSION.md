@@ -1,23 +1,39 @@
 # 玄箓行版本档案
 
-## V3.13N-TM-T2A5F-UI1 热修
+## V3.13N-TM-T2A5F-UI2
 
-- 优化玩家状态栏，状态过多时显示 +N
-- 点击、长按或 hover 状态栏可查看完整状态详情
-- 修复荆棘等状态只能从战斗日志看到的问题
-- 荆棘详情新增说明：受到攻击时反伤敌人
-- 不修改战斗数值，不修改真武合流概率
-- 不复跑 normal/regular 9000+9000，不复跑 trueMartial 18000
+**发行日期**: 2026-06-14
 
----
+### 修复
 
-## 当前版本
+* 修复雷劫击杀最后敌人后战斗未正确结束的问题。
+* 修复该非法状态下后续尝试/点击拾遗诀可能导致界面空白的问题。
+* 雷劫击杀最后敌人后，战斗状态应立即进入合法后战斗阶段，例如 reward。
+* 禁止出现 phase=combat 且 aliveEnemyCount=0 的非法状态。
 
-- 总版本：V3.13N-TM-T2A5F-UI1
+### 验收
+
+* Browser harness 已真实执行。
+* thunder-before、thunder-after-kill、thunder-after-pickup-attempt 三段截图证据已进入审核包。
+* runnerResult = PASS_FOR_GPT_AUDIT_THUNDER_CORE_REPAIR。
+* gateResult = PASS_FOR_GPT_AUDIT_THUNDER_CORE_REPAIR。
+* 最终审核包 sha256 = 0dee6d4e0b36212917d73b10111f051c423ed87b1a10c626eccd60782e827fa8。
+
+### 说明
+
+* 本次未改回心铃平衡。
+* 本次未做真武回心铃发布。
+* 本次只发布 UI2 雷劫/拾遗诀链路修复。
+
+### 当前版本
+
+- 总版本：V3.13N-TM-T2A5F-UI2
 - core：0.7.7
 - ui：0.1.0
 - data：0.1.0
 - save：0.7.7
+
+---
 
 ## v0.7.7 Release Candidate
 

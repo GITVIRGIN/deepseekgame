@@ -1,0 +1,48 @@
+ M ai-review/ui1-status-panel/deepseekgame-v3.13n-tm-t2a5f-ui1-final-review-pass.zip
+ M ai-review/ui1-status-panel/review-pack-manifest.json
+ M ai-review/ui1-status-panel/ui1-final-gate.json
+ M ai-review/ui1-status-panel/ui1-final-gate.md
+ M scripts/harness-release-rc.mjs
+ M scripts/sim-ai.mjs
+ M scripts/smoke-tests.mjs
+ M scripts/validate-data.mjs
+ M src/app/main.js
+ M src/core/archetypes.js
+ M src/core/combat.js
+ M src/core/data.js
+ M src/core/effects.js
+ M src/core/myth.js
+ M src/core/rewards.js
+ M src/core/version.js
+?? _pack.py
+?? deepseekgame-v3.13n-truemartial-t2a5-fusion-mastery-tune-deepseek-review.tar.gz
+?? scripts/_rc2-patch.mjs
+?? scripts/_ui1-harness-fix2.mjs
+?? scripts/_ui1-harness-patch.mjs
+?? scripts/_ui1-harness-v3.mjs
+?? scripts/_ui1-hook-patch.mjs
+?? scripts/_ui1-popover-patch.mjs
+?? scripts/create-rc3-staging-pack.mjs
+?? scripts/create-ui2-review-pack.mjs
+?? scripts/diagnose-release-rc-winrate.mjs
+?? scripts/diagnose-truemartial-t2a2.mjs
+?? scripts/diagnose-truemartial-t2a3.mjs
+?? scripts/diagnose-truemartial-t2a4.mjs
+?? scripts/diagnose-truemartial-t2a5.mjs
+?? scripts/diagnose-ui2-tm-balance.mjs
+?? scripts/harness-t2a2-small.mjs
+?? scripts/harness-t2a4-small.mjs
+?? scripts/ui2-bugfix-gate.mjs
+?? scripts/ui2-harness-only-gate.mjs
+?? scripts/ui2-harness-only-runner.mjs
+?? scripts/ui2-huixinling-engine-test.mjs
+?? scripts/ui2-thunder-core-repair-gate.mjs
+?? scripts/ui2-thunder-core-repair-runner.mjs
+?? scripts/ui2-thunder-harness-reality-gate.mjs
+?? scripts/ui2-thunder-harness-reality-runner.mjs
+?? scripts/ui2-thunder-pickup-engine-test.mjs
+?? scripts/verify-release-rc3-evidence.mjs
+?? scripts/verify-t2a2-evidence.mjs
+?? scripts/verify-t2a3-evidence.mjs
+?? scripts/verify-t2a4-evidence.mjs
+?? scripts/verify-t2a5-evidence.mjs

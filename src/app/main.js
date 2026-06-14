@@ -2,7 +2,7 @@ import { cards, gradeInfo, rarityInfo, relics, shopItems, statusInfo, styleInfo 
 import { archetypeRanking, dominantArchetype, styleLabel } from "../core/archetypes.js";
 import { previewEnemyIntent, effectiveMaxEnergy, trueMartialFormationInfo } from "../core/combat.js";
 import { reduceGame } from "../core/reducer.js";
-import { canShowTrueMartialEntry } from "../core/state.js";
+import { canShowTrueMartialEntry, isTrueMartialUnlocked } from "../core/state.js";
 import { clearSave, loadGame, migrateGameState, saveGame } from "../core/save.js";
 import { MAX_FLOOR, TRUE_MARTIAL_MAX_FLOOR, DIFFICULTY_LABELS, DIFFICULTY_BEGINNER, MIN_DECK_SIZE } from "../core/types.js";
 import { gameVersion } from "../core/version.js";
@@ -111,7 +111,7 @@ function renderShell() {
     shell.append(renderCloudOverlay());
   }
 
-  if (state.run?.pendingChoice?.type === "discardPick") {
+  if (state.phase === "combat" && state.run?.pendingChoice?.type === "discardPick") {
     shell.append(renderDiscardPickPanel(state.run));
   }
 
@@ -810,6 +810,18 @@ function renderMobilePlayerStrip(run) {
   ]);
 }
 
+// UI2: get effective card data for current game mode
+function effectiveCardData(definition) {
+  if (state.run?.trueMartial && definition.trueMartial) {
+    return {
+      text: definition.trueMartial.text || definition.text,
+      cost: definition.trueMartial.cost ?? definition.cost,
+      effects: definition.trueMartial.effects || definition.effects,
+    };
+  }
+  return { text: definition.text, cost: definition.cost, effects: definition.effects };
+}
+
 function renderCard(definition, onClick, options = {}) {
   const node = el("button", `game-card rarity-${definition.rarity}`);
   node.type = "button";
@@ -822,11 +834,12 @@ function renderCard(definition, onClick, options = {}) {
   });
   const displayCost = options.costInfo?.cost ?? definition.cost;
   const costText = options.costInfo?.firstFree ? `免/${definition.cost}` : displayCost === definition.cost ? `${definition.cost}` : `${displayCost}/${definition.cost}`;
+  const cardText = effectiveCardData(definition).text;
   node.append(
     el("span", "card-rarity", rarityInfo[definition.rarity].label),
     el("strong", "", definition.name),
     el("span", "card-cost", costText),
-    el("p", "card-body", definition.text),
+    el("p", "card-body", cardText),
     renderCardStyle(definition),
     renderEffectBadges(definition),
     el("span", "myth-tags", definition.mythTags.join(" / ")),
@@ -857,7 +870,7 @@ function detailForCard(definition) {
     key: `card:${definition.id}`,
     type: "卡牌详情",
     title: definition.name,
-    main: definition.text,
+    main: effectiveCardData(definition).text,
     lines: [
       effectiveCostLine,
       `品级：${rarityInfo[definition.rarity].label}`,
@@ -1152,7 +1165,7 @@ function cardEffectLabels(definition) {
   if (mythBoost.active) {
     labels.push(`${mythBoost.tag}箓印 +${mythBoost.level}`);
   }
-  for (const effect of definition.effects) {
+  for (const effect of effectiveCardData(definition).effects) {
     if (effect.type === "damage") labels.push(`伤害 ${effect.value}`);
     if (effect.type === "execute") labels.push(`斩杀 ${effect.threshold ?? 35}%`);
     if (effect.type === "block") labels.push(`格挡 ${effect.value}`);
@@ -1703,6 +1716,138 @@ if (new URLSearchParams(window.location.search).get("harness") === "1") {
       detailInfo = null;
       render();
       return { ok: true };
+    },
+    // UI2: additional harness methods
+    startTrueMartialRun(style = "physical") {
+      // Must enter martialSelect phase first for reducer guard
+      if (state.phase !== "martialSelect") {
+        dispatch({ type: "martialSelect" });
+      }
+      dispatch({ type: "startTrueMartial", style });
+      // If TM not unlocked yet, unlock it in meta for harness testing
+      if (state.phase !== "route") {
+        // Unlock TM for harness testing
+        if (!isTrueMartialUnlocked(state.meta)) {
+          state.meta.collectedRelics = state.meta.collectedRelics || [];
+          // Add all required relics
+          const allRelics = Object.keys(relics).filter(id => {
+            const r = relics[id];
+            return r.implemented !== false && r.trueMartialOnly !== true && !r.text?.includes("真武专属");
+          });
+          for (const id of allRelics) {
+            if (!state.meta.collectedRelics.includes(id)) state.meta.collectedRelics.push(id);
+          }
+          // Set myth mastery
+          state.meta.mythMastery = state.meta.mythMastery || {};
+          const factions = Object.keys(MYTH_FACTIONS); // Array, use MYTH_MASTERY_MAX target
+          for (const f of MYTH_FACTIONS) {
+            state.meta.mythMastery[f] = 3;
+          }
+          dispatch({ type: "martialSelect" });
+          dispatch({ type: "startTrueMartial", style });
+        }
+      }
+      return { ok: true, phase: state.phase };
+    },
+    inspectCardByName(name) {
+      // Search cards by name and return effective data for current mode
+      const entry = Object.entries(cards).find(([, c]) => c.name === name);
+      if (!entry) return null;
+      const [, card] = entry;
+      const effective = effectiveCardData(card);
+      return {
+        id: card.id,
+        name: card.name,
+        cost: effective.cost,
+        text: effective.text,
+        effects: (effective.effects || []).map(e => ({ type: e.type, status: e.status, stacks: e.stacks, value: e.value, target: e.target })),
+        rarity: card.rarity,
+        style: card.style,
+        grade: card.grade,
+        mythTags: card.mythTags,
+      };
+    },
+    // ======== Harness-Only: Test Setup & State Reading APIs ========
+    getCombatState() {
+      const combat = state.run?.combat;
+      if (!combat) return { ok: false, phase: state.phase, reason: 'not-in-combat' };
+      return {
+        ok: true,
+        phase: state.phase,
+        playerHp: state.run.hp,
+        playerMaxHp: state.run.maxHp,
+        playerBlock: combat.block ?? 0,
+        playerEnergy: state.run.energy,
+        playerStatuses: (state.run.statuses || []).filter(s => s.stacks > 0).map(s => ({ id: s.id, stacks: s.stacks })),
+        enemies: combat.enemies.map(e => ({
+          uid: e.uid, name: e.name,
+          hp: e.hp, maxHp: e.maxHp, block: e.block ?? 0,
+          statuses: (e.statuses || []).filter(s => s.stacks > 0).map(s => ({ id: s.id, stacks: s.stacks })),
+        })),
+        hand: (combat.hand || []).map(ci => ({
+          uid: ci.uid,
+          cardId: ci.cardId,
+          name: (cards[ci.cardId] || {}).name || ci.cardId,
+        })),
+        aliveEnemyCount: combat.enemies.filter(e => e.hp > 0).length,
+        totalEnemyCount: combat.enemies.length,
+        totalEnemyHp: combat.enemies.reduce((s, e) => s + Math.max(0, e.hp), 0),
+      };
+    },
+    // Set hand contents for testing (test prep only)
+    setTestHand(cardIds) {
+      if (!state.run?.combat) return { ok: false, reason: 'not-in-combat' };
+      state.run.combat.hand = cardIds.map((cardId, i) => ({ uid: 'harness-hand-' + i, cardId }));
+      render();
+      return { ok: true, count: cardIds.length };
+    },
+    // Set enemy HP for test prep (cannot kill, only reduce to testable level)
+    setEnemyHp(index, hp) {
+      const enemies = state.run?.combat?.enemies;
+      if (!enemies || !enemies[index]) return { ok: false, reason: 'no-such-enemy' };
+      const clamped = Math.max(1, Math.min(hp, enemies[index].maxHp));
+      enemies[index].hp = clamped;
+      render();
+      return { ok: true, index, hp: clamped, maxHp: enemies[index].maxHp };
+    },
+    // Find card UIDs in hand by cardId or name
+    findCardsInHand(filter) {
+      const hand = state.run?.combat?.hand || [];
+      if (typeof filter === 'string') {
+        return hand.filter(ci => ci.cardId === filter || (cards[ci.cardId] || {}).name === filter).map(ci => ci.uid);
+      }
+      return [];
+    },
+    // Play card by UID (real dispatch through reducer)
+    playCardByUid(uid) {
+      const combat = state.run?.combat;
+      if (!combat) return { ok: false, reason: 'not-in-combat' };
+      const ci = combat.hand.find(c => c.uid === uid);
+      if (!ci) return { ok: false, reason: 'card-not-in-hand' };
+      // Target: first alive enemy, or null for non-targeting cards
+      const targetUid = combat.enemies.find(e => e.hp > 0)?.uid ?? null;
+      dispatch({ type: 'playCard', cardUid: uid, targetUid });
+      return { ok: true, phase: state.phase, cardId: ci.cardId };
+    },
+    // Set energy for test prep
+    setEnergy(n) {
+      if (!state.run) return { ok: false, reason: 'no-run' };
+      state.run.energy = Math.max(0, n);
+      render();
+      return { ok: true, energy: state.run.energy };
+    },
+    // Get page body diagnostics (for white-screen check)
+    getBodyDiagnostics() {
+      const body = document.body;
+      const appRoot = document.querySelector('#app');
+      return {
+        bodyExists: !!body,
+        appRootExists: !!appRoot,
+        bodyTextLength: (body?.innerText || '').trim().length,
+        appRootChildCount: appRoot?.childElementCount ?? 0,
+        hasShell: !!document.querySelector('.shell'),
+        hasCombatLayout: !!document.querySelector('.combat-layout'),
+      };
     },
   };
 }

@@ -1,0 +1,16 @@
+{
+  "packageName": "deepseekgame-v3.13n-tm-t2a5f-ui2-thunder-pickup-core-repair-repack-only-review-pass.zip",
+  "packagePath": "ai-review/deepseekgame-v3.13n-tm-t2a5f-ui2-thunder-pickup-core-repair-repack-only-review-pass.zip",
+  "generatedAt": "2026-06-14T10:35:25.861Z",
+  "verdict": "PASS_FOR_GPT_AUDIT_PACKAGE_COMPLETENESS_ONLY",
+  "taskId": "UI2-THUNDER-PICKUP-CORE-REPAIR-REPACK-ONLY",
+  "mode": "PACKAGE_COMPLETENESS_REPACK_ONLY",
+  "sourceEvidenceRoot": "ai-review/ui2-thunder-pickup-core-repair",
+  "zipHasDeepseekgameRoot": true,
+  "zipEntriesUseForwardSlashOnly": true,
+  "backslashEntriesFound": [],
+  "includedRequiredFiles": [],
+  "missingRequiredFiles": [],
+  "forbiddenEntriesFound": [],
+  "notes": "REPACK ONLY."
+}

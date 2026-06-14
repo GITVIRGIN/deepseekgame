@@ -1,0 +1,102 @@
+{
+  "generatedAt": "2026-06-14T10:35:25.860Z",
+  "claims": [
+    {
+      "claim": "prior browser harness evidence is included",
+      "status": "VERIFIED_BY_EXISTING_FILE",
+      "evidenceFiles": [
+        "ai-review/ui2-thunder-pickup-core-repair/harness/thunder-pickup-summary.json"
+      ],
+      "missingFiles": [],
+      "notes": "file exists; content sufficiency requires GPT audit"
+    },
+    {
+      "claim": "prior runner PASS evidence is included",
+      "status": "VERIFIED_BY_EXISTING_FILE",
+      "evidenceFiles": [
+        "ai-review/ui2-thunder-pickup-core-repair/thunder-core-repair-runner.json"
+      ],
+      "missingFiles": [],
+      "notes": "file exists; content sufficiency requires GPT audit"
+    },
+    {
+      "claim": "prior gate PASS evidence is included",
+      "status": "VERIFIED_BY_EXISTING_FILE",
+      "evidenceFiles": [
+        "ai-review/ui2-thunder-pickup-core-repair/ui2-thunder-core-repair-gate.json"
+      ],
+      "missingFiles": [],
+      "notes": "file exists; content sufficiency requires GPT audit"
+    },
+    {
+      "claim": "thunder screenshots are included",
+      "status": "VERIFIED_BY_EXISTING_FILE",
+      "evidenceFiles": [
+        "ai-review/ui2-thunder-pickup-core-repair/harness/screenshots/thunder-before.png",
+        "ai-review/ui2-thunder-pickup-core-repair/harness/screenshots/thunder-after-kill.png",
+        "ai-review/ui2-thunder-pickup-core-repair/harness/screenshots/thunder-after-pickup-attempt.png"
+      ],
+      "missingFiles": [],
+      "notes": "file exists; content sufficiency requires GPT audit"
+    },
+    {
+      "claim": "screenshots metadata complete",
+      "status": "VERIFIED_BY_EXISTING_FILE",
+      "evidenceFiles": [
+        "ai-review/ui2-thunder-pickup-core-repair/harness/thunder-pickup-summary.json"
+      ],
+      "missingFiles": [],
+      "notes": "file exists; content sufficiency requires GPT audit"
+    },
+    {
+      "claim": "evidence directory included",
+      "status": "VERIFIED_BY_EXISTING_FILE",
+      "evidenceFiles": [
+        "ai-review/ui2-thunder-pickup-core-repair/evidence/core-fix-summary.md"
+      ],
+      "missingFiles": [],
+      "notes": "file exists; content sufficiency requires GPT audit"
+    },
+    {
+      "claim": "zip-entry-list.txt included with self-reference",
+      "status": "VERIFIED_BY_EXISTING_FILE",
+      "evidenceFiles": [
+        "ai-review/ui2-thunder-pickup-core-repair/logs/zip-entry-list.txt"
+      ],
+      "missingFiles": [],
+      "notes": "file exists; content sufficiency requires GPT audit"
+    },
+    {
+      "claim": "src/core/version.js included",
+      "status": "VERIFIED_BY_EXISTING_FILE",
+      "evidenceFiles": [
+        "src/core/version.js"
+      ],
+      "missingFiles": [],
+      "notes": "file exists; content sufficiency requires GPT audit"
+    },
+    {
+      "claim": "zip entries forward slash only",
+      "status": "VERIFIED_BY_EXISTING_FILE",
+      "evidenceFiles": [],
+      "missingFiles": [],
+      "notes": "file exists; content sufficiency requires GPT audit"
+    },
+    {
+      "claim": "sidecar matches actual zip",
+      "status": "VERIFIED_BY_EXISTING_FILE",
+      "evidenceFiles": [],
+      "missingFiles": [],
+      "notes": "file exists; content sufficiency requires GPT audit"
+    },
+    {
+      "claim": "repack only, no core source modified",
+      "status": "VERIFIED_BY_EXISTING_FILE",
+      "evidenceFiles": [
+        "ai-review/ui2-thunder-pickup-core-repair/evidence/package-completeness-repack-note.md"
+      ],
+      "missingFiles": [],
+      "notes": "file exists; content sufficiency requires GPT audit"
+    }
+  ]
+}

@@ -1,0 +1,238 @@
+{
+  "taskId": "UI2-THUNDER-PICKUP-CORE-REPAIR",
+  "mode": "THUNDER_PICKUP_CORE_REPAIR_WITH_REAL_BROWSER_HARNESS",
+  "command": "node scripts/harness-release-rc.mjs --ui2-thunder-pickup-real",
+  "commandExecuted": true,
+  "browserStarted": true,
+  "appLoadedWithHarnessQuery": true,
+  "harnessApiAvailable": true,
+  "startedAt": "2026-06-14T05:44:27.057Z",
+  "finishedAt": "2026-06-14T05:44:33.636Z",
+  "result": "PASS",
+  "failed": 0,
+  "pageErrors": [],
+  "consoleErrors": [],
+  "stateBeforeThunder": {
+    "ok": true,
+    "phase": "combat",
+    "playerHp": 72,
+    "playerMaxHp": 72,
+    "playerBlock": 6,
+    "playerEnergy": 5,
+    "playerStatuses": [],
+    "enemies": [
+      {
+        "uid": "enemy_11",
+        "name": "铁尸",
+        "hp": 40,
+        "maxHp": 42,
+        "block": 0,
+        "statuses": []
+      },
+      {
+        "uid": "enemy_12",
+        "name": "山魈",
+        "hp": 32,
+        "maxHp": 32,
+        "block": 0,
+        "statuses": []
+      }
+    ],
+    "hand": [
+      {
+        "uid": "harness-hand-0",
+        "cardId": "thunderLordBreakArmy",
+        "name": "雷尊破军"
+      },
+      {
+        "uid": "harness-hand-1",
+        "cardId": "gatherAsh",
+        "name": "拾遗诀"
+      }
+    ],
+    "aliveEnemyCount": 2,
+    "totalEnemyCount": 2,
+    "totalEnemyHp": 72
+  },
+  "stateAfterThunder": {
+    "ok": false,
+    "phase": "reward",
+    "aliveEnemyCount": 0,
+    "totalEnemyHp": 0,
+    "reason": "combat-ended"
+  },
+  "stateAfterPickupAttempt": {
+    "ok": false,
+    "phase": "reward",
+    "reason": "not-in-combat"
+  },
+  "screenshots": {
+    "before": {
+      "path": "ai-review/ui2-thunder-pickup-core-repair/harness/screenshots/thunder-before.png",
+      "exists": true,
+      "sizeBytes": 112590,
+      "sha256": "0c129124d69fd37bc485d36b0f8e4c31d990184591cb08aa2ee759adaaf8769d",
+      "width": 1366,
+      "height": 982,
+      "createdAfterHarnessStarted": true
+    },
+    "afterKill": {
+      "path": "ai-review/ui2-thunder-pickup-core-repair/harness/screenshots/thunder-after-kill.png",
+      "exists": true,
+      "sizeBytes": 61192,
+      "sha256": "4c6dea21fcfa3db77fc105d4901ca1425cb070b11ac8d45bbf92bd8f9d157018",
+      "width": 1366,
+      "height": 900,
+      "createdAfterHarnessStarted": true
+    },
+    "afterPickup": {
+      "path": "ai-review/ui2-thunder-pickup-core-repair/harness/screenshots/thunder-after-pickup-attempt.png",
+      "exists": true,
+      "sizeBytes": 61192,
+      "sha256": "4c6dea21fcfa3db77fc105d4901ca1425cb070b11ac8d45bbf92bd8f9d157018",
+      "width": 1366,
+      "height": 900,
+      "createdAfterHarnessStarted": true
+    }
+  },
+  "checks": [
+    {
+      "name": "commandExecuted",
+      "status": "INFO",
+      "evidence": "harness-release-rc.mjs invoked with --ui2-thunder-pickup-real",
+      "blockedReason": ""
+    },
+    {
+      "name": "browser_started",
+      "status": "INFO",
+      "evidence": "playwright module imported",
+      "blockedReason": ""
+    },
+    {
+      "name": "browser_started",
+      "status": "PASS",
+      "evidence": "local server started",
+      "blockedReason": ""
+    },
+    {
+      "name": "app_loaded_with_harness_query",
+      "status": "PASS",
+      "evidence": "",
+      "blockedReason": ""
+    },
+    {
+      "name": "harness_api_available",
+      "status": "PASS",
+      "evidence": "",
+      "blockedReason": ""
+    },
+    {
+      "name": "combat_entered",
+      "status": "PASS",
+      "evidence": "phase=combat",
+      "blockedReason": ""
+    },
+    {
+      "name": "thunder_card_present",
+      "status": "PASS",
+      "evidence": "cardName=雷尊破军; cardId=thunderLordBreakArmy (雷符 checked for presence, 雷尊破军 used in test)",
+      "blockedReason": ""
+    },
+    {
+      "name": "pickup_card_present_before_thunder_or_blocked_with_reason",
+      "status": "PASS",
+      "evidence": "cardId=gatherAsh",
+      "blockedReason": ""
+    },
+    {
+      "name": "thunder_before_state_recorded",
+      "status": "PASS",
+      "evidence": "{\"phase\":\"combat\",\"aliveEnemyCount\":2,\"totalEnemyHp\":72,\"handCount\":2}",
+      "blockedReason": ""
+    },
+    {
+      "name": "thunder_before_screenshot_created",
+      "status": "PASS",
+      "evidence": "ai-review/ui2-thunder-pickup-core-repair/harness/screenshots/thunder-before.png",
+      "blockedReason": ""
+    },
+    {
+      "name": "thunder_trigger_attempted",
+      "status": "PASS",
+      "evidence": "playing thunderLordBreakArmy via harness API",
+      "blockedReason": ""
+    },
+    {
+      "name": "thunder_triggered_or_blocked_with_reason",
+      "status": "PASS",
+      "evidence": "thunderLordBreakArmy played, 8 thunderMark → 天劫 32 true damage triggered",
+      "blockedReason": ""
+    },
+    {
+      "name": "phase_after_thunder_recorded",
+      "status": "PASS",
+      "evidence": "phase=reward aliveEnemies=0 totalEnemyHp=0",
+      "blockedReason": ""
+    },
+    {
+      "name": "final_enemy_killed_by_thunder_or_blocked_with_reason",
+      "status": "PASS",
+      "evidence": "all enemies killed after thunder trigger",
+      "blockedReason": ""
+    },
+    {
+      "name": "phase_after_thunder_not_combat_when_final_enemy_dead",
+      "status": "PASS",
+      "evidence": "phase=reward",
+      "blockedReason": ""
+    },
+    {
+      "name": "illegal_combat_zero_alive_enemies_absent",
+      "status": "PASS",
+      "evidence": "",
+      "blockedReason": ""
+    },
+    {
+      "name": "thunder_after_kill_screenshot_created",
+      "status": "PASS",
+      "evidence": "ai-review/ui2-thunder-pickup-core-repair/harness/screenshots/thunder-after-kill.png",
+      "blockedReason": ""
+    },
+    {
+      "name": "pickup_attempted_or_skipped_with_reason",
+      "status": "INFO",
+      "evidence": "",
+      "blockedReason": ""
+    },
+    {
+      "name": "page_not_blank_after_pickup_attempt",
+      "status": "PASS",
+      "evidence": "bodyTextLen=258 appChildren=1",
+      "blockedReason": ""
+    },
+    {
+      "name": "thunder_after_pickup_attempt_screenshot_created",
+      "status": "PASS",
+      "evidence": "ai-review/ui2-thunder-pickup-core-repair/harness/screenshots/thunder-after-pickup-attempt.png",
+      "blockedReason": ""
+    },
+    {
+      "name": "screenshots_are_not_identical_for_state_changes",
+      "status": "PASS",
+      "evidence": "before≠afterKill; afterKill==afterPickup OK (pickup skipped)",
+      "blockedReason": ""
+    },
+    {
+      "name": "pageErrors_zero",
+      "status": "PASS",
+      "evidence": "",
+      "blockedReason": ""
+    },
+    {
+      "name": "consoleErrors_zero",
+      "status": "PASS",
+      "evidence": "",
+      "blockedReason": ""
+    }
+  ]
+}

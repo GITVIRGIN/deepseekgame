@@ -1,0 +1,163 @@
+{
+  "result": "PASS_FOR_GPT_AUDIT_THUNDER_CORE_REPAIR",
+  "runnerResult": "PASS_FOR_GPT_AUDIT_THUNDER_CORE_REPAIR",
+  "summaryResult": "PASS",
+  "gateChecks": [
+    {
+      "name": "runner_json_exists",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "runner_result",
+      "status": "PASS",
+      "detail": "PASS_FOR_GPT_AUDIT_THUNDER_CORE_REPAIR"
+    },
+    {
+      "name": "summary_exists",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "report_exists",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "screenshot_before",
+      "status": "PASS",
+      "detail": "112590 bytes"
+    },
+    {
+      "name": "screenshot_afterKill",
+      "status": "PASS",
+      "detail": "61192 bytes"
+    },
+    {
+      "name": "screenshot_afterPickup",
+      "status": "PASS",
+      "detail": "61192 bytes"
+    },
+    {
+      "name": "summary_mtime_ok",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "ss_before_mtime",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "ss_afterKill_mtime",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "ss_afterPickup_mtime",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "all_required_checks",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "pageErrors_zero",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "consoleErrors_zero",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "runner_result_PASS",
+      "status": "PASS",
+      "detail": "PASS_FOR_GPT_AUDIT_THUNDER_CORE_REPAIR"
+    },
+    {
+      "name": "summary_result_PASS",
+      "status": "PASS",
+      "detail": "PASS"
+    },
+    {
+      "name": "summary_failed_zero",
+      "status": "PASS",
+      "detail": "0"
+    },
+    {
+      "name": "aliveEnemyCount_0",
+      "status": "PASS",
+      "detail": "aliveEnemyCount=0"
+    },
+    {
+      "name": "phase_not_combat",
+      "status": "PASS",
+      "detail": "phase=reward"
+    },
+    {
+      "name": "illegal_state_absent",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "screenshots_differ",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "page_not_blank_PASS",
+      "status": "PASS",
+      "detail": "PASS"
+    },
+    {
+      "name": "protected_files_unchanged",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "testsRerun",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "simRerun",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "harnessRerun",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "release_false",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "commit_false",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "tag_false",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "push_false",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "gate_verdict",
+      "status": "PASS",
+      "detail": "PASS_FOR_GPT_AUDIT_THUNDER_CORE_REPAIR"
+    }
+  ],
+  "finishedAt": "2026-06-14T05:44:37.319Z"
+}

@@ -441,6 +441,11 @@ export function applyCardEffects(state, cardInstance, targetUid) {
   const card = cards[cardInstance.cardId];
   const mythBoost = cardMythBoost(state.run, card);
 
+  // UI2: use trueMartial-specific effects when in trueMartial mode
+  const effectiveCard = (state.run?.trueMartial && card.trueMartial) ? card.trueMartial : card;
+  const effects = effectiveCard.effects || card.effects;
+  const cardCost = effectiveCard.cost !== undefined ? effectiveCard.cost : card.cost;
+
   // V3.3: berserkBrand — lose 3 HP when playing a physical card
   if (card.style === "physical" && state.run?.relics?.includes("berserkBrand")) {
     state.run.hp = Math.max(1, state.run.hp - 3);
@@ -453,13 +458,13 @@ export function applyCardEffects(state, cardInstance, targetUid) {
   }
   beginCardControlBatch(state);
   try {
-    for (const effect of card.effects) {
+    for (const effect of effects) {
       applyEffect(
         state,
         {
           ...effect,
           sourceUid: cardInstance.uid,
-          cardCost: card.cost,
+          cardCost,
           cardStyle: card.style,
           cardMythBonus: mythBoost.numericBonus,
           cardMythStatusBonus: mythBoost.statusBonus,
@@ -474,7 +479,7 @@ export function applyCardEffects(state, cardInstance, targetUid) {
     const charge = combat?.flags?.travelSpellCharge ?? 0;
     if (charge > 0 && state.phase === "combat" && card.style === "spell" && combat) {
       const resolvedTargets = new Set();
-      for (const effect of card.effects) {
+      for (const effect of effects) {
         if (effect.type === "damage" || effect.type === "status" || effect.type === "thunderMark" || effect.type === "amplifyDebuffs" || effect.type === "poisonBurst") {
           if (effect.target === "allEnemies") {
             for (const e of (combat.enemies || [])) {
@@ -502,7 +507,7 @@ export function applyCardEffects(state, cardInstance, targetUid) {
     if (state.phase === "combat" && card.style === "spell") {
       const combat = state.run?.combat;
       if (combat) {
-        for (const effect of card.effects) {
+        for (const effect of effects) {
           if (effect.target === "allEnemies") {
             for (const e of (combat.enemies || [])) {
               if (e.hp > 0) affectedEnemies.add(e);
@@ -544,6 +549,8 @@ export function applyCardEffects(state, cardInstance, targetUid) {
       }
     }
   }
+  // UI2-THUNDER-PICKUP-CORE-REPAIR: check combat victory after tribulation damage
+  finishCombatIfWon(state);
 }
 
 export function pickDiscardCard(state, cardUid) {

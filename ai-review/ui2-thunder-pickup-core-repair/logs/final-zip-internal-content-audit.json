@@ -1,0 +1,27 @@
+{
+  "taskId": "UI2-FINAL-INTERNAL-AUDIT-STALENESS-FIX",
+  "mode": "ULTRA_NARROW_FINAL_INTERNAL_AUDIT_ONLY",
+  "result": "PASS_INTERNAL_CONTENT_AUDIT",
+  "auditScope": "zip internal content consistency only",
+  "finalPackageHashAuthoritativeSource": "external sidecar only; not embedded inside zip because internal audit file is part of the zip and would make package hash self-referential",
+  "packageNameExpected": "deepseekgame-v3.13n-tm-t2a5f-ui2-thunder-pickup-core-repair-repack-only-review-pass.zip",
+  "packagePathExpected": "ai-review/deepseekgame-v3.13n-tm-t2a5f-ui2-thunder-pickup-core-repair-repack-only-review-pass.zip",
+  "oldKnownBadPackageSha256": "673de88fd1a7b47f4e3a1e7d7b58e1af8a2df2a9289dc8cdf7f290bbe94657b6",
+  "oldIntermediateFailedAuditSha256": "889859fca9c991a3b8feb835fe7a72043543369febfc8abc139124a39223dd5d",
+  "repackReportPackageNameInsidePackage": "deepseekgame-v3.13n-tm-t2a5f-ui2-thunder-pickup-core-repair-repack-only-review-pass.zip",
+  "repackReportResultInsidePackage": "PASS_FOR_GPT_AUDIT_PACKAGE_COMPLETENESS_ONLY",
+  "repackReportEvidenceDirInZipInsidePackage": true,
+  "repackReportHarnessRerunInsidePackage": false,
+  "repackReportRepackOnlyInsidePackage": true,
+  "zipEntryListContainsSelfInsidePackage": true,
+  "zipEntryListSelfEntry": "deepseekgame/ai-review/ui2-thunder-pickup-core-repair/logs/zip-entry-list.txt",
+  "zipEntriesUseForwardSlashOnly": true,
+  "backslashEntriesFound": [],
+  "internalContentAuditPassed": true,
+  "finalInternalAuditPassed": true,
+  "notes": [
+    "This file intentionally does not embed the final ZIP sha256/size/entryCount because it is itself inside the ZIP.",
+    "Final package sha256/size/entryCount are authoritative in external-audit.json and .sha256.txt sidecars.",
+    "This audit verifies that the previous stale internal audit file has been replaced."
+  ]
+}

@@ -1,0 +1,271 @@
+{
+  "generatedAt": "2026-06-14T10:35:25.858Z",
+  "sourceRoot": "ai-review/ui2-thunder-pickup-core-repair",
+  "totalFiles": 33,
+  "files": [
+    {
+      "path": "deepseekgame/ai-review/ui2-thunder-pickup-core-repair/claim-to-evidence-matrix.json",
+      "exists": true,
+      "sizeBytes": 3602,
+      "sha256": "d1fc2f76288c3c34ad898624d3fe97613d8faa5e1588cbd7513f87c9ee9c90a1",
+      "lastModified": "2026-06-14T10:34:58.636Z",
+      "category": "evidence"
+    },
+    {
+      "path": "deepseekgame/ai-review/ui2-thunder-pickup-core-repair/claim-to-evidence-matrix.md",
+      "exists": true,
+      "sizeBytes": 783,
+      "sha256": "388057d2d986678c48e6f79c19fffffce5712da1c79b8cd0e453e5d513141a71",
+      "lastModified": "2026-06-14T10:34:58.638Z",
+      "category": "evidence"
+    },
+    {
+      "path": "deepseekgame/ai-review/ui2-thunder-pickup-core-repair/evidence/core-fix-summary.md",
+      "exists": true,
+      "sizeBytes": 496,
+      "sha256": "e46c6f56d2eeccb4b26ecdcb10673f7a406c860f5c2f976a87fd3d610e6ec9d8",
+      "lastModified": "2026-06-14T06:24:11.390Z",
+      "category": "evidence"
+    },
+    {
+      "path": "deepseekgame/ai-review/ui2-thunder-pickup-core-repair/evidence/package-completeness-repack-note.md",
+      "exists": true,
+      "sizeBytes": 647,
+      "sha256": "f355868b64aa355c86a6eecc82d5251f42dae4e2d4a3b257e9d3488d952f71a0",
+      "lastModified": "2026-06-14T06:24:11.391Z",
+      "category": "repack"
+    },
+    {
+      "path": "deepseekgame/ai-review/ui2-thunder-pickup-core-repair/evidence-completion-report.json",
+      "exists": true,
+      "sizeBytes": 350,
+      "sha256": "477510c81419140c939a73b1e4b04ea5edfb1e458c30735f2db3ba25a6a47911",
+      "lastModified": "2026-06-14T10:34:58.643Z",
+      "category": "other"
+    },
+    {
+      "path": "deepseekgame/ai-review/ui2-thunder-pickup-core-repair/evidence-completion-report.md",
+      "exists": true,
+      "sizeBytes": 181,
+      "sha256": "6f00ff594db86267fecea70c9e0ff6c06576a1f685609837630d2f56399b8d7b",
+      "lastModified": "2026-06-14T10:34:58.644Z",
+      "category": "other"
+    },
+    {
+      "path": "deepseekgame/ai-review/ui2-thunder-pickup-core-repair/evidence-file-index.json",
+      "exists": true,
+      "sizeBytes": 10840,
+      "sha256": "6b0a02f8743309aeb1d6ea1791225b18aa16ec5bed68db84c521a9fd9d0aec3b",
+      "lastModified": "2026-06-14T10:34:58.630Z",
+      "category": "other"
+    },
+    {
+      "path": "deepseekgame/ai-review/ui2-thunder-pickup-core-repair/evidence-file-index.md",
+      "exists": true,
+      "sizeBytes": 4318,
+      "sha256": "4ddd1bfc51368a5c8282a465589b410fa93c356d90a8c0c81f31a8bd0fffa876",
+      "lastModified": "2026-06-14T10:34:58.634Z",
+      "category": "other"
+    },
+    {
+      "path": "deepseekgame/ai-review/ui2-thunder-pickup-core-repair/harness/screenshots/thunder-after-kill.png",
+      "exists": true,
+      "sizeBytes": 61192,
+      "sha256": "4c6dea21fcfa3db77fc105d4901ca1425cb070b11ac8d45bbf92bd8f9d157018",
+      "lastModified": "2026-06-14T05:44:33.429Z",
+      "category": "screenshots"
+    },
+    {
+      "path": "deepseekgame/ai-review/ui2-thunder-pickup-core-repair/harness/screenshots/thunder-after-pickup-attempt.png",
+      "exists": true,
+      "sizeBytes": 61192,
+      "sha256": "4c6dea21fcfa3db77fc105d4901ca1425cb070b11ac8d45bbf92bd8f9d157018",
+      "lastModified": "2026-06-14T05:44:33.461Z",
+      "category": "screenshots"
+    },
+    {
+      "path": "deepseekgame/ai-review/ui2-thunder-pickup-core-repair/harness/screenshots/thunder-before.png",
+      "exists": true,
+      "sizeBytes": 112590,
+      "sha256": "0c129124d69fd37bc485d36b0f8e4c31d990184591cb08aa2ee759adaaf8769d",
+      "lastModified": "2026-06-14T05:44:31.388Z",
+      "category": "screenshots"
+    },
+    {
+      "path": "deepseekgame/ai-review/ui2-thunder-pickup-core-repair/harness/thunder-pickup-report.md",
+      "exists": true,
+      "sizeBytes": 3707,
+      "sha256": "363c905beb8dd586be94cedd2f513f9e3e18a1a5b9933564d5cb0971bea79660",
+      "lastModified": "2026-06-14T05:44:33.637Z",
+      "category": "harness"
+    },
+    {
+      "path": "deepseekgame/ai-review/ui2-thunder-pickup-core-repair/harness/thunder-pickup-summary.json",
+      "exists": true,
+      "sizeBytes": 6620,
+      "sha256": "7adbdee800b8e256d0745c9982a81edf215a848d93650f650655c4ddc663b012",
+      "lastModified": "2026-06-14T06:24:11.388Z",
+      "category": "harness"
+    },
+    {
+      "path": "deepseekgame/ai-review/ui2-thunder-pickup-core-repair/harness-run-started-at.txt",
+      "exists": true,
+      "sizeBytes": 25,
+      "sha256": "7f36413be1a0914ea6e06bf3c57c7ba134b2c21e55fe66b38728320bb99b8560",
+      "lastModified": "2026-06-14T05:44:27.010Z",
+      "category": "other"
+    },
+    {
+      "path": "deepseekgame/ai-review/ui2-thunder-pickup-core-repair/logs/final-internal-audit-staleness-diagnosis.json",
+      "exists": true,
+      "sizeBytes": 695,
+      "sha256": "e0c30d6808c774657986e7f3583e464981a0a60916518557794c6ecfb589714f",
+      "lastModified": "2026-06-14T10:31:16.496Z",
+      "category": "logs"
+    },
+    {
+      "path": "deepseekgame/ai-review/ui2-thunder-pickup-core-repair/logs/final-zip-internal-content-audit.json",
+      "exists": true,
+      "sizeBytes": 1845,
+      "sha256": "8ed1f60e9265e2a7e92a44d4a186e89028f84b242916cb6e341a08d3c3279cd2",
+      "lastModified": "2026-06-14T10:34:59.258Z",
+      "category": "logs"
+    },
+    {
+      "path": "deepseekgame/ai-review/ui2-thunder-pickup-core-repair/logs/git-diff-name-only-after.txt",
+      "exists": true,
+      "sizeBytes": 479,
+      "sha256": "a55f7ada3c56ea7a320950c0c7ee7464b7a72bb6fa7db15ce30303787cbc19e6",
+      "lastModified": "2026-06-14T05:44:37.441Z",
+      "category": "logs"
+    },
+    {
+      "path": "deepseekgame/ai-review/ui2-thunder-pickup-core-repair/logs/git-diff-name-only-before.txt",
+      "exists": true,
+      "sizeBytes": 479,
+      "sha256": "a55f7ada3c56ea7a320950c0c7ee7464b7a72bb6fa7db15ce30303787cbc19e6",
+      "lastModified": "2026-06-14T05:39:30.606Z",
+      "category": "logs"
+    },
+    {
+      "path": "deepseekgame/ai-review/ui2-thunder-pickup-core-repair/logs/git-status-after.txt",
+      "exists": true,
+      "sizeBytes": 1772,
+      "sha256": "4203921a73fc320508e89d9b227993102428db3012c974059a7102f30648f468",
+      "lastModified": "2026-06-14T05:44:37.378Z",
+      "category": "logs"
+    },
+    {
+      "path": "deepseekgame/ai-review/ui2-thunder-pickup-core-repair/logs/git-status-before.txt",
+      "exists": true,
+      "sizeBytes": 1682,
+      "sha256": "646f45bde34cbcc162554468d0af959f59e96d28a72f33cc305754b18f8466ad",
+      "lastModified": "2026-06-14T05:39:30.543Z",
+      "category": "logs"
+    },
+    {
+      "path": "deepseekgame/ai-review/ui2-thunder-pickup-core-repair/logs/protected-file-sha-after.json",
+      "exists": true,
+      "sizeBytes": 1023,
+      "sha256": "699d6a661457f52cd270bd8bc8dcb2bf420ec2545d143fd263375f1f42579e8f",
+      "lastModified": "2026-06-14T05:44:37.319Z",
+      "category": "logs"
+    },
+    {
+      "path": "deepseekgame/ai-review/ui2-thunder-pickup-core-repair/logs/protected-file-sha-before.json",
+      "exists": true,
+      "sizeBytes": 1022,
+      "sha256": "8a2a4709fbe6e72626c1996771621b788e9357a9df29c8341ba76adf8803779c",
+      "lastModified": "2026-06-14T05:39:30.666Z",
+      "category": "logs"
+    },
+    {
+      "path": "deepseekgame/ai-review/ui2-thunder-pickup-core-repair/logs/stale-package-diagnosis.json",
+      "exists": true,
+      "sizeBytes": 723,
+      "sha256": "3e371d0cbe8b5586a52c8916ed9c3eca9128edf1b1140dd295b49f9659d5806e",
+      "lastModified": "2026-06-14T10:34:59.257Z",
+      "category": "logs"
+    },
+    {
+      "path": "deepseekgame/ai-review/ui2-thunder-pickup-core-repair/logs/thunder-pickup-real.stderr.log",
+      "exists": true,
+      "sizeBytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "lastModified": "2026-06-14T05:44:33.649Z",
+      "category": "logs"
+    },
+    {
+      "path": "deepseekgame/ai-review/ui2-thunder-pickup-core-repair/logs/thunder-pickup-real.stdout.log",
+      "exists": true,
+      "sizeBytes": 82,
+      "sha256": "37e6f662d37e9ddafdb69fe94fb0f5fed63b100c3f42038f7a3d6a0d17a93f42",
+      "lastModified": "2026-06-14T05:44:33.648Z",
+      "category": "logs"
+    },
+    {
+      "path": "deepseekgame/ai-review/ui2-thunder-pickup-core-repair/logs/zip-entry-list.txt",
+      "exists": true,
+      "sizeBytes": 3327,
+      "sha256": "25d6a1be0412fd446ebd10c3fa19f1c041b0065c72ea1b9660af4a7d2ba1406c",
+      "lastModified": "2026-06-14T10:34:58.885Z",
+      "category": "logs"
+    },
+    {
+      "path": "deepseekgame/ai-review/ui2-thunder-pickup-core-repair/repack-report.json",
+      "exists": true,
+      "sizeBytes": 1185,
+      "sha256": "db4697ff11d23b97c14bfb26fa8fa9bdbb60d46eaaa724290787b20611e7cfcc",
+      "lastModified": "2026-06-14T10:34:58.886Z",
+      "category": "repack"
+    },
+    {
+      "path": "deepseekgame/ai-review/ui2-thunder-pickup-core-repair/repack-report.md",
+      "exists": true,
+      "sizeBytes": 455,
+      "sha256": "44bd50b0bdc515798a3c128b8a878d66fe4527c3b20051175ed026b9efe171fd",
+      "lastModified": "2026-06-14T10:34:58.890Z",
+      "category": "repack"
+    },
+    {
+      "path": "deepseekgame/ai-review/ui2-thunder-pickup-core-repair/review-pack-manifest.json",
+      "exists": true,
+      "sizeBytes": 732,
+      "sha256": "2e96b265b54540b47cf23dcbdff499760edcb2076e936f1671bdd3911d57393a",
+      "lastModified": "2026-06-14T10:34:58.639Z",
+      "category": "manifest"
+    },
+    {
+      "path": "deepseekgame/ai-review/ui2-thunder-pickup-core-repair/thunder-core-repair-runner.json",
+      "exists": true,
+      "sizeBytes": 3377,
+      "sha256": "6f5e3d04044a47a5ca58d934d37bc6528a0ff14c3f1e3680ba924a257dec80e6",
+      "lastModified": "2026-06-14T05:44:33.650Z",
+      "category": "runner"
+    },
+    {
+      "path": "deepseekgame/ai-review/ui2-thunder-pickup-core-repair/thunder-core-repair-runner.md",
+      "exists": true,
+      "sizeBytes": 1565,
+      "sha256": "22037e5d3de8d4e632d0bf2f4ddb7680bc6020ba5180f37612a597a3de5a98cc",
+      "lastModified": "2026-06-14T05:44:33.650Z",
+      "category": "runner"
+    },
+    {
+      "path": "deepseekgame/ai-review/ui2-thunder-pickup-core-repair/ui2-thunder-core-repair-gate.json",
+      "exists": true,
+      "sizeBytes": 3185,
+      "sha256": "14dce2bbda15f17d9c4df36074060fd5d67035fb8607015fc3ec305bc143248e",
+      "lastModified": "2026-06-14T05:44:37.320Z",
+      "category": "gate"
+    },
+    {
+      "path": "deepseekgame/ai-review/ui2-thunder-pickup-core-repair/ui2-thunder-core-repair-gate.md",
+      "exists": true,
+      "sizeBytes": 1341,
+      "sha256": "5f96709b178eb8ce5db58ffd6c35327e2a975748c56131a27a6539206218453f",
+      "lastModified": "2026-06-14T05:44:37.320Z",
+      "category": "gate"
+    }
+  ]
+}

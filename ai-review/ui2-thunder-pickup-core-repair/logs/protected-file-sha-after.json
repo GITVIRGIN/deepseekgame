@@ -1,0 +1,13 @@
+{
+  "README.md": "63afc1e48a0e980eb98b72c3ba4d20c5ae96fdbd7f4aa32a46e038a373dbc28d",
+  "VERSION.md": "25cecd9983a33b504874cd0786365be3a97f71f0a088a0c069156bf1e8714971",
+  "RELEASE_NOTES.md": "b844f273677d71b07725598d462dc02f6da11608a78050630382132bd597f4c1",
+  "package.json": "610a5ed31aa1db8da656137397f27558212c96007a180e880235e709c43776aa",
+  "package-lock.json": "bebbc2b63565778a2e9e1b30cf00e1720f02362c12788cf759177a6c7f67ecfa",
+  "src/core/version.js": "8b2e66217523267d2b8cb7ff700b72043c6028e2105d9939f730bf498353b94d",
+  "src/core/data.js": "36d6379d82deea6f8a0fec0079b9f5001d956efa9f3c1b20752b0ce0564a8ced",
+  "src/core/myth.js": "0ec42b72556ea14cbc102765fa8a90b4d433c774760a288c3b6768b7cd69be35",
+  "scripts/ui2-huixinling-engine-test.mjs": "d788ac1413e036bed4df44e1111248f8319cc0c3b6ed899ccf55631c0a656204",
+  "scripts/diagnose-ui2-tm-balance.mjs": "b75cc6ec6ddfebbb61eacbd8d3201c4d40e8481ff3498f32a8e7a2cd1faa9404",
+  "scripts/sim-ai.mjs": "3e586c4e920f7163498a833ac130da96589d20bd315b501298b5e06511d38cc3"
+}
