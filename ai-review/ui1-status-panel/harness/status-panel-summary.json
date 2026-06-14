@@ -1,0 +1,123 @@
+{
+  "total": 18,
+  "passed": 12,
+  "failed": 6,
+  "pageErrors": 0,
+  "consoleErrors": 0,
+  "checks": [
+    {
+      "name": "playwright available",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": null
+    },
+    {
+      "name": "server started",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": null
+    },
+    {
+      "name": "chromium launched",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": null
+    },
+    {
+      "name": "page loaded",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": null
+    },
+    {
+      "name": "harness state injected",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": null
+    },
+    {
+      "name": "desktop status panel screenshot",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": "ai-review/ui1-status-panel/harness/screenshots/desktop-status-panel.png"
+    },
+    {
+      "name": "mobile status panel screenshot",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": "ai-review/ui1-status-panel/harness/screenshots/mobile-status-panel.png"
+    },
+    {
+      "name": "mobile status popover screenshot",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": "ai-review/ui1-status-panel/harness/screenshots/mobile-status-popover.png"
+    },
+    {
+      "name": "desktop status popover screenshot",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": "ai-review/ui1-status-panel/harness/screenshots/desktop-status-popover.png"
+    },
+    {
+      "name": "popover contains spikes 2",
+      "status": "FAIL",
+      "error": "",
+      "screenshotPath": null
+    },
+    {
+      "name": "popover contains curse 5",
+      "status": "FAIL",
+      "error": "",
+      "screenshotPath": null
+    },
+    {
+      "name": "popover contains spirit 1",
+      "status": "FAIL",
+      "error": "",
+      "screenshotPath": null
+    },
+    {
+      "name": "spikes description visible",
+      "status": "FAIL",
+      "error": "",
+      "screenshotPath": null
+    },
+    {
+      "name": "mobile endTurn visible",
+      "status": "FAIL",
+      "error": "",
+      "screenshotPath": null
+    },
+    {
+      "name": "hand visible",
+      "status": "FAIL",
+      "error": "",
+      "screenshotPath": null
+    },
+    {
+      "name": "pageErrors = 0",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": null
+    },
+    {
+      "name": "consoleErrors = 0",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": null
+    },
+    {
+      "name": "server stopped",
+      "status": "PASS",
+      "error": "",
+      "screenshotPath": null
+    }
+  ],
+  "screenshots": [
+    "ai-review/ui1-status-panel/harness/screenshots/desktop-status-panel.png",
+    "ai-review/ui1-status-panel/harness/screenshots/mobile-status-panel.png",
+    "ai-review/ui1-status-panel/harness/screenshots/mobile-status-popover.png",
+    "ai-review/ui1-status-panel/harness/screenshots/desktop-status-popover.png"
+  ]
+}

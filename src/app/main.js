@@ -50,7 +50,19 @@ function dispatch(action) {
 
   saveGame(state);
   scheduleCloudSync();
-  render();
+  
+// UI1 harness: state injection hook (only active with ?harness=1)
+if (new URLSearchParams(window.location.search).get("harness") === "1") {
+  (function() {
+    window.__setHarnessState = function(mode, opts) {
+      if (opts.playerStatuses && state?.run) {
+        state.run.statuses = opts.playerStatuses.map(s => ({ id: s.id, stacks: s.stacks }));
+      }
+      render();
+    };
+  })();
+}
+render();
 }
 
 function render() {

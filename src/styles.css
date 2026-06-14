@@ -1670,7 +1670,7 @@ button.ghost-tiny {
   margin-top: 2px;
 }
 .status-chip-inline { cursor: pointer; user-select: none; }
-.status-overflow { background: #333; border-radius: 4px; padding: 1px 6px; font-size: 0.85em; }
+.status-overflow { background: #555; color: #fff; font-weight: bold; border-radius: 4px; padding: 1px 6px; font-size: 0.85em; }
 @media (max-width: 520px) {
   .status-popover .status-popover-list { max-height: 260px; }
 }
