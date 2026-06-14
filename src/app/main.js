@@ -572,14 +572,24 @@ export function formatPlayerStatusChips(run, limit = 3) {
     const label = `${statusInfo[s.id]?.label ?? s.id} ${s.stacks}`;
     const node = el("span", `status-chip-inline status-${s.id}`, label);
     node.title = allNames;
+    node.style.cursor = "pointer";
+    node.addEventListener("click", (e) => { e.stopPropagation(); showPlayerStatusDetail(run); });
     return node;
   });
   if (statuses.length > limit) {
     const overflow = el("span", "status-chip-inline status-overflow", `+${statuses.length - limit}`);
     overflow.title = allNames;
+    overflow.style.cursor = "pointer";
+    overflow.addEventListener("click", (e) => { e.stopPropagation(); showPlayerStatusDetail(run); });
     chips.push(overflow);
   }
   return chips;
+}
+
+function showPlayerStatusDetail(run) {
+  if (detailInfo?.type === "playerStatuses") { detailInfo = null; render(); return; }
+  detailInfo = { type: "playerStatuses", run };
+  render();
 }
 
 function renderArchetypePanel(run) {
@@ -1228,6 +1238,10 @@ function renderDetailPanel(info) {
       el("ul", "detail-list", lines.map((line) => el("li", "", line))),
     ]);
   }
+  // UI1: player status detail popover
+  if (info.type === "playerStatuses") {
+    return renderPlayerStatusPopover(info.run);
+  }
   return el("aside", "detail-panel", [
     el("div", "detail-head", [
       el("div", "", [el("span", "muted", info.type), el("h2", "", info.title)]),
@@ -1239,6 +1253,44 @@ function renderDetailPanel(info) {
     el("p", "detail-main", info.main),
     el("ul", "detail-list", info.lines.map((line) => el("li", "", line))),
   ]);
+}
+
+// UI1: player status full popover
+function renderPlayerStatusPopover(run) {
+  const statuses = (run?.statuses || []).filter(s => s.stacks > 0);
+  // Priority order for display
+  const priority = ["spikes", "blockShield", "curse", "spirit", "burn", "poison", "bleed", "thunderMark", "ward", "battleIntent", "stasis", "thunderFireMark", "clearMind", "chaos", "bind", "stun"];
+  const getPriority = (id) => { const idx = priority.indexOf(id); return idx >= 0 ? idx : 99; };
+  const sorted = [...statuses].sort((a, b) => getPriority(a.id) - getPriority(b.id));
+
+  const items = sorted.map(s => {
+    const info = statusInfo[s.id];
+    const label = info?.label ?? s.id;
+    const text = info?.text ?? "状态效果已生效，暂无说明";
+    return el("div", `status-popover-item status-${s.id}`, [
+      el("span", "status-popover-name", `${label} ${s.stacks}`),
+      el("span", "status-popover-desc", text),
+    ]);
+  });
+
+  if (items.length === 0) {
+    items.push(el("div", "status-popover-item", [el("span", "", "无状态")]));
+  }
+
+  const panel = el("aside", "detail-panel status-popover", [
+    el("div", "detail-head", [
+      el("h2", "", `玩家状态 (${statuses.length})`),
+      button("关闭", "ghost small", () => { detailInfo = null; render(); }),
+    ]),
+    el("div", "status-popover-list", items),
+  ]);
+
+  // Close on outside click
+  setTimeout(() => {
+    panel.addEventListener("click", (e) => e.stopPropagation());
+  }, 0);
+
+  return panel;
 }
 
 function showDetail(info) {
@@ -1539,5 +1591,15 @@ function el(tag, className = "", children = []) {
 
   return node;
 }
+
+// UI1: close player status popover on ESC or outside click
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && detailInfo?.type === "playerStatuses") { detailInfo = null; render(); }
+});
+document.addEventListener("click", (e) => {
+  if (detailInfo?.type === "playerStatuses" && !e.target.closest(".detail-panel") && !e.target.closest(".status-chip-inline")) {
+    detailInfo = null; render();
+  }
+});
 
 render();

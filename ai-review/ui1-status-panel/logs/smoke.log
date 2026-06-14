@@ -1,0 +1,204 @@
+
+> smoke
+> node scripts/smoke-tests.mjs
+
+✅ 普通模式不崩溃
+✅ 真武physical启动
+✅ 真武spell启动
+✅ 真武bleed启动
+✅ 真武shell启动
+✅ 真武poison启动
+✅ 真武control启动
+✅ 破军令+10真伤穿99格挡
+✅ 九天雷劫120伤无眩晕
+✅ 九天雷劫开局敌人雷印3
+✅ 修罗心回血8(12层流血)
+✅ 血牙回复6
+✅ 血涌消耗2生命
+✅ 万毒真经敌毒12伤
+✅ 万毒真经玩家毒不翻倍
+✅ 混沌灵宝只一次
+✅ 玄龟甲反射+25%击杀
+✅ 荆棘反震击杀不崩溃
+✅ 存档迁移完整
+✅ saveGame容错
+✅ combat-events模块
+✅ 破军令开局格挡+22
+✅ 万毒真经开局敌毒+8
+✅ 毒牙格挡+5
+✅ 毒爆伤害12不消耗6格挡
+✅ 反震不消耗格挡但不锁定敌方攻击
+✅ 狐火纳入法术流且施加灼烧雷痕
+✅ 心防崩裂单类6不触发
+✅ 心防崩裂单类8触发
+✅ 定力抵消离间禁锢眩晕
+✅ 定力上限2
+✅ 敌人正常行动后定力减少
+✅ 敌人眩晕跳过后获得定力不获得醒神
+✅ 心防崩裂单类8触发(旧规则不变)
+✅ 连续放弃不会重复结算
+✅ 低层放弃不会获得派系箓印
+✅ 放弃不会批量解锁遗物
+✅ 真武解锁纯函数正确
+✅ 真武解锁后home显示入口
+✅ 真武解锁后gameOver显示入口
+✅ 未解锁不显示真武入口
+✅ 进入真武选择页不赠送遗物
+✅ 雷火引单体法术只影响目标
+✅ 雷火引全体法术影响所有敌人
+✅ 雷火共鸣只检查受影响目标
+✅ self-only法术不消耗雷火引
+✅ dragonRain文案与效果一致
+✅ foxFire文案与效果一致
+✅ 玄龟甲文案与代码一致
+✅ 雷火机制核心值保持
+✅ 破军令追加真伤穿透格挡
+✅ trueMartial spell不触发雷火引
+✅ 雷痕达到8立即触发天劫
+✅ 雷痕10会触发天劫并剩余2
+✅ 雷痕16会连续触发两次天劫
+✅ 雷火引推过阈值会当次触发天劫
+✅ 雷火共鸣后同次天劫消耗雷火烙印
+✅ 九天雷劫雷痕达到8立即触发120伤
+✅ spell放大雷痕不提前天劫
+✅ 入门difficulty正确
+✅ 入门rollsMax=3
+✅ 入门开战有行旅护持
+✅ 常规difficulty正确
+✅ 常规rollsMax=3
+✅ 常规开战无行旅护持
+✅ 真武maxFloor=25
+✅ 真武rollsMax=5
+✅ 真武目标包含虚渊主宰
+✅ roll只刷新card奖励
+✅ roll后非card奖励保持不变
+✅ 无card奖励时不能roll且不消耗次数
+✅ 到上限后不能继续roll
+✅ 散功符只能删基础牌
+✅ 斩念符能删普通可删牌
+✅ 不能低于最小牌组数量
+✅ 普通删牌不能删业障
+✅ 洗髓令能连续删两张并加入业障
+✅ bloodContract获得时最大生命降低20%
+✅ bloodContract战斗胜利后回血15
+✅ cursedMirror回合开始额外抽1
+✅ cursedMirror回合结束给玩家2层诅咒
+✅ soulFurnace开战本场能量+1
+✅ soulFurnace开战扣8血且最低保留1
+✅ 支线删牌奖励能进入pendingPurge
+✅ 支线删牌完成后能继续路线
+✅ 洗髓令不能删除业障/诅咒牌
+✅ roll不能刷新遗物奖励
+✅ roll不能刷新删牌奖励
+✅ soulFurnace战斗结束后maxEnergy恢复
+✅ soulFurnace连续两场不会叠加永久能量
+✅ 商店删牌购买前会二次校验
+✅ 删牌物品不可在无可删牌时扣费
+✅ pendingPurge未完成时不能离开商店
+✅ 入门最终Boss击败后自动gameOver
+✅ 常规最终Boss击败后自动gameOver
+✅ 真武最终Boss击败后自动gameOver
+✅ 最终Boss胜利不进入reward阶段
+✅ 玄箓特殊通关自动gameOver
+✅ 终局支线完成后仍可挑战最终Boss
+✅ 终局商店离开后仍可挑战最终Boss
+✅ gameOver后confirmPurge不会改牌组
+✅ 玄箓残片奖励触发特殊通关真实路径
+✅ 最终Boss从路线选择进入并击败后自动gameOver
+✅ 真武最终Boss从路线选择进入并击败后自动gameOver
+✅ 终局支线完成后路线仍包含最终Boss
+✅ 真武终局支线完成后路线仍包含虚渊主宰
+✅ 终局商店离开后路线仍包含最终Boss
+✅ 真武终局商店离开后路线仍包含虚渊主宰
+✅ 普通战斗不会生成真武阵势
+✅ 真武试锋阶段生成真武共鸣
+✅ 真武破阵阶段生成阵眼
+✅ 阵眼存活时非阵眼敌人获得攻击加成
+✅ 魔化倒计时第4回合增强阵势
+✅ 破法轮转只净化部分负面状态
+✅ 虚渊领域会随回合加压
+✅ 真武阵势信息可供UI展示
+✅ infernoLotus开战自身获得灼烧
+✅ infernoLotus增强玩家施加的灼烧
+✅ inverseScaleArmor每回合首次格挡增强
+✅ inverseScaleArmor回合结束有格挡会失血
+✅ chaosBell控制附加伤害并给目标定力
+✅ 咒杀术真武费用为1
+✅ 血祭悟道只在真武支线出现
+✅ 血祭悟道扣最大生命33%
+✅ 血祭悟道高生命时扣当前生命50%
+✅ 血祭悟道不会给未实现真武遗物
+✅ 血祭悟道选择后保留代价提示
+✅ berserkBrand物理牌伤害翻倍且失血
+✅ bloodPrisonOath增强流血并自损
+✅ venomousCauldron增强毒瘴并自染毒
+✅ 血祭悟道可获得已实现三流派真武遗物
+✅ 真武遗物池覆盖所有已实现真武遗物
+✅ 血祭悟道授予六流派升华遗物时保留代价提示
+✅ 真武起始遗物不会进入普通遗物池
+✅ 阵眼死亡后非阵眼攻击加成消失
+✅ 魔化触发回合攻击预览包含即将增加的阵势压力
+✅ 旧真武存档迁移补齐difficulty和roll上限
+✅ tickDamageStatus不引用未定义run
+✅ 普通模式错误持有破军令不会触发真武真伤
+✅ 普通模式错误持有万毒真经不会翻倍毒瘴
+✅ 普通模式错误持有玄龟甲不增强格挡
+✅ 真武模式破军令仍触发真伤
+✅ C1B: regular玩家给敌人施加9层毒→8层
+✅ C1B: regular玩家给敌人施加7层毒→6层
+✅ C1B: normal玩家给敌人施加9层毒→仍是9层
+✅ C1B: trueMartial玩家给敌人施加9层毒→仍是9层
+✅ C1B: regular敌人给玩家施毒不受mult影响
+✅ C1B: regular非poison状态不受mult影响
+✅ C1B: shellTap/stoneShell/mountainEcho保持C1A龟壳值
+✅ C1B: regular amplifyDebuffs poison按0.85缩放
+✅ C1B: regular amplifyDebuffs非poison不缩放
+✅ C1B: normal amplifyDebuffs poison不缩放
+✅ C1B: trueMartial amplifyDebuffs poison不缩放
+✅ C1B: regular敌人给玩家施毒瞬间不受mult影响
+✅ CQC: 对象参数启动 beginner
+✅ CQC: 对象参数启动 regular
+✅ CQC: 对象参数启动 trueMartial physical
+✅ CQC: 旧调用 startRun(state) 仍启动 beginner
+✅ CQC: 旧调用 startRun(state, null, DIFFICULTY_REGULAR) 仍启动 regular
+✅ CQC: startRun(state, DIFFICULTY_REGULAR) 启动 regular
+✅ CQC: startRun(state, DIFFICULTY_BEGINNER) 安全解释为 beginner
+✅ CQC: startRun(state, DIFFICULTY_TRUE_MARTIAL) 不默认启动 physical
+✅ CQC: startRun(state, { difficulty: DIFFICULTY_TRUE_MARTIAL }) 不默认启动 physical
+✅ CQC: 非法 trueMartialStyle 不 fallback 到 physical
+✅ T0B: trueMartial开局DOT死亡不访问null combat
+✅ CQC: pendingPurge + cardUid null + source shop 安全退出
+✅ CQC: pendingPurge + cardUid null + finishNodeOnComplete 回 route
+✅ CQC: pendingPurge + deck <= MIN_DECK_SIZE + cardUid null 清理
+✅ CQC: pendingPurge + filter 下无可删牌 + cardUid null 安全退出
+✅ CQC: defeat 后 run.combat = null
+✅ CQC: defeat 后 run.rewards = []
+✅ CQC: defeat 后 run.pendingPurge = null
+✅ CQC: defeat 后 run.pendingChoice = null
+✅ CQC: defeat 不重复结算
+✅ CQC: defeat 不批量解锁真武专属遗物
+✅ CQC: missing difficulty 旧档迁移为 beginner
+✅ CQC: old normal 旧档迁移为 beginner
+✅ CQC: regular 旧档保留 regular
+✅ CQC: trueMartial 旧档保留 trueMartial
+✅ CQC: unknown difficulty 安全归一为 beginner
+✅ CQC: rollsUsed 缺失时默认 0
+✅ CQC: 迁移不清理已有 meta.mythMastery
+✅ T2-A3: normal/regular pools exclude trueMartial and fusion cards
+✅ T2-A3: trueMartial floor <=4 excludes all fusion cards
+✅ T2-A3: floor 5-6 allows base stage only
+✅ T2-A3: floor 7-9 hasBase allows commit but not formed or higher
+✅ T2-A4: route sticky continuation keeps commit after initial dual gate drops
+✅ T2-A3: floor 7-9 spell+bleed opens only base/core route stages
+✅ T2-A3: floor 10-14 route count >=2 with base allows formed but not highroll
+✅ T2-A3: floor 15 without dualMastered has no triple candidates (trigger-only)
+✅ T2-A3: floor 19 dualMastered opens matching heavenly trigger only
+✅ T2-A4: route count 4 with highroll unlocks mastery candidate
+✅ T2-A4: choosing heavenly trigger adds triple ultimate and not trigger card
+✅ T2-A4: ineligible heavenly trigger pick does not add triple
+✅ T2-A3: reward choices contain at most one fusion card
+✅ T2-A3: low hp heal reward is not replaced by fusion injection
+✅ T2-A3: fusionRouteProgress counts duplicates and buckets route progress
+✅ T2-A3: deckStyleScores counts fusionStyles without unknown or NaN
+
+198 passed, 0 failed

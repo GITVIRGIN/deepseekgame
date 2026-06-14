@@ -1646,3 +1646,32 @@ button.ghost-tiny {
   border-radius: var(--radius);
   cursor: pointer;
 }
+
+/* UI1: player status popover */
+.status-popover .status-popover-list {
+  max-height: 320px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.status-popover .status-popover-item {
+  display: flex;
+  flex-direction: column;
+  padding: 6px 0;
+  border-bottom: 1px solid #333;
+}
+.status-popover .status-popover-item:last-child { border-bottom: none; }
+.status-popover .status-popover-name {
+  font-weight: bold;
+  font-size: 0.95em;
+}
+.status-popover .status-popover-desc {
+  font-size: 0.8em;
+  color: #aaa;
+  margin-top: 2px;
+}
+.status-chip-inline { cursor: pointer; user-select: none; }
+.status-overflow { background: #333; border-radius: 4px; padding: 1px 6px; font-size: 0.85em; }
+@media (max-width: 520px) {
+  .status-popover .status-popover-list { max-height: 260px; }
+}
+
