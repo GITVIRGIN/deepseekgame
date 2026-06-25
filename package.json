@@ -14,6 +14,7 @@
     "balance:check": "node scripts/balance-check.mjs",
     "player:flow": "node scripts/player-flow-tests.mjs",
     "serve": "node scripts/serve.mjs 5173",
+    "build": "node scripts/build-release.mjs",
     "build:release": "node scripts/build-release.mjs",
     "codex:harness": "node scripts/harness-check.mjs",
     "check": "npm run validate:data && npm run smoke && npm run player:flow && node --check src/core/data.js && node --check src/core/effects.js && node --check src/core/combat.js && node --check src/core/state.js && node --check src/core/reducer.js && node --check src/app/main.js && node --check src/core/save.js && node --check src/core/goals.js && node --check src/core/rewards.js && node --check src/core/shop.js && echo 'All syntax OK'",

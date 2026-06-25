@@ -10,6 +10,7 @@ import { createRunGoal, goalProgress } from "../core/goals.js";
 import { talentCost, talentDefinitions, talentLevel } from "../core/progression.js";
 import { MYTH_FACTIONS, MYTH_MASTERY_MAX, MYTH_MASTERY_PERKS, cardMythBoost, effectiveCardCost, hasMythMasteryPerk } from "../core/myth.js";
 import { clearCloudConfig, connectCloud, downloadCloudSave, loadCloudConfig, saveCloudConfig, uploadCloudSave } from "../core/cloud.js";
+import { assetUrl } from "../ui/assetPath.js";
 import { R3_BACKGROUNDS, R3_PANELS, r3CardArtUrl, r3FallbackCardArtUrl, cardVisualCategory, r3EffectIconUrl } from "../ui/uiR3Assets.js";
 import { R5_ICONS, r5CardArtUrl, r5FallbackCardArtUrl, r5EnemyBattleUrl, r5FallbackEnemyBattleUrl, r5EffectIconUrl } from "../ui/uiR5Assets.js";
 
@@ -29,22 +30,22 @@ let combatEventFeedback = null;
 let combatEventFeedbackTimer = null;
 
 const COMBAT_EVENT_FEEDBACK_ASSETS = {
-  attack: "/assets/ui-r5/effects/effect_attack_impact_mural_crack_r5_256.png",
-  block: "/assets/ui-r5/effects/effect_block_guardian_shield_r5_256.png",
-  thunder: "/assets/ui-r5/effects/effect_thunder_lightning_strike_r5_256.png",
-  burn: "/assets/ui-r5/effects/effect_burn_flame_eruption_r5_256.png",
-  poison: "/assets/ui-r5/effects/effect_poison_toxic_cloud_r5_256.png",
-  bind: "/assets/ui-r5/effects/effect_bind_talisman_lock_r5_256.png",
+  attack: assetUrl("/assets/ui-r5/effects/effect_attack_impact_mural_crack_r5_256.png"),
+  block: assetUrl("/assets/ui-r5/effects/effect_block_guardian_shield_r5_256.png"),
+  thunder: assetUrl("/assets/ui-r5/effects/effect_thunder_lightning_strike_r5_256.png"),
+  burn: assetUrl("/assets/ui-r5/effects/effect_burn_flame_eruption_r5_256.png"),
+  poison: assetUrl("/assets/ui-r5/effects/effect_poison_toxic_cloud_r5_256.png"),
+  bind: assetUrl("/assets/ui-r5/effects/effect_bind_talisman_lock_r5_256.png"),
 };
 
-const UI_IMAGE_R1_BASE = "/assets/ui-image-r1/";
+const UI_IMAGE_R1_BASE = assetUrl("/assets/ui-image-r1/");
 const R5_UI_ICON_OVERRIDES = {
   "ui-gold.svg": R5_ICONS.gold,
   "ui-relic.svg": R5_ICONS.relic,
   "ui-reward.svg": R5_ICONS.scroll,
   "ui-scroll-hint.svg": R5_ICONS.scroll,
-  "intent-attack.svg": "/assets/ui-r5/effects/effect_battleIntent_icon.png",
-  "intent-block.svg": "/assets/ui-r5/effects/effect_blockShield_icon.png",
+  "intent-attack.svg": assetUrl("/assets/ui-r5/effects/effect_battleIntent_icon.png"),
+  "intent-block.svg": assetUrl("/assets/ui-r5/effects/effect_blockShield_icon.png"),
 };
 const statusIconFiles = {
   burn: "status-burn.svg",
@@ -1964,7 +1965,7 @@ function button(text, className, onClick) {
 
 function image(src, alt) {
   const node = document.createElement("img");
-  node.src = src;
+  node.src = assetUrl(src);
   node.alt = alt;
   return node;
 }

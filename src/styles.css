@@ -1303,7 +1303,7 @@ p {
 .home {
   background-image:
     linear-gradient(180deg, rgba(12, 10, 8, 0.18), rgba(10, 10, 8, 0.36)),
-    url('/assets/ui-r5/backgrounds/bg_home_mural_gate.png');
+    url('../assets/ui-r5/backgrounds/bg_home_mural_gate.png');
   background-size: cover, cover;
   background-position: center, center 48%;
 }
@@ -1312,27 +1312,27 @@ p {
   background-image:
     linear-gradient(180deg, rgba(12, 10, 8, 0.06), rgba(13, 12, 10, 0.2) 42%, rgba(13, 11, 9, 0.32)),
     radial-gradient(circle at 50% 18%, rgba(235, 179, 92, 0.12), transparent 34%),
-    url('/assets/ui-r5/backgrounds/bg_combat_xiaoxitian_hall.png');
+    url('../assets/ui-r5/backgrounds/bg_combat_xiaoxitian_hall.png');
 }
 
 .r3-reward-bg {
   background-image:
     linear-gradient(180deg, rgba(16, 12, 9, 0.2), rgba(18, 13, 9, 0.32)),
     radial-gradient(circle at 50% 18%, rgba(235, 179, 92, 0.12), transparent 36%),
-    url('/assets/ui-r5/backgrounds/bg_reward_altar.png');
+    url('../assets/ui-r5/backgrounds/bg_reward_altar.png');
 }
 
 .discard-pick-panel {
   background-image:
     linear-gradient(180deg, rgba(14, 12, 10, 0.22), rgba(10, 10, 8, 0.4)),
     radial-gradient(circle at 50% 18%, rgba(218, 176, 95, 0.12), transparent 34%),
-    url('/assets/ui-r5/backgrounds/bg_gatherash_talisman_altar.png');
+    url('../assets/ui-r5/backgrounds/bg_gatherash_talisman_altar.png');
 }
 
 .combat-layout .enemy {
   background-image:
     linear-gradient(90deg, rgba(33, 24, 18, 0.92), rgba(19, 22, 19, 0.78) 46%, rgba(31, 23, 18, 0.92)),
-    url('/assets/ui-r5/panels/panel_enemy_niche.png');
+    url('../assets/ui-r5/panels/panel_enemy_niche.png');
   background-size: cover, 100% 100%;
   background-position: center, center;
 }
@@ -1340,7 +1340,7 @@ p {
 .combat-layout .enemy.selected {
   background-image:
     linear-gradient(90deg, rgba(39, 25, 18, 0.9), rgba(22, 24, 19, 0.76) 46%, rgba(39, 25, 18, 0.9)),
-    url('/assets/ui-r5/panels/panel_enemy_niche_selected.png');
+    url('../assets/ui-r5/panels/panel_enemy_niche_selected.png');
 }
 
 .r5-enemy-battle {
@@ -1356,7 +1356,7 @@ p {
 .combat-layout .hand .uiimg-card-shell .card-cost {
   background:
     linear-gradient(145deg, rgba(58, 38, 22, 0.38), rgba(138, 91, 43, 0.18)),
-    url('/assets/ui-r5/tokens/cost_token_octagon_64.png') center / cover no-repeat;
+    url('../assets/ui-r5/tokens/cost_token_octagon_64.png') center / cover no-repeat;
   border-color: rgba(218, 176, 95, 0.52);
 }
 
@@ -1364,7 +1364,7 @@ p {
 .combat-layout .hand-head {
   background-image:
     linear-gradient(180deg, rgba(12, 14, 12, 0.7), rgba(18, 15, 10, 0.72)),
-    url('/assets/ui-r5/panels/panel_hand_area_scroll.png');
+    url('../assets/ui-r5/panels/panel_hand_area_scroll.png');
   background-size: cover, 100% 100%;
   background-position: center, center;
 }
@@ -1372,14 +1372,14 @@ p {
 .action-banner {
   background-image:
     linear-gradient(180deg, rgba(12, 14, 12, 0.74), rgba(18, 15, 10, 0.76)),
-    url('/assets/ui-r5/panels/panel_battle_log_scroll.png');
+    url('../assets/ui-r5/panels/panel_battle_log_scroll.png');
   background-size: cover, 100% 100%;
 }
 
 .detail-panel {
   background-image:
     linear-gradient(180deg, rgba(12, 14, 12, 0.84), rgba(18, 15, 10, 0.86)),
-    url('/assets/ui-r5/panels/panel_status_tooltip.png');
+    url('../assets/ui-r5/panels/panel_status_tooltip.png');
   background-size: cover, 100% 100%;
 }
 
@@ -1393,7 +1393,7 @@ p {
     linear-gradient(180deg, rgba(10, 8, 7, 0.14), rgba(14, 12, 10, 0.26) 44%, rgba(9, 8, 7, 0.4)),
     radial-gradient(circle at 49% 14%, rgba(229, 168, 81, 0.18), transparent 32%),
     radial-gradient(circle at 78% 28%, rgba(66, 120, 93, 0.16), transparent 26%),
-    url('/assets/ui-r5/backgrounds/bg_combat_xiaoxitian_hall_batch2.png');
+    url('../assets/ui-r5/backgrounds/bg_combat_xiaoxitian_hall_batch2.png');
   background-size: cover, 880px 520px, 620px 420px, cover;
   background-position: center, 50% 10%, 78% 28%, center 50%;
 }
@@ -1407,8 +1407,8 @@ p {
   border-radius: 8px;
   background:
     linear-gradient(90deg, rgba(218, 176, 95, 0.08), transparent 24%, transparent 76%, rgba(55, 112, 86, 0.08)),
-    url('/assets/ui-r5/effects/effect_feedback_status_thunder_batch2.png') right 10px top 14px / 190px 190px no-repeat,
-    url('/assets/ui-r5/effects/effect_feedback_block_batch2.png') left 12px bottom 116px / 170px 170px no-repeat;
+    url('../assets/ui-r5/effects/effect_feedback_status_thunder_batch2.png') right 10px top 14px / 190px 190px no-repeat,
+    url('../assets/ui-r5/effects/effect_feedback_block_batch2.png') left 12px bottom 116px / 170px 170px no-repeat;
   opacity: 0.18;
   mix-blend-mode: screen;
 }
@@ -1479,7 +1479,7 @@ p {
   overflow: hidden;
   background-image:
     linear-gradient(90deg, rgba(18, 12, 9, 0.9), rgba(13, 17, 15, 0.86) 52%, rgba(23, 15, 10, 0.92)),
-    url('/assets/ui-r5/panels/panel_battle_log_scroll_r5_refined.png');
+    url('../assets/ui-r5/panels/panel_battle_log_scroll_r5_refined.png');
   background-size: cover, 100% 100%;
   background-position: center, center;
 }
@@ -1491,7 +1491,7 @@ p {
   z-index: 0;
   width: min(220px, 32%);
   pointer-events: none;
-  background: url('/assets/ui-r5/effects/effect_turn_log_soft_wash_r5.png') center / contain no-repeat;
+  background: url('../assets/ui-r5/effects/effect_turn_log_soft_wash_r5.png') center / contain no-repeat;
   opacity: 0.14;
   mix-blend-mode: screen;
 }
@@ -1586,7 +1586,7 @@ p {
 .combat-layout .player-action-column .floor-actions button {
   background-image:
     linear-gradient(180deg, rgba(37, 24, 15, 0.88), rgba(12, 14, 12, 0.84)),
-    url('/assets/ui-r5/buttons/button_choose_xxt.png');
+    url('../assets/ui-r5/buttons/button_choose_xxt.png');
   background-size: cover, 100% 100%;
   background-position: center, center;
   border-color: rgba(218, 176, 95, 0.58);
@@ -1601,25 +1601,25 @@ p {
 .reward-grid .reward-gold-choice {
   background-image:
     linear-gradient(180deg, rgba(82, 43, 22, 0.88), rgba(24, 17, 12, 0.86)),
-    url('/assets/ui-r5/buttons/button_confirm_xxt.png');
+    url('../assets/ui-r5/buttons/button_confirm_xxt.png');
 }
 
 .combat-layout .hand-head button.danger {
   background-image:
     linear-gradient(180deg, rgba(82, 31, 28, 0.9), rgba(24, 17, 12, 0.86)),
-    url('/assets/ui-r5/buttons/button_end_turn_xxt.png');
+    url('../assets/ui-r5/buttons/button_end_turn_xxt.png');
 }
 
 .combat-layout .player-action-column .floor-actions button.ghost {
   background-image:
     linear-gradient(180deg, rgba(49, 34, 18, 0.9), rgba(18, 19, 14, 0.86)),
-    url('/assets/ui-r5/buttons/button_cultivate_xxt.png');
+    url('../assets/ui-r5/buttons/button_cultivate_xxt.png');
 }
 
 .combat-layout .player-action-column .floor-actions button.danger {
   background-image:
     linear-gradient(180deg, rgba(82, 31, 28, 0.9), rgba(24, 17, 12, 0.86)),
-    url('/assets/ui-r5/buttons/button_abandon_xxt.png');
+    url('../assets/ui-r5/buttons/button_abandon_xxt.png');
 }
 
 @media (max-width: 768px) {
@@ -2069,12 +2069,12 @@ button.ghost-tiny {
 
 /* UI-IMAGE-R1 codex asset integration */
 :root {
-  --ui-img-card-common: url("/assets/ui-image-r1/card-frame-common.svg");
-  --ui-img-card-uncommon: url("/assets/ui-image-r1/card-frame-uncommon.svg");
-  --ui-img-card-rare: url("/assets/ui-image-r1/card-frame-rare.svg");
-  --ui-img-card-legendary: url("/assets/ui-image-r1/card-frame-legendary.svg");
-  --ui-img-card-curse: url("/assets/ui-image-r1/card-frame-curse.svg");
-  --ui-img-scroll-hint: url("/assets/ui-image-r1/ui-scroll-hint.svg");
+  --ui-img-card-common: url("../assets/ui-image-r1/card-frame-common.svg");
+  --ui-img-card-uncommon: url("../assets/ui-image-r1/card-frame-uncommon.svg");
+  --ui-img-card-rare: url("../assets/ui-image-r1/card-frame-rare.svg");
+  --ui-img-card-legendary: url("../assets/ui-image-r1/card-frame-legendary.svg");
+  --ui-img-card-curse: url("../assets/ui-image-r1/card-frame-curse.svg");
+  --ui-img-scroll-hint: url("../assets/ui-image-r1/ui-scroll-hint.svg");
 }
 
 .uiimg-icon,
@@ -2495,7 +2495,7 @@ button.ghost-tiny {
   --xxt-thunder: #7b689e;
   --xxt-shadow: 0 18px 38px rgba(6, 8, 6, 0.38);
   --xxt-text-shadow: 0 1px 1px rgba(0, 0, 0, 0.48);
-  --ui-img-xxt-wall: url("/assets/ui-image-r2/xxt-wall-texture.svg");
+  --ui-img-xxt-wall: url("../assets/ui-image-r2/xxt-wall-texture.svg");
 }
 
 body {
@@ -2691,7 +2691,7 @@ button.ghost {
   height: 64px;
   opacity: 0.46;
   pointer-events: none;
-  background: url('/assets/ui-r5/panels/panel_enemy_standee_motif.png') center / contain no-repeat;
+  background: url('../assets/ui-r5/panels/panel_enemy_standee_motif.png') center / contain no-repeat;
 }
 
 .enemy.selected {
@@ -3141,7 +3141,7 @@ button.ghost {
 .r3-combat-bg {
   background-image:
     linear-gradient(90deg, rgba(21, 18, 13, 0.52), rgba(14, 18, 16, 0.38) 44%, rgba(39, 25, 17, 0.46)),
-    url('/public/assets/ui-r3/backgrounds/bg_combat_xiaoxitian_hall.png');
+    url('../public/assets/ui-r3/backgrounds/bg_combat_xiaoxitian_hall.png');
   background-size: cover;
   background-position: center 42%;
   background-repeat: no-repeat;
@@ -3173,7 +3173,7 @@ button.ghost {
 .r3-reward-bg {
   background-image:
     linear-gradient(180deg, rgba(22, 16, 12, 0.56), rgba(17, 20, 17, 0.5)),
-    url('/public/assets/ui-r3/backgrounds/bg_reward_altar.png');
+    url('../public/assets/ui-r3/backgrounds/bg_reward_altar.png');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -3259,7 +3259,7 @@ button.ghost {
   background-image:
     linear-gradient(180deg, rgba(12, 10, 8, 0.06), rgba(13, 12, 10, 0.2) 42%, rgba(13, 11, 9, 0.32)),
     radial-gradient(circle at 50% 18%, rgba(235, 179, 92, 0.12), transparent 34%),
-    url('/public/assets/ui-r3/backgrounds/bg_combat_xiaoxitian_hall.png');
+    url('../public/assets/ui-r3/backgrounds/bg_combat_xiaoxitian_hall.png');
   background-size: cover, cover, cover;
   background-position: center, center, center 48%;
   box-shadow:
@@ -3343,7 +3343,7 @@ button.ghost {
   background-image:
     linear-gradient(180deg, rgba(16, 12, 9, 0.2), rgba(18, 13, 9, 0.32)),
     radial-gradient(circle at 30% 32%, rgba(232, 154, 78, 0.14), transparent 30%),
-    url('/public/assets/ui-r3/backgrounds/bg_reward_altar.png');
+    url('../public/assets/ui-r3/backgrounds/bg_reward_altar.png');
   background-size: cover, cover, cover;
   background-position: center, center, center 48%;
   box-shadow:
@@ -3379,7 +3379,7 @@ button.ghost {
   background:
     linear-gradient(180deg, rgba(24, 16, 11, 0.34), rgba(12, 13, 11, 0.55)),
     radial-gradient(circle at 42% 34%, rgba(216, 132, 69, 0.16), transparent 34%),
-    url('/public/assets/ui-r3/backgrounds/bg_gatherash_talisman_altar.png');
+    url('../public/assets/ui-r3/backgrounds/bg_gatherash_talisman_altar.png');
   background-size: cover, cover, cover;
   background-position: center, center, center 48%;
   box-shadow:
@@ -4736,7 +4736,7 @@ button.ghost {
 .home {
   background-image:
     linear-gradient(180deg, rgba(12, 10, 8, 0.18), rgba(10, 10, 8, 0.36)),
-    url('/assets/ui-r5/backgrounds/bg_home_mural_gate.png');
+    url('../assets/ui-r5/backgrounds/bg_home_mural_gate.png');
   background-size: cover, cover;
   background-position: center, center 48%;
 }
@@ -4745,27 +4745,27 @@ button.ghost {
   background-image:
     linear-gradient(180deg, rgba(12, 10, 8, 0.06), rgba(13, 12, 10, 0.2) 42%, rgba(13, 11, 9, 0.32)),
     radial-gradient(circle at 50% 18%, rgba(235, 179, 92, 0.12), transparent 34%),
-    url('/assets/ui-r5/backgrounds/bg_combat_xiaoxitian_hall.png');
+    url('../assets/ui-r5/backgrounds/bg_combat_xiaoxitian_hall.png');
 }
 
 .r3-reward-bg {
   background-image:
     linear-gradient(180deg, rgba(16, 12, 9, 0.2), rgba(18, 13, 9, 0.32)),
     radial-gradient(circle at 50% 18%, rgba(235, 179, 92, 0.12), transparent 36%),
-    url('/assets/ui-r5/backgrounds/bg_reward_altar.png');
+    url('../assets/ui-r5/backgrounds/bg_reward_altar.png');
 }
 
 .discard-pick-panel {
   background-image:
     linear-gradient(180deg, rgba(14, 12, 10, 0.22), rgba(10, 10, 8, 0.4)),
     radial-gradient(circle at 50% 18%, rgba(218, 176, 95, 0.12), transparent 34%),
-    url('/assets/ui-r5/backgrounds/bg_gatherash_talisman_altar.png');
+    url('../assets/ui-r5/backgrounds/bg_gatherash_talisman_altar.png');
 }
 
 .combat-layout .enemy {
   background-image:
     linear-gradient(90deg, rgba(33, 24, 18, 0.92), rgba(19, 22, 19, 0.78) 46%, rgba(31, 23, 18, 0.92)),
-    url('/assets/ui-r5/panels/panel_enemy_niche.png');
+    url('../assets/ui-r5/panels/panel_enemy_niche.png');
   background-size: cover, 100% 100%;
   background-position: center, center;
 }
@@ -4773,7 +4773,7 @@ button.ghost {
 .combat-layout .enemy.selected {
   background-image:
     linear-gradient(90deg, rgba(39, 25, 18, 0.9), rgba(22, 24, 19, 0.76) 46%, rgba(39, 25, 18, 0.9)),
-    url('/assets/ui-r5/panels/panel_enemy_niche_selected.png');
+    url('../assets/ui-r5/panels/panel_enemy_niche_selected.png');
 }
 
 .r5-enemy-battle {
@@ -4789,7 +4789,7 @@ button.ghost {
 .combat-layout .hand .uiimg-card-shell .card-cost {
   background:
     linear-gradient(145deg, rgba(58, 38, 22, 0.38), rgba(138, 91, 43, 0.18)),
-    url('/assets/ui-r5/tokens/cost_token_octagon_64.png') center / cover no-repeat;
+    url('../assets/ui-r5/tokens/cost_token_octagon_64.png') center / cover no-repeat;
   border-color: rgba(218, 176, 95, 0.52);
 }
 
@@ -4797,7 +4797,7 @@ button.ghost {
 .combat-layout .hand-head {
   background-image:
     linear-gradient(180deg, rgba(12, 14, 12, 0.7), rgba(18, 15, 10, 0.72)),
-    url('/assets/ui-r5/panels/panel_hand_area_scroll.png');
+    url('../assets/ui-r5/panels/panel_hand_area_scroll.png');
   background-size: cover, 100% 100%;
   background-position: center, center;
 }
@@ -4805,13 +4805,13 @@ button.ghost {
 .action-banner {
   background-image:
     linear-gradient(180deg, rgba(12, 14, 12, 0.74), rgba(18, 15, 10, 0.76)),
-    url('/assets/ui-r5/panels/panel_battle_log_scroll.png');
+    url('../assets/ui-r5/panels/panel_battle_log_scroll.png');
   background-size: cover, 100% 100%;
 }
 
 .detail-panel {
   background-image:
     linear-gradient(180deg, rgba(12, 14, 12, 0.84), rgba(18, 15, 10, 0.86)),
-    url('/assets/ui-r5/panels/panel_status_tooltip.png');
+    url('../assets/ui-r5/panels/panel_status_tooltip.png');
   background-size: cover, 100% 100%;
 }

@@ -1,7 +1,9 @@
 // uiR3Assets.js - UI R3 Xiaoxitian Seed Asset Mapper
 // Only maps resource paths and visual categories. No gameplay logic.
 
-export const R3_BASE = "/public/assets/ui-r3";
+import { assetUrl } from "./assetPath.js";
+
+export const R3_BASE = assetUrl("/public/assets/ui-r3");
 
 // === CARD VISUAL MAPPING ===
 const cardVisualMap = {

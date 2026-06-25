@@ -1,7 +1,9 @@
 // uiR5Assets.js - generated from R5 CSV maps; browser paths remain /assets/ui-r5/...
 // R5 full refined asset resolver only maps UI resource paths. No gameplay/data logic.
 
-export const R5_BASE = "/assets/ui-r5";
+import { assetUrl } from "./assetPath.js";
+
+export const R5_BASE = assetUrl("/assets/ui-r5");
 export const R5_ASSET_COUNTS = {
   "cards": 132,
   "enemyLegacySmallImagesRetained": 11,
@@ -334,38 +336,38 @@ const effectAssetMap = {
   }
 };
 export const R5_BACKGROUNDS = {
-  "home": "/assets/ui-r5/backgrounds/bg_home_mural_gate.png",
-  "combat": "/assets/ui-r5/backgrounds/bg_combat_xiaoxitian_hall.png",
-  "reward": "/assets/ui-r5/backgrounds/bg_reward_altar.png",
-  "gatherAsh": "/assets/ui-r5/backgrounds/bg_gatherash_talisman_altar.png",
-  "modeSelect": "/assets/ui-r5/backgrounds/bg_mode_select_gate.png",
-  "shop": "/assets/ui-r5/backgrounds/bg_shop_cave.png",
-  "gameOver": "/assets/ui-r5/backgrounds/bg_gameover_reincarnation.png"
+  "home": assetUrl("/assets/ui-r5/backgrounds/bg_home_mural_gate.png"),
+  "combat": assetUrl("/assets/ui-r5/backgrounds/bg_combat_xiaoxitian_hall.png"),
+  "reward": assetUrl("/assets/ui-r5/backgrounds/bg_reward_altar.png"),
+  "gatherAsh": assetUrl("/assets/ui-r5/backgrounds/bg_gatherash_talisman_altar.png"),
+  "modeSelect": assetUrl("/assets/ui-r5/backgrounds/bg_mode_select_gate.png"),
+  "shop": assetUrl("/assets/ui-r5/backgrounds/bg_shop_cave.png"),
+  "gameOver": assetUrl("/assets/ui-r5/backgrounds/bg_gameover_reincarnation.png")
 };
 export const R5_PANELS = {
-  "relicSelect": "/assets/ui-r5/panels/panel_relic_select.png",
-  "cardReward": "/assets/ui-r5/panels/panel_card_reward.png",
-  "statusTooltip": "/assets/ui-r5/panels/panel_status_tooltip.png",
-  "enemyPanel": "/assets/ui-r5/panels/panel_enemy_niche.png",
-  "battleLog": "/assets/ui-r5/panels/panel_battle_log_scroll.png",
-  "handArea": "/assets/ui-r5/panels/panel_hand_area_scroll.png",
-  "discardDrawBar": "/assets/ui-r5/panels/panel_discard_draw_bar.png",
-  "topStatusBar": "/assets/ui-r5/panels/panel_top_status_wood_gold.png",
-  "mythPanel": "/assets/ui-r5/panels/panel_myth_cultivation.png"
+  "relicSelect": assetUrl("/assets/ui-r5/panels/panel_relic_select.png"),
+  "cardReward": assetUrl("/assets/ui-r5/panels/panel_card_reward.png"),
+  "statusTooltip": assetUrl("/assets/ui-r5/panels/panel_status_tooltip.png"),
+  "enemyPanel": assetUrl("/assets/ui-r5/panels/panel_enemy_niche.png"),
+  "battleLog": assetUrl("/assets/ui-r5/panels/panel_battle_log_scroll.png"),
+  "handArea": assetUrl("/assets/ui-r5/panels/panel_hand_area_scroll.png"),
+  "discardDrawBar": assetUrl("/assets/ui-r5/panels/panel_discard_draw_bar.png"),
+  "topStatusBar": assetUrl("/assets/ui-r5/panels/panel_top_status_wood_gold.png"),
+  "mythPanel": assetUrl("/assets/ui-r5/panels/panel_myth_cultivation.png")
 };
 export const R5_TOKENS = { cost: `${R5_BASE}/tokens/cost_token_octagon_64.png` };
 export const R5_ICONS = { deck: `${R5_BASE}/icons/icon_deck.png`, discard: `${R5_BASE}/icons/icon_discard.png`, gold: `${R5_BASE}/icons/icon_gold.png`, hp: `${R5_BASE}/icons/icon_hp.png`, relic: `${R5_BASE}/icons/icon_relic.png`, scroll: `${R5_BASE}/icons/icon_scroll.png`, settings: `${R5_BASE}/icons/icon_settings.png`, target: `${R5_BASE}/icons/icon_target.png`, plus: `${R5_BASE}/icons/icon_plus.png`, lock: `${R5_BASE}/icons/icon_lock.png` };
 const fallbackCard = cardArtMap.strike || `${R5_BASE}/cards/card_strike.png`;
 const fallbackEnemy = enemyAssetMap.littleYao || Object.values(enemyAssetMap)[0];
 
-export function r5CardArtUrl(cardId) { return cardArtMap[cardId] || fallbackCard; }
-export function r5FallbackCardArtUrl() { return fallbackCard; }
-export function r5EnemyBattleUrl(enemyId) { return enemyAssetMap[enemyId]?.battlePath || fallbackEnemy?.battlePath || null; }
-export function r5FallbackEnemyBattleUrl() { return fallbackEnemy?.battlePath || null; }
-export function r5EffectIconUrl(statusId) { return effectAssetMap[statusId]?.iconPath || null; }
-export function r5LargeEffectUrl(statusId) { return effectAssetMap[statusId]?.largeEffectPath || null; }
+export function r5CardArtUrl(cardId) { return assetUrl(cardArtMap[cardId] || fallbackCard); }
+export function r5FallbackCardArtUrl() { return assetUrl(fallbackCard); }
+export function r5EnemyBattleUrl(enemyId) { return assetUrl(enemyAssetMap[enemyId]?.battlePath || fallbackEnemy?.battlePath || null); }
+export function r5FallbackEnemyBattleUrl() { return assetUrl(fallbackEnemy?.battlePath || null); }
+export function r5EffectIconUrl(statusId) { return assetUrl(effectAssetMap[statusId]?.iconPath || null); }
+export function r5LargeEffectUrl(statusId) { return assetUrl(effectAssetMap[statusId]?.largeEffectPath || null); }
 export function r5SceneUrl(sceneId) { return R5_BACKGROUNDS[sceneId] || R5_PANELS[sceneId] || null; }
 export function r5AssetStats() { return { cards: Object.keys(cardArtMap).length, enemies: Object.keys(enemyAssetMap).length, effects: Object.keys(effectAssetMap).length, backgrounds: Object.keys(R5_BACKGROUNDS).length, panels: Object.keys(R5_PANELS).length }; }
 export function r5MissingCardIds(cardIds) { return cardIds.filter((id) => !cardArtMap[id]); }
 export function r5MissingEnemyIds(enemyIds) { return enemyIds.filter((id) => !enemyAssetMap[id]); }
-export function r5EnemyAssetEntries() { return Object.entries(enemyAssetMap).map(([enemyId, value]) => ({ enemyId, ...value })); }
+export function r5EnemyAssetEntries() { return Object.entries(enemyAssetMap).map(([enemyId, value]) => ({ enemyId, ...value, battlePath: assetUrl(value.battlePath) })); }
