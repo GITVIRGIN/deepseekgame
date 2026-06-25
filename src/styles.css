@@ -1295,6 +1295,398 @@ p {
   }
 }
 
+/* ============================================================
+   UI R5 FULL ASSETS IMPORT
+   Asset-only skin swap on top of the frozen UI-R4.8 structure.
+   ============================================================ */
+
+.home {
+  background-image:
+    linear-gradient(180deg, rgba(12, 10, 8, 0.18), rgba(10, 10, 8, 0.36)),
+    url('/assets/ui-r5/backgrounds/bg_home_mural_gate.png');
+  background-size: cover, cover;
+  background-position: center, center 48%;
+}
+
+.r3-combat-bg {
+  background-image:
+    linear-gradient(180deg, rgba(12, 10, 8, 0.06), rgba(13, 12, 10, 0.2) 42%, rgba(13, 11, 9, 0.32)),
+    radial-gradient(circle at 50% 18%, rgba(235, 179, 92, 0.12), transparent 34%),
+    url('/assets/ui-r5/backgrounds/bg_combat_xiaoxitian_hall.png');
+}
+
+.r3-reward-bg {
+  background-image:
+    linear-gradient(180deg, rgba(16, 12, 9, 0.2), rgba(18, 13, 9, 0.32)),
+    radial-gradient(circle at 50% 18%, rgba(235, 179, 92, 0.12), transparent 36%),
+    url('/assets/ui-r5/backgrounds/bg_reward_altar.png');
+}
+
+.discard-pick-panel {
+  background-image:
+    linear-gradient(180deg, rgba(14, 12, 10, 0.22), rgba(10, 10, 8, 0.4)),
+    radial-gradient(circle at 50% 18%, rgba(218, 176, 95, 0.12), transparent 34%),
+    url('/assets/ui-r5/backgrounds/bg_gatherash_talisman_altar.png');
+}
+
+.combat-layout .enemy {
+  background-image:
+    linear-gradient(90deg, rgba(33, 24, 18, 0.92), rgba(19, 22, 19, 0.78) 46%, rgba(31, 23, 18, 0.92)),
+    url('/assets/ui-r5/panels/panel_enemy_niche.png');
+  background-size: cover, 100% 100%;
+  background-position: center, center;
+}
+
+.combat-layout .enemy.selected {
+  background-image:
+    linear-gradient(90deg, rgba(39, 25, 18, 0.9), rgba(22, 24, 19, 0.76) 46%, rgba(39, 25, 18, 0.9)),
+    url('/assets/ui-r5/panels/panel_enemy_niche_selected.png');
+}
+
+.r5-enemy-battle {
+  object-position: center 42%;
+}
+
+.r5-card-art {
+  object-fit: cover;
+  object-position: center 44%;
+}
+
+.combat-layout .hand .card-shell-xxt .card-cost,
+.combat-layout .hand .uiimg-card-shell .card-cost {
+  background:
+    linear-gradient(145deg, rgba(58, 38, 22, 0.38), rgba(138, 91, 43, 0.18)),
+    url('/assets/ui-r5/tokens/cost_token_octagon_64.png') center / cover no-repeat;
+  border-color: rgba(218, 176, 95, 0.52);
+}
+
+.combat-layout .hand-area,
+.combat-layout .hand-head {
+  background-image:
+    linear-gradient(180deg, rgba(12, 14, 12, 0.7), rgba(18, 15, 10, 0.72)),
+    url('/assets/ui-r5/panels/panel_hand_area_scroll.png');
+  background-size: cover, 100% 100%;
+  background-position: center, center;
+}
+
+.action-banner {
+  background-image:
+    linear-gradient(180deg, rgba(12, 14, 12, 0.74), rgba(18, 15, 10, 0.76)),
+    url('/assets/ui-r5/panels/panel_battle_log_scroll.png');
+  background-size: cover, 100% 100%;
+}
+
+.detail-panel {
+  background-image:
+    linear-gradient(180deg, rgba(12, 14, 12, 0.84), rgba(18, 15, 10, 0.86)),
+    url('/assets/ui-r5/panels/panel_status_tooltip.png');
+  background-size: cover, 100% 100%;
+}
+
+/* ============================================================
+   UI R5 COMBAT BACKGROUND / FEEDBACK BATCH2
+   Asset-only combat skin refinement; no card, logic, or layout movement.
+   ============================================================ */
+
+.r3-combat-bg {
+  background-image:
+    linear-gradient(180deg, rgba(10, 8, 7, 0.14), rgba(14, 12, 10, 0.26) 44%, rgba(9, 8, 7, 0.4)),
+    radial-gradient(circle at 49% 14%, rgba(229, 168, 81, 0.18), transparent 32%),
+    radial-gradient(circle at 78% 28%, rgba(66, 120, 93, 0.16), transparent 26%),
+    url('/assets/ui-r5/backgrounds/bg_combat_xiaoxitian_hall_batch2.png');
+  background-size: cover, 880px 520px, 620px 420px, cover;
+  background-position: center, 50% 10%, 78% 28%, center 50%;
+}
+
+.combat-layout .battlefield::after {
+  content: "";
+  position: absolute;
+  inset: 8px;
+  z-index: 0;
+  pointer-events: none;
+  border-radius: 8px;
+  background:
+    linear-gradient(90deg, rgba(218, 176, 95, 0.08), transparent 24%, transparent 76%, rgba(55, 112, 86, 0.08)),
+    url('/assets/ui-r5/effects/effect_feedback_status_thunder_batch2.png') right 10px top 14px / 190px 190px no-repeat,
+    url('/assets/ui-r5/effects/effect_feedback_block_batch2.png') left 12px bottom 116px / 170px 170px no-repeat;
+  opacity: 0.18;
+  mix-blend-mode: screen;
+}
+
+.combat-layout .battlefield > .action-banner,
+.combat-layout .battlefield > .enemy-row,
+.combat-layout .battlefield > .hand-area,
+.combat-layout .battlefield > .hand-swipe-hint {
+  position: relative;
+  z-index: 1;
+}
+
+.combat-event-feedback-layer {
+  --feedback-size: 104px;
+  --feedback-peak: 0.94;
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 2;
+  width: var(--feedback-size);
+  height: var(--feedback-size);
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+}
+
+.combat-event-feedback-layer.feedback-block {
+  transform: translateX(calc(-50% - 116px));
+}
+
+.combat-event-feedback {
+  width: var(--feedback-size);
+  height: var(--feedback-size);
+  object-fit: contain;
+  animation: combat-event-feedback-burst 760ms cubic-bezier(0.18, 0.72, 0.24, 1) both;
+  filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.48));
+}
+
+.combat-event-feedback-layer.feedback-attack { --feedback-size: 96px; --feedback-peak: 0.96; }
+.combat-event-feedback-layer.feedback-bind { --feedback-size: 104px; --feedback-peak: 0.92; }
+.combat-event-feedback-layer.feedback-poison { --feedback-size: 100px; --feedback-peak: 0.88; }
+.combat-event-feedback-layer.feedback-thunder { --feedback-size: 100px; --feedback-peak: 0.96; }
+.combat-event-feedback-layer.feedback-burn { --feedback-size: 98px; --feedback-peak: 0.92; }
+.combat-event-feedback-layer.feedback-block { --feedback-size: 106px; --feedback-peak: 0.94; }
+
+@keyframes combat-event-feedback-burst {
+  0% {
+    opacity: 0;
+    transform: scale(0.82);
+  }
+  16% {
+    opacity: var(--feedback-peak);
+    transform: scale(1);
+  }
+  72% {
+    opacity: calc(var(--feedback-peak) * 0.86);
+    transform: scale(1.04);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.14);
+  }
+}
+
+.combat-layout .action-banner {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background-image:
+    linear-gradient(90deg, rgba(18, 12, 9, 0.9), rgba(13, 17, 15, 0.86) 52%, rgba(23, 15, 10, 0.92)),
+    url('/assets/ui-r5/panels/panel_battle_log_scroll_r5_refined.png');
+  background-size: cover, 100% 100%;
+  background-position: center, center;
+}
+
+.combat-layout .action-banner::after {
+  content: "";
+  position: absolute;
+  inset: -24px 8px -24px auto;
+  z-index: 0;
+  width: min(220px, 32%);
+  pointer-events: none;
+  background: url('/assets/ui-r5/effects/effect_turn_log_soft_wash_r5.png') center / contain no-repeat;
+  opacity: 0.14;
+  mix-blend-mode: screen;
+}
+
+.combat-layout .action-banner > * {
+  position: relative;
+  z-index: 1;
+}
+
+@media (max-width: 768px) {
+  .r3-combat-bg {
+    background-size: cover, 520px 360px, 430px 320px, auto 100%;
+    background-position: center, 50% 10%, 86% 22%, center top;
+  }
+
+  .combat-layout .battlefield::after {
+    background-size: auto, 132px 132px, 118px 118px;
+    background-position: center, right 4px top 78px, left 4px bottom 98px;
+    opacity: 0.16;
+  }
+
+  .combat-event-feedback-layer {
+    --feedback-size: 74px;
+  }
+
+  .combat-event-feedback-layer.feedback-block {
+    transform: translate(calc(-50% - 32px), -50%);
+  }
+
+  .combat-event-feedback {
+    width: var(--feedback-size);
+    height: var(--feedback-size);
+  }
+
+  .combat-event-feedback-layer.feedback-attack { --feedback-size: 70px; }
+  .combat-event-feedback-layer.feedback-bind { --feedback-size: 76px; }
+  .combat-event-feedback-layer.feedback-poison { --feedback-size: 72px; }
+  .combat-event-feedback-layer.feedback-thunder { --feedback-size: 72px; }
+  .combat-event-feedback-layer.feedback-burn { --feedback-size: 70px; }
+  .combat-event-feedback-layer.feedback-block { --feedback-size: 76px; }
+
+  .combat-layout .action-banner {
+    background-size: cover, 100% 100%;
+    background-position: center, center;
+  }
+
+  .combat-layout .action-banner::after {
+    inset: -18px 4px -18px auto;
+    width: min(118px, 34%);
+    opacity: 0.12;
+  }
+}
+
+@media (max-width: 768px) {
+  .combat-layout .enemy::before {
+    inset: 8px 10px auto auto;
+  }
+
+  .combat-layout .enemy .enemy-title {
+    position: relative;
+    z-index: 3;
+    gap: 4px;
+  }
+
+  .combat-layout .enemy .enemy-title .intent {
+    min-width: 44px;
+    max-width: 62px;
+    min-height: 26px;
+    padding: 3px 6px;
+    border: 1px solid rgba(218, 176, 95, 0.72);
+    border-radius: 8px;
+    background:
+      linear-gradient(180deg, rgba(26, 19, 12, 0.97), rgba(10, 12, 10, 0.95));
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 231, 157, 0.16),
+      0 3px 10px rgba(0, 0, 0, 0.48);
+  }
+
+  .combat-layout .enemy .enemy-title .uiimg-intent-icon {
+    width: 16px;
+    height: 16px;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.72));
+  }
+}
+
+.reward-actions button,
+.reward-grid .relic-choice,
+.reward-grid .reward-gold-choice,
+.combat-layout .hand-head .pile-strip > button,
+.combat-layout .hand-head button.danger,
+.combat-layout .hand-card-slot > button,
+.combat-layout .player-action-column .floor-actions button {
+  background-image:
+    linear-gradient(180deg, rgba(37, 24, 15, 0.88), rgba(12, 14, 12, 0.84)),
+    url('/assets/ui-r5/buttons/button_choose_xxt.png');
+  background-size: cover, 100% 100%;
+  background-position: center, center;
+  border-color: rgba(218, 176, 95, 0.58);
+  color: #f6e6b7;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.72);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 231, 157, 0.12),
+    0 6px 14px rgba(0, 0, 0, 0.18);
+}
+
+.combat-layout .hand-card-slot > button.primary,
+.reward-grid .reward-gold-choice {
+  background-image:
+    linear-gradient(180deg, rgba(82, 43, 22, 0.88), rgba(24, 17, 12, 0.86)),
+    url('/assets/ui-r5/buttons/button_confirm_xxt.png');
+}
+
+.combat-layout .hand-head button.danger {
+  background-image:
+    linear-gradient(180deg, rgba(82, 31, 28, 0.9), rgba(24, 17, 12, 0.86)),
+    url('/assets/ui-r5/buttons/button_end_turn_xxt.png');
+}
+
+.combat-layout .player-action-column .floor-actions button.ghost {
+  background-image:
+    linear-gradient(180deg, rgba(49, 34, 18, 0.9), rgba(18, 19, 14, 0.86)),
+    url('/assets/ui-r5/buttons/button_cultivate_xxt.png');
+}
+
+.combat-layout .player-action-column .floor-actions button.danger {
+  background-image:
+    linear-gradient(180deg, rgba(82, 31, 28, 0.9), rgba(24, 17, 12, 0.86)),
+    url('/assets/ui-r5/buttons/button_abandon_xxt.png');
+}
+
+@media (max-width: 768px) {
+  .combat-layout .enemy .status-line {
+    position: relative;
+    z-index: 3;
+    max-width: calc(100% - 88px);
+    margin-left: 88px;
+    padding: 3px 5px;
+    gap: 3px;
+    border: 1px solid rgba(218, 176, 95, 0.42);
+    border-radius: 6px;
+    background: rgba(12, 10, 8, 0.74);
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 231, 157, 0.1),
+      0 4px 12px rgba(0, 0, 0, 0.34);
+    backdrop-filter: blur(1.5px);
+  }
+
+  .combat-layout .enemy .status-chips {
+    gap: 3px;
+  }
+
+  .combat-layout .enemy .status-chip {
+    min-height: 19px;
+    padding: 1px 5px;
+    border-color: rgba(218, 176, 95, 0.56);
+    background: rgba(19, 15, 10, 0.86);
+    color: #f6e6b7;
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 231, 157, 0.12),
+      0 2px 6px rgba(0, 0, 0, 0.36);
+  }
+
+  .combat-layout .enemy .status-chip .uiimg-status-icon {
+    width: 16px;
+    height: 16px;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.65));
+  }
+
+  .combat-layout .enemy .enemy-title {
+    position: relative;
+    z-index: 3;
+    gap: 4px;
+  }
+
+  .combat-layout .enemy .enemy-title .intent {
+    min-width: 42px;
+    max-width: 58px;
+    min-height: 26px;
+    padding: 3px 6px;
+    border-color: rgba(218, 176, 95, 0.68);
+    border-radius: 8px;
+    background:
+      linear-gradient(180deg, rgba(26, 19, 12, 0.96), rgba(10, 12, 10, 0.94));
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 231, 157, 0.14),
+      0 3px 10px rgba(0, 0, 0, 0.45);
+  }
+
+  .combat-layout .enemy .enemy-title .uiimg-intent-icon {
+    width: 16px;
+    height: 16px;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.72));
+  }
+}
+
 @media (max-width: 768px) {
   /* HF5: mobile combat — real mobile summary block, horizontal hand strip */
   .combat-layout {
@@ -1675,3 +2067,2751 @@ button.ghost-tiny {
   .status-popover .status-popover-list { max-height: 260px; }
 }
 
+/* UI-IMAGE-R1 codex asset integration */
+:root {
+  --ui-img-card-common: url("/assets/ui-image-r1/card-frame-common.svg");
+  --ui-img-card-uncommon: url("/assets/ui-image-r1/card-frame-uncommon.svg");
+  --ui-img-card-rare: url("/assets/ui-image-r1/card-frame-rare.svg");
+  --ui-img-card-legendary: url("/assets/ui-image-r1/card-frame-legendary.svg");
+  --ui-img-card-curse: url("/assets/ui-image-r1/card-frame-curse.svg");
+  --ui-img-scroll-hint: url("/assets/ui-image-r1/ui-scroll-hint.svg");
+}
+
+.uiimg-icon,
+.uiimg-status-icon,
+.uiimg-intent-icon,
+.uiimg-stat-icon,
+.uiimg-inline-icon,
+.uiimg-title-icon,
+.uiimg-scroll-hint-icon {
+  display: inline-block;
+  flex: 0 0 auto;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.uiimg-status-icon,
+.uiimg-intent-icon,
+.uiimg-inline-icon {
+  width: 18px;
+  height: 18px;
+}
+
+.uiimg-stat-icon {
+  grid-row: 1 / 3;
+  width: 24px;
+  height: 24px;
+}
+
+.uiimg-title-icon {
+  width: 30px;
+  height: 30px;
+}
+
+.player-vitals-row {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+}
+
+.player-vitals-row .uiimg-stat {
+  display: grid;
+  grid-template-columns: 24px auto;
+  grid-template-rows: auto auto;
+  column-gap: 6px;
+  align-items: center;
+  min-width: 92px;
+  padding: 6px 8px;
+}
+
+.player-vitals-row .uiimg-stat span,
+.player-vitals-row .uiimg-stat strong {
+  min-width: 0;
+}
+
+.player-vitals-row .uiimg-stat strong {
+  margin-top: 0;
+  line-height: 1.05;
+}
+
+.player-vitals-status {
+  flex: 1 1 auto;
+  justify-content: flex-start;
+}
+
+.player-gold-slot {
+  margin-left: auto;
+}
+
+.status-chip-inline,
+.status-chip,
+.intent,
+.relic-title,
+.reward-title,
+.reward-gold-choice,
+.gold-drop {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.status-chip-inline {
+  min-height: 26px;
+  max-width: 106px;
+  padding: 2px 7px 2px 5px;
+}
+
+.status-chip-text {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.status-empty {
+  color: var(--muted);
+  border-style: dashed;
+}
+
+.status-chip .uiimg-status-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.intent {
+  justify-content: center;
+}
+
+.reward-title {
+  line-height: 1.05;
+}
+
+.uiimg-card-shell {
+  border-color: transparent;
+  color: #fff7d7;
+  background-color: #1b1822;
+  background-image: var(--ui-img-card-common);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 100% 100%;
+  box-shadow: 0 14px 26px rgba(18, 14, 22, 0.24);
+}
+
+.uiimg-card-shell[data-rarity="uncommon"] {
+  background-image: var(--ui-img-card-uncommon);
+}
+
+.uiimg-card-shell[data-rarity="rare"] {
+  background-image: var(--ui-img-card-rare);
+}
+
+.uiimg-card-shell[data-rarity="legendary"] {
+  background-image: var(--ui-img-card-legendary);
+}
+
+.uiimg-card-shell.rarity-curse {
+  background-image: var(--ui-img-card-curse);
+}
+
+.uiimg-card-shell .card-rarity,
+.uiimg-card-shell .myth-tags {
+  color: #f7d889;
+}
+
+.uiimg-card-shell strong {
+  color: #fff9df;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.38);
+}
+
+.uiimg-card-shell p {
+  color: #f8ecd0;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.28);
+}
+
+.uiimg-card-shell .card-body {
+  min-height: 42px;
+  padding: 6px 7px;
+  border: 1px solid rgba(255, 247, 214, 0.2);
+  border-radius: 7px;
+  background: rgba(12, 11, 18, 0.36);
+}
+
+.uiimg-card-shell .card-cost {
+  top: 9px;
+  right: 9px;
+  width: 30px;
+  height: 30px;
+  color: #26180a;
+  background: #f3c85f;
+  box-shadow: inset 0 0 0 2px rgba(255, 252, 217, 0.7), 0 4px 10px rgba(0, 0, 0, 0.28);
+}
+
+.uiimg-card-shell .style-badges span,
+.uiimg-card-shell .effect-badges span {
+  border-color: rgba(255, 247, 214, 0.26);
+  color: #fff3c0;
+  background: rgba(12, 11, 18, 0.46);
+}
+
+.combat-layout {
+  grid-template-columns: 240px minmax(620px, 760px);
+  gap: 12px;
+}
+
+.combat-layout .run-panel {
+  grid-row: 1;
+}
+
+.combat-layout .log {
+  display: none;
+}
+
+.combat-layout > div:empty {
+  display: none;
+}
+
+.combat-layout .enemy {
+  min-height: 154px;
+  gap: 6px;
+  padding: 10px;
+}
+
+.combat-layout .status-line {
+  min-height: 0;
+}
+
+.combat-layout .action-banner {
+  padding: 8px 12px;
+}
+
+.combat-layout .action-banner .latest-action {
+  font-size: 16px;
+}
+
+.combat-layout .hand-area {
+  gap: 8px;
+}
+
+.combat-layout .hand {
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-columns: none;
+  grid-template-rows: 178px;
+  grid-auto-columns: calc((100% - 24px) / 3);
+  gap: 12px;
+  width: 100%;
+  height: 188px;
+  max-height: 188px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 2px 4px 4px;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: thin;
+}
+
+.combat-layout .hand-card-slot {
+  display: grid;
+  grid-template-rows: 144px 28px;
+  gap: 6px;
+  height: 178px;
+  min-height: 178px;
+  min-width: 0;
+  scroll-snap-align: start;
+}
+
+.combat-layout .hand-card-slot .game-card {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  height: 144px;
+  min-height: 0;
+  overflow: hidden;
+  padding: 10px 10px 9px;
+}
+
+.combat-layout .hand-card-slot .discard-action {
+  height: 28px;
+  min-height: 28px;
+  margin: 0;
+  border-radius: 6px;
+}
+
+.hand-swipe-hint {
+  display: flex;
+  min-height: 24px;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.hand-swipe-hint::before {
+  content: none;
+}
+
+.uiimg-scroll-hint-icon {
+  width: 28px;
+  height: 28px;
+}
+
+.combat-layout .log {
+  max-height: 72px;
+}
+
+.relic-title {
+  min-width: 0;
+}
+
+@media (max-width: 768px) {
+  .combat-layout {
+    grid-template-columns: 1fr;
+    max-width: 100%;
+    margin: 0;
+  }
+
+  .combat-layout .battlefield,
+  .combat-layout .log {
+    grid-column: 1;
+  }
+
+  .mobile-run-summary {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 3px;
+  }
+
+  .ms-top,
+  .ms-vitals,
+  .ms-stats,
+  .ms-actions {
+    width: 100%;
+  }
+
+  .ms-vitals.player-vitals-row {
+    gap: 4px;
+  }
+
+  .ms-vitals .uiimg-stat {
+    min-width: 76px;
+    padding: 3px 5px;
+  }
+
+  .ms-vitals .uiimg-stat strong {
+    font-size: 11px;
+  }
+
+  .ms-vitals .uiimg-stat-icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  .ms-vitals .player-vitals-status {
+    gap: 2px;
+  }
+
+  .ms-vitals .status-chip-inline {
+    max-width: 70px;
+    min-height: 22px;
+    padding: 1px 5px 1px 3px;
+    font-size: 10px;
+  }
+
+  .ms-vitals .uiimg-status-icon {
+    width: 16px;
+    height: 16px;
+  }
+
+  .combat-layout .enemy {
+    min-height: 62px;
+  }
+
+  .combat-layout .hand {
+    grid-template-rows: 166px;
+    grid-auto-columns: calc((100% - 16px) / 3);
+    gap: 8px;
+    height: 172px;
+    max-height: 172px;
+    padding: 2px 4px 4px;
+  }
+
+  .combat-layout .hand .hand-card-slot {
+    grid-template-rows: 138px 22px;
+    height: 166px;
+    min-height: 166px;
+    gap: 6px;
+  }
+
+  .combat-layout .hand .hand-card-slot .game-card {
+    height: 138px;
+    min-height: 0;
+    padding: 7px 6px 6px;
+  }
+
+  .combat-layout .hand .game-card .card-body {
+    display: none;
+  }
+
+  .combat-layout .hand .hand-card-slot .discard-action {
+    height: 22px;
+    min-height: 22px;
+  }
+
+  .hand-swipe-hint {
+    min-height: 22px;
+    font-size: 10px;
+  }
+
+  .uiimg-scroll-hint-icon {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+/* UI-IMAGE-R2 Xiaoxitian mural visual system */
+:root {
+  --xxt-ink: #121817;
+  --xxt-ink-2: #1b211c;
+  --xxt-wood: #2d1c14;
+  --xxt-wood-2: #3b2418;
+  --xxt-wall: #7a5a38;
+  --xxt-wall-dim: #3b2b21;
+  --xxt-paper: #eadfbd;
+  --xxt-paper-deep: #d8c392;
+  --xxt-text: #f7ead0;
+  --xxt-muted: #c9b27a;
+  --xxt-line: #b89348;
+  --xxt-line-soft: rgba(203, 169, 86, 0.48);
+  --xxt-red: #9f3f2c;
+  --xxt-red-soft: #6e2f27;
+  --xxt-green: #547965;
+  --xxt-green-soft: #2f4c40;
+  --xxt-blue: #405968;
+  --xxt-thunder: #7b689e;
+  --xxt-shadow: 0 18px 38px rgba(6, 8, 6, 0.38);
+  --xxt-text-shadow: 0 1px 1px rgba(0, 0, 0, 0.48);
+  --ui-img-xxt-wall: url("/assets/ui-image-r2/xxt-wall-texture.svg");
+}
+
+body {
+  color: var(--xxt-text);
+  background:
+    radial-gradient(circle at 22% 12%, rgba(159, 63, 44, 0.16), transparent 28%),
+    radial-gradient(circle at 86% 8%, rgba(84, 121, 101, 0.13), transparent 30%),
+    linear-gradient(180deg, rgba(14, 21, 19, 0.94), rgba(45, 28, 20, 0.96)),
+    var(--ui-img-xxt-wall),
+    var(--xxt-ink);
+  background-attachment: fixed;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(184, 147, 72, 0.06) 0 1px, transparent 1px 96px),
+    linear-gradient(180deg, rgba(234, 223, 189, 0.04) 0 1px, transparent 1px 72px);
+  opacity: 0.72;
+}
+
+.shell {
+  padding: 14px 18px 2px;
+}
+
+.topbar,
+.intro,
+.codex,
+.progression-panel,
+.run-panel,
+.log,
+.reward-view,
+.game-over,
+.cloud-panel,
+.detail-panel,
+.route-view,
+.shop-view,
+.discard-pick-panel,
+.battlefield,
+.enemy,
+.relic-choice,
+.route-node,
+.shop-item,
+.talent,
+.goal-panel,
+.vitals {
+  color: var(--xxt-text);
+  border: 1px solid var(--xxt-line-soft);
+  background:
+    linear-gradient(180deg, rgba(44, 30, 22, 0.92), rgba(18, 24, 22, 0.91)),
+    var(--ui-img-xxt-wall);
+  box-shadow: var(--xxt-shadow), inset 0 0 0 1px rgba(242, 211, 132, 0.08);
+}
+
+.topbar {
+  margin-bottom: 12px;
+  padding: 8px 12px;
+  border-radius: 8px;
+}
+
+.brand h1,
+.intro h2,
+.reward-view h2,
+.game-over h2,
+.enemy h3,
+.reward-title,
+.floor-head h2 {
+  color: #fff2c4;
+  text-shadow: var(--xxt-text-shadow);
+  letter-spacing: 0;
+}
+
+.brand p,
+.muted,
+.card-rarity,
+.myth-tags,
+.stat span,
+.codex li,
+.roll-info,
+.route-view p,
+.shop-view p {
+  color: var(--xxt-muted);
+}
+
+.brand img {
+  border: 1px solid var(--xxt-line);
+  border-radius: 8px;
+  background: var(--xxt-red-soft);
+  box-shadow: inset 0 0 0 1px rgba(255, 239, 174, 0.25), 0 8px 20px rgba(0, 0, 0, 0.32);
+}
+
+.topbar-actions .stat,
+.stat,
+.uiimg-stat,
+.status-chip-inline,
+.status-chip,
+.impact-chip,
+.style-badges span,
+.effect-badges span,
+.difficulty-badge,
+.tm-formation-chip,
+.gold-drop {
+  color: var(--xxt-text);
+  border-color: rgba(196, 157, 78, 0.56);
+  background: linear-gradient(180deg, rgba(62, 43, 29, 0.9), rgba(28, 33, 29, 0.9));
+  box-shadow: inset 0 0 0 1px rgba(252, 230, 160, 0.07);
+}
+
+.uiimg-stat strong,
+.stat strong {
+  color: #fff3c8;
+}
+
+button {
+  color: var(--xxt-text);
+  border-color: rgba(196, 157, 78, 0.62);
+  background:
+    linear-gradient(180deg, rgba(74, 47, 27, 0.96), rgba(41, 27, 19, 0.96));
+  box-shadow: inset 0 0 0 1px rgba(255, 235, 166, 0.1);
+  transition: border-color 120ms ease, transform 120ms ease, background 120ms ease;
+}
+
+button:hover {
+  border-color: #f0c96f;
+  background: linear-gradient(180deg, rgba(91, 56, 31, 0.98), rgba(49, 31, 20, 0.98));
+}
+
+button.primary,
+button.danger {
+  border-color: rgba(226, 177, 88, 0.7);
+  background: linear-gradient(180deg, rgba(156, 63, 44, 0.96), rgba(98, 39, 29, 0.98));
+  color: #fff2d1;
+}
+
+button.ghost {
+  background: linear-gradient(180deg, rgba(36, 45, 40, 0.88), rgba(24, 30, 27, 0.92));
+}
+
+.difficulty-badge,
+.card-rarity,
+.myth-tags,
+.style-badges span,
+.effect-badges span {
+  border-radius: 999px;
+}
+
+.combat-layout {
+  grid-template-columns: 240px minmax(620px, 760px);
+  gap: 12px;
+}
+
+.combat-layout .battlefield {
+  position: relative;
+  gap: 10px;
+  padding: 10px 12px;
+  overflow: hidden;
+}
+
+.combat-layout .battlefield::before {
+  content: "";
+  position: absolute;
+  inset: 8px;
+  pointer-events: none;
+  border: 1px solid rgba(217, 174, 89, 0.18);
+  border-radius: 7px;
+}
+
+.action-banner {
+  border-left-color: var(--xxt-red);
+  background:
+    linear-gradient(90deg, rgba(159, 63, 44, 0.28), rgba(31, 32, 25, 0.78)),
+    var(--ui-img-xxt-wall);
+}
+
+.action-banner .latest-action {
+  color: #f2a66f;
+}
+
+.enemy {
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.enemy::before {
+  content: "";
+  position: absolute;
+  inset: 8px 10px auto auto;
+  width: 48px;
+  height: 64px;
+  opacity: 0.46;
+  pointer-events: none;
+  background: url('/assets/ui-r5/panels/panel_enemy_standee_motif.png') center / contain no-repeat;
+}
+
+.enemy.selected {
+  border-color: #d9aa57;
+  box-shadow: 0 0 0 1px rgba(217, 170, 87, 0.38), var(--xxt-shadow);
+}
+
+.meter {
+  border-color: rgba(216, 195, 146, 0.45);
+  background: rgba(18, 18, 16, 0.58);
+}
+
+.meter-fill {
+  background: linear-gradient(90deg, #812f25, #b54b35);
+}
+
+.block-meter .meter-fill {
+  background: linear-gradient(90deg, var(--xxt-blue), #6f8790);
+}
+
+.intent {
+  color: #ffdca6;
+  border-color: rgba(190, 112, 76, 0.58);
+  background: linear-gradient(180deg, rgba(92, 42, 34, 0.92), rgba(47, 31, 26, 0.92));
+}
+
+.status-burn,
+.status-chip-inline[data-status="burn"] {
+  border-color: rgba(213, 112, 59, 0.7);
+  background: linear-gradient(180deg, rgba(104, 45, 31, 0.88), rgba(43, 32, 25, 0.9));
+  animation: fx-burn-pulse 2.8s ease-in-out infinite;
+}
+
+.status-poison,
+.status-chip-inline[data-status="poison"] {
+  border-color: rgba(104, 145, 98, 0.7);
+  background: linear-gradient(180deg, rgba(49, 76, 62, 0.88), rgba(31, 39, 32, 0.9));
+  animation: fx-poison-mist 3.8s ease-in-out infinite;
+}
+
+.status-thunderMark,
+.status-chip-inline[data-status="thunderMark"] {
+  border-color: rgba(151, 128, 190, 0.62);
+  background: linear-gradient(180deg, rgba(56, 48, 76, 0.82), rgba(32, 31, 38, 0.9));
+  animation: fx-thunder-thread 4.2s steps(2, end) infinite;
+}
+
+.status-spikes,
+.status-chip-inline[data-status="spikes"] {
+  border-color: rgba(160, 175, 100, 0.68);
+  background: linear-gradient(180deg, rgba(67, 78, 48, 0.82), rgba(33, 39, 28, 0.92));
+  animation: fx-thorn-edge 3.2s ease-in-out infinite;
+}
+
+.status-blockShield,
+.status-chip-inline[data-status="blockShield"],
+.status-ward,
+.status-chip-inline[data-status="ward"] {
+  border-color: rgba(115, 139, 151, 0.68);
+  background: linear-gradient(180deg, rgba(55, 71, 76, 0.82), rgba(31, 38, 39, 0.92));
+  animation: fx-shield-glow 3.6s ease-in-out infinite;
+}
+
+.hand-area {
+  position: relative;
+}
+
+.hand-head h2 {
+  color: #ffe6a5;
+  text-shadow: var(--xxt-text-shadow);
+}
+
+.combat-layout .hand {
+  padding: 2px 3px 4px;
+}
+
+.card-shell-xxt.uiimg-card-shell {
+  isolation: isolate;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-auto-rows: min-content;
+  align-content: start;
+  gap: 4px 8px;
+  color: var(--xxt-text);
+  border: 1px solid rgba(211, 174, 96, 0.66);
+  background:
+    linear-gradient(180deg, rgba(50, 37, 28, 0.96), rgba(20, 23, 22, 0.98)),
+    var(--ui-img-xxt-wall);
+  box-shadow: 0 12px 22px rgba(4, 6, 5, 0.36), inset 0 0 0 1px rgba(246, 219, 150, 0.1);
+}
+
+.card-shell-xxt::before {
+  content: "";
+  position: absolute;
+  inset: 29px 10px auto 10px;
+  height: 34px;
+  z-index: -1;
+  border: 1px solid rgba(219, 185, 100, 0.22);
+  border-radius: 7px;
+  background:
+    radial-gradient(circle at 22% 24%, rgba(227, 162, 91, 0.22), transparent 26%),
+    radial-gradient(circle at 78% 28%, rgba(84, 121, 101, 0.18), transparent 25%),
+    linear-gradient(135deg, rgba(234, 223, 189, 0.08), rgba(11, 14, 13, 0.16));
+}
+
+.card-shell-xxt::after {
+  content: "";
+  position: absolute;
+  inset: auto 14px 9px 14px;
+  height: 2px;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, rgba(221, 183, 91, 0.78), transparent);
+}
+
+.card-shell-xxt[data-tone="attack"] {
+  border-color: rgba(213, 112, 59, 0.72);
+}
+
+.card-shell-xxt[data-tone="guard"] {
+  border-color: rgba(116, 142, 144, 0.72);
+}
+
+.card-shell-xxt[data-tone="poison"],
+.card-shell-xxt[data-tone="thorn"] {
+  border-color: rgba(103, 142, 100, 0.72);
+}
+
+.card-shell-xxt[data-tone="burn"] {
+  border-color: rgba(206, 97, 53, 0.78);
+}
+
+.card-shell-xxt[data-tone="thunder"] {
+  border-color: rgba(142, 120, 180, 0.68);
+}
+
+.card-shell-xxt .card-rarity {
+  grid-column: 1;
+  justify-self: start;
+  padding: 0 0 1px;
+  color: #f7d78f;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  font-weight: 800;
+}
+
+.card-shell-xxt > strong {
+  grid-column: 1;
+  color: #fff4cf;
+  font-size: 15px;
+  line-height: 1.12;
+  text-shadow: var(--xxt-text-shadow);
+}
+
+.card-shell-xxt .card-cost {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  position: static;
+  justify-self: end;
+  width: 34px;
+  height: 34px;
+  color: #2a190c;
+  border: 1px solid rgba(255, 239, 177, 0.86);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 35% 30%, #fff3b8, #e4b849 60%, #9e6825);
+  box-shadow: inset 0 0 0 2px rgba(95, 54, 21, 0.2), 0 5px 10px rgba(0, 0, 0, 0.26);
+}
+
+.card-shell-xxt .card-body {
+  grid-column: 1 / -1;
+  min-height: 38px;
+  margin-top: 38px;
+  padding: 6px 7px;
+  color: #fff0cf;
+  border: 1px solid rgba(231, 202, 131, 0.28);
+  border-radius: 7px;
+  background: rgba(8, 11, 10, 0.58);
+  text-shadow: none;
+}
+
+.card-shell-xxt .style-badges,
+.card-shell-xxt .effect-badges {
+  grid-column: 1 / -1;
+}
+
+.card-shell-xxt .style-badges span,
+.card-shell-xxt .effect-badges span {
+  color: #f9e8b6;
+  border-color: rgba(222, 184, 98, 0.3);
+  background: rgba(20, 22, 18, 0.56);
+}
+
+.card-shell-xxt .myth-tags {
+  grid-column: 1 / -1;
+  color: #d9bf7e;
+}
+
+.relic-choice,
+.reward-gold-choice {
+  min-height: 118px;
+}
+
+.reward-grid .game-card,
+.reward-grid .relic-choice {
+  background:
+    linear-gradient(180deg, rgba(55, 38, 25, 0.94), rgba(22, 27, 24, 0.96)),
+    var(--ui-img-xxt-wall);
+}
+
+.reward-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.hand-swipe-hint {
+  color: #f0cf86;
+  text-shadow: var(--xxt-text-shadow);
+}
+
+.uiimg-scroll-hint-icon {
+  border: 1px solid rgba(219, 185, 100, 0.38);
+  border-radius: 6px;
+  background: rgba(20, 18, 16, 0.7);
+  box-shadow: inset 0 0 0 1px rgba(242, 211, 132, 0.08);
+}
+
+@keyframes fx-poison-mist {
+  0%, 100% { box-shadow: inset 0 0 0 1px rgba(142, 176, 118, 0.06); }
+  50% { box-shadow: inset 0 0 8px rgba(92, 129, 80, 0.22); }
+}
+
+@keyframes fx-burn-pulse {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.12); }
+}
+
+@keyframes fx-thunder-thread {
+  0%, 86%, 100% { outline: 0 solid transparent; }
+  88% { outline: 1px solid rgba(151, 128, 190, 0.55); }
+}
+
+@keyframes fx-thorn-edge {
+  0%, 100% { box-shadow: inset 0 0 0 1px rgba(160, 175, 100, 0.05); }
+  50% { box-shadow: inset 0 0 0 1px rgba(160, 175, 100, 0.28); }
+}
+
+@keyframes fx-shield-glow {
+  0%, 100% { box-shadow: inset 0 0 0 1px rgba(115, 139, 151, 0.08); }
+  50% { box-shadow: inset 0 0 7px rgba(115, 139, 151, 0.22); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .status-burn,
+  .status-chip-inline[data-status="burn"],
+  .status-poison,
+  .status-chip-inline[data-status="poison"],
+  .status-thunderMark,
+  .status-chip-inline[data-status="thunderMark"],
+  .status-spikes,
+  .status-chip-inline[data-status="spikes"],
+  .status-blockShield,
+  .status-chip-inline[data-status="blockShield"],
+  .status-ward,
+  .status-chip-inline[data-status="ward"] {
+    animation: none;
+  }
+}
+
+@media (max-width: 768px) {
+  body {
+    background-attachment: scroll;
+  }
+
+  .shell {
+    padding: 4px 6px;
+  }
+
+  .topbar {
+    margin-bottom: 6px;
+    padding: 6px;
+  }
+
+  .brand {
+    gap: 6px;
+  }
+
+  .brand img {
+    width: 44px;
+    height: 44px;
+  }
+
+  .brand h1 {
+    font-size: 22px;
+  }
+
+  .brand p {
+    max-width: 188px;
+    overflow-wrap: anywhere;
+    font-size: 10px;
+    line-height: 1.12;
+  }
+
+  .combat-layout {
+    grid-template-columns: 1fr;
+    max-width: 100%;
+    width: 100%;
+    margin: 0;
+    gap: 4px;
+    overflow: hidden;
+  }
+
+  .combat-layout .run-panel {
+    display: none;
+  }
+
+  .combat-layout .battlefield,
+  .combat-layout .log {
+    grid-column: 1;
+  }
+
+  .combat-layout .battlefield {
+    gap: 4px;
+    padding: 5px;
+  }
+
+  .mobile-run-summary {
+    border-color: rgba(196, 157, 78, 0.56);
+    background:
+      linear-gradient(180deg, rgba(44, 30, 22, 0.92), rgba(18, 24, 22, 0.91)),
+      var(--ui-img-xxt-wall);
+  }
+
+  .combat-layout .enemy {
+    min-height: 56px;
+  }
+
+  .combat-layout .hand {
+    grid-template-rows: 166px;
+    height: 172px;
+    max-height: 172px;
+  }
+
+  .combat-layout .hand .hand-card-slot {
+    grid-template-rows: 138px 22px;
+  }
+
+  .combat-layout .hand .hand-card-slot .game-card {
+    height: 138px;
+    padding: 6px 6px 5px;
+  }
+
+  .combat-layout .hand .game-card strong {
+    font-size: 11px;
+    line-height: 1.1;
+  }
+
+  .combat-layout .hand .game-card .card-body {
+    display: -webkit-box;
+    min-height: 26px;
+    margin-top: 30px;
+    padding: 4px 5px;
+    overflow: hidden;
+    font-size: 8px;
+    line-height: 1.25;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  .combat-layout .hand .game-card .card-rarity,
+  .combat-layout .hand .game-card .myth-tags,
+  .combat-layout .hand .game-card .style-badges span,
+  .combat-layout .hand .game-card .effect-badges span {
+    font-size: 8px;
+  }
+
+  .combat-layout .hand .game-card .style-badges,
+  .combat-layout .hand .game-card .effect-badges {
+    gap: 2px;
+  }
+
+  .combat-layout .hand .game-card .card-cost {
+    width: 28px;
+    height: 28px;
+    font-size: 13px;
+  }
+
+  .card-shell-xxt::before {
+    inset: 27px 7px auto 7px;
+    height: 28px;
+  }
+
+  .card-shell-xxt::after {
+    bottom: 6px;
+  }
+
+  .hand-swipe-hint {
+    min-height: 22px;
+  }
+}
+
+/* ============================================================
+   UI R3 XIAOXITIAN SEED ASSET INTEGRATION STYLES
+   ============================================================ */
+
+/* Combat background */
+@media (min-width: 769px) {
+  .combat-layout {
+    grid-template-columns: 210px minmax(700px, 820px);
+    max-width: 1080px;
+    gap: 10px;
+  }
+
+  .combat-layout .run-panel {
+    padding: 14px;
+  }
+
+  .combat-layout .battlefield {
+    min-width: 0;
+  }
+
+  .combat-layout .action-banner {
+    padding: 7px 12px;
+  }
+
+  .combat-layout .enemy {
+    min-height: 148px;
+    padding: 8px 10px 8px 78px;
+    gap: 5px;
+  }
+
+  .combat-layout .enemy .r5-enemy-battle {
+    position: absolute;
+    left: 10px;
+    top: 10px;
+    width: 56px;
+    height: 56px;
+  }
+
+  .combat-layout .enemy-title,
+  .combat-layout .status-line {
+    min-height: 0;
+  }
+}
+
+.r3-combat-bg {
+  background-image:
+    linear-gradient(90deg, rgba(21, 18, 13, 0.52), rgba(14, 18, 16, 0.38) 44%, rgba(39, 25, 17, 0.46)),
+    url('/public/assets/ui-r3/backgrounds/bg_combat_xiaoxitian_hall.png');
+  background-size: cover;
+  background-position: center 42%;
+  background-repeat: no-repeat;
+  position: relative;
+}
+
+.r3-combat-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 24% 16%, rgba(180, 103, 56, 0.18), transparent 31%),
+    linear-gradient(180deg, rgba(7, 10, 9, 0.14), rgba(7, 10, 9, 0.28));
+  pointer-events: none;
+  z-index: 0;
+}
+
+.r3-combat-bg > * {
+  position: relative;
+  z-index: 1;
+}
+
+.r3-combat-bg > .combat-event-feedback-layer {
+  position: absolute;
+  z-index: 2;
+}
+
+/* Reward background */
+.r3-reward-bg {
+  background-image:
+    linear-gradient(180deg, rgba(22, 16, 12, 0.56), rgba(17, 20, 17, 0.5)),
+    url('/public/assets/ui-r3/backgrounds/bg_reward_altar.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
+}
+
+.r3-reward-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(12, 14, 12, 0.18);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.r3-reward-bg > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Card art image */
+.r3-card-art {
+  width: calc(100% - 18px);
+  height: 42px;
+  object-fit: cover;
+  position: absolute;
+  inset: 28px 9px auto;
+  opacity: 0.58;
+  border-radius: 7px;
+  border: 1px solid rgba(219, 185, 100, 0.2);
+  pointer-events: none;
+}
+
+.game-card {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Enemy battle image */
+.r5-enemy-battle {
+  width: 70px;
+  height: 70px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 2px solid rgba(201, 154, 72, 0.55);
+  box-shadow: 0 0 8px rgba(0,0,0,0.35);
+  flex-shrink: 0;
+  background: rgba(18, 19, 15, 0.8);
+}
+
+/* Effect icons */
+.r3-effect-icon {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+}
+
+/* Text-safe overlay for readability */
+.r3-text-safe {
+  background: rgba(12, 14, 12, 0.72);
+  border: 1px solid rgba(201, 154, 72, 0.55);
+  box-shadow: inset 0 0 18px rgba(0,0,0,0.35);
+  backdrop-filter: blur(1.5px);
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .fx-poison-mist,
+  .fx-burn-pulse,
+  .fx-thunder-thread,
+  .fx-thorn-edge,
+  .fx-shield-glow {
+    animation: none !important;
+  }
+}
+
+/* ============================================================
+   UI R4 VISUAL AMPLIFICATION
+   Background, enemy subject, card art, reward/gatherAsh emphasis.
+   ============================================================ */
+
+.r3-combat-bg {
+  background-image:
+    linear-gradient(180deg, rgba(12, 10, 8, 0.06), rgba(13, 12, 10, 0.2) 42%, rgba(13, 11, 9, 0.32)),
+    radial-gradient(circle at 50% 18%, rgba(235, 179, 92, 0.12), transparent 34%),
+    url('/public/assets/ui-r3/backgrounds/bg_combat_xiaoxitian_hall.png');
+  background-size: cover, cover, cover;
+  background-position: center, center, center 48%;
+  box-shadow:
+    inset 0 0 0 1px rgba(230, 188, 98, 0.28),
+    inset 0 -90px 120px rgba(16, 12, 9, 0.34);
+}
+
+.r3-combat-bg::before {
+  background:
+    linear-gradient(90deg, rgba(12, 10, 8, 0.36), transparent 18%, transparent 82%, rgba(12, 10, 8, 0.34)),
+    radial-gradient(circle at 50% 30%, rgba(224, 146, 74, 0.16), transparent 34%);
+}
+
+.combat-layout .battlefield {
+  background-color: rgba(19, 16, 12, 0.34);
+}
+
+.combat-layout .action-banner,
+.combat-layout .hand-head,
+.combat-layout .enemy,
+.card-shell-xxt .card-body,
+.reward-title,
+.reward-view > p,
+.reward-actions,
+.discard-pick-panel > h2,
+.discard-pick-panel > p {
+  backdrop-filter: blur(1.2px);
+}
+
+.combat-layout .enemy {
+  background:
+    linear-gradient(90deg, rgba(33, 24, 18, 0.94), rgba(19, 22, 19, 0.82) 46%, rgba(31, 23, 18, 0.94)),
+    radial-gradient(circle at 16% 45%, rgba(226, 171, 88, 0.12), transparent 32%),
+    var(--ui-img-xxt-wall);
+  box-shadow:
+    var(--xxt-shadow),
+    inset 0 0 0 1px rgba(246, 219, 150, 0.1),
+    inset 0 0 42px rgba(0, 0, 0, 0.22);
+}
+
+.combat-layout .enemy::before {
+  width: 72px;
+  height: 96px;
+  opacity: 0.48;
+}
+
+.r5-enemy-battle {
+  width: 90px;
+  height: 90px;
+  border-color: rgba(224, 181, 92, 0.72);
+  background:
+    linear-gradient(180deg, rgba(43, 31, 22, 0.9), rgba(17, 19, 16, 0.92));
+  box-shadow:
+    0 12px 22px rgba(0, 0, 0, 0.38),
+    inset 0 0 0 1px rgba(255, 236, 169, 0.14);
+}
+
+.r3-card-art {
+  width: calc(100% - 16px);
+  height: 58px;
+  inset: 30px 8px auto;
+  opacity: 0.74;
+  border-color: rgba(227, 188, 98, 0.34);
+  box-shadow: inset 0 -26px 28px rgba(8, 8, 7, 0.2);
+}
+
+.card-shell-xxt::before {
+  inset: 28px 8px auto 8px;
+  height: 62px;
+  opacity: 0.74;
+}
+
+.card-shell-xxt .card-body {
+  margin-top: 54px;
+  color: #fff3d4;
+  background: rgba(8, 10, 9, 0.76);
+  border-color: rgba(232, 202, 130, 0.38);
+}
+
+.r3-reward-bg {
+  background-image:
+    linear-gradient(180deg, rgba(16, 12, 9, 0.2), rgba(18, 13, 9, 0.32)),
+    radial-gradient(circle at 30% 32%, rgba(232, 154, 78, 0.14), transparent 30%),
+    url('/public/assets/ui-r3/backgrounds/bg_reward_altar.png');
+  background-size: cover, cover, cover;
+  background-position: center, center, center 48%;
+  box-shadow:
+    inset 0 0 0 1px rgba(232, 190, 99, 0.34),
+    inset 0 -80px 110px rgba(14, 10, 8, 0.34);
+}
+
+.r3-reward-bg::before {
+  background:
+    linear-gradient(90deg, rgba(9, 8, 7, 0.2), transparent 18%, transparent 82%, rgba(9, 8, 7, 0.2));
+}
+
+.reward-grid .game-card,
+.reward-grid .relic-choice {
+  border-color: rgba(222, 178, 88, 0.72);
+  background:
+    linear-gradient(180deg, rgba(47, 33, 23, 0.88), rgba(15, 18, 16, 0.9)),
+    radial-gradient(circle at 50% 18%, rgba(225, 159, 79, 0.12), transparent 34%),
+    var(--ui-img-xxt-wall);
+}
+
+.reward-grid .r3-card-art {
+  height: 70px;
+  opacity: 0.72;
+}
+
+.reward-grid .card-shell-xxt .card-body {
+  margin-top: 66px;
+}
+
+.discard-pick-panel {
+  border-color: rgba(222, 178, 88, 0.78);
+  background:
+    linear-gradient(180deg, rgba(24, 16, 11, 0.34), rgba(12, 13, 11, 0.55)),
+    radial-gradient(circle at 42% 34%, rgba(216, 132, 69, 0.16), transparent 34%),
+    url('/public/assets/ui-r3/backgrounds/bg_gatherash_talisman_altar.png');
+  background-size: cover, cover, cover;
+  background-position: center, center, center 48%;
+  box-shadow:
+    0 20px 60px rgba(8, 6, 4, 0.42),
+    inset 0 0 0 1px rgba(246, 219, 150, 0.1);
+}
+
+.discard-pick-panel > h2,
+.discard-pick-panel > p,
+.reward-title,
+.reward-view > p {
+  display: inline-flex;
+  width: fit-content;
+  max-width: 100%;
+  padding: 5px 8px;
+  border: 1px solid rgba(220, 177, 88, 0.34);
+  border-radius: 7px;
+  background: rgba(11, 11, 9, 0.58);
+}
+
+@media (min-width: 769px) {
+  .shell {
+    padding: 8px 18px 0;
+  }
+
+  .topbar {
+    min-height: 48px;
+    margin-bottom: 8px;
+    padding: 6px 10px;
+  }
+
+  .brand img {
+    width: 42px;
+    height: 42px;
+  }
+
+  .brand h1 {
+    font-size: 24px;
+  }
+
+  .brand p {
+    font-size: 10px;
+    line-height: 1.12;
+  }
+
+  .combat-layout {
+    grid-template-columns: 188px minmax(820px, 930px);
+    max-width: 1130px;
+  }
+
+  .combat-layout .run-panel {
+    padding: 12px;
+  }
+
+  .combat-layout .battlefield {
+    padding: 9px 12px 8px;
+  }
+
+  .combat-layout .enemy {
+    min-height: 186px;
+    padding: 12px 14px 12px 164px;
+    gap: 6px;
+  }
+
+  .combat-layout .enemy .r5-enemy-battle {
+    left: 16px;
+    top: 20px;
+    width: 132px;
+    height: 132px;
+    border-radius: 10px;
+  }
+
+  .combat-layout .enemy-title h3 {
+    font-size: 22px;
+  }
+
+  .combat-layout .enemy .hp-meter {
+    height: 25px;
+  }
+
+  .combat-layout .enemy button.small {
+    min-height: 27px;
+  }
+
+  .combat-layout .hand {
+    grid-template-rows: 190px;
+    grid-auto-columns: calc((100% - 20px) / 3);
+    gap: 10px;
+    height: 198px;
+    max-height: 198px;
+  }
+
+  .combat-layout .hand-card-slot {
+    grid-template-rows: 160px 28px;
+    height: 194px;
+    min-height: 194px;
+    gap: 6px;
+  }
+
+  .combat-layout .hand-card-slot .game-card {
+    height: 160px;
+    padding: 9px 10px 8px;
+  }
+
+  .combat-layout .hand .r3-card-art {
+    height: 66px;
+  }
+
+  .combat-layout .hand .card-shell-xxt::before {
+    height: 72px;
+  }
+
+  .combat-layout .hand .card-shell-xxt .card-body {
+    min-height: 40px;
+    margin-top: 64px;
+    font-size: 10px;
+    line-height: 1.25;
+  }
+}
+
+@media (max-width: 768px) {
+  .r3-combat-bg {
+    background-position: center, center, center 52%;
+    box-shadow:
+      inset 0 0 0 1px rgba(230, 188, 98, 0.24),
+      inset 0 -70px 100px rgba(16, 12, 9, 0.34);
+  }
+
+  .combat-layout .battlefield {
+    padding: 4px 5px;
+  }
+
+  .combat-layout .enemy {
+    min-height: 150px;
+    padding: 7px 7px 7px 98px;
+    gap: 3px;
+  }
+
+  .combat-layout .enemy .r5-enemy-battle {
+    position: absolute;
+    left: 9px;
+    top: 11px;
+    width: 78px;
+    height: 78px;
+    border-radius: 8px;
+  }
+
+  .combat-layout .enemy h3 {
+    font-size: 13px;
+  }
+
+  .combat-layout .enemy .meter {
+    height: 20px;
+  }
+
+  .combat-layout .enemy .status-line {
+    min-height: 0;
+    font-size: 10px;
+  }
+
+  .combat-layout .hand {
+    grid-template-rows: 170px;
+    height: 176px;
+    max-height: 176px;
+  }
+
+  .combat-layout .hand .hand-card-slot {
+    grid-template-rows: 142px 22px;
+    height: 170px;
+    min-height: 170px;
+  }
+
+  .combat-layout .hand .hand-card-slot .game-card {
+    height: 142px;
+    padding: 6px 6px 5px;
+  }
+
+  .combat-layout .hand .r3-card-art {
+    height: 52px;
+    inset: 29px 7px auto;
+  }
+
+  .combat-layout .hand .card-shell-xxt::before {
+    inset: 28px 7px auto 7px;
+    height: 54px;
+  }
+
+  .combat-layout .hand .game-card .card-body {
+    display: -webkit-box;
+    min-height: 24px;
+    margin-top: 49px;
+    padding: 4px 5px;
+    overflow: hidden;
+    font-size: 8px;
+    line-height: 1.2;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  .reward-grid .r3-card-art {
+    height: 54px;
+  }
+
+  .reward-grid .card-shell-xxt .card-body {
+    margin-top: 50px;
+  }
+
+  .discard-pick-panel {
+    inset: auto 8px 8px 8px;
+    max-height: min(560px, calc(100vh - 16px));
+  }
+}
+
+/* ============================================================
+   UI R4.1 CARD READABILITY / COST TOKEN FIX
+   Narrow fix: keep art, but remove art/text overlap and soften cost seal.
+   ============================================================ */
+
+.card-shell-xxt .card-rarity,
+.card-shell-xxt > strong,
+.card-shell-xxt .card-body,
+.card-shell-xxt .style-badges,
+.card-shell-xxt .effect-badges,
+.card-shell-xxt .myth-tags,
+.card-shell-xxt .card-cost {
+  position: relative;
+  z-index: 2;
+}
+
+.card-shell-xxt .card-rarity,
+.card-shell-xxt > strong {
+  width: fit-content;
+  max-width: calc(100% - 40px);
+  padding: 2px 6px;
+  border: 1px solid rgba(218, 176, 95, 0.28);
+  border-radius: 6px;
+  background: rgba(9, 11, 10, 0.82);
+  box-shadow: inset 0 0 0 1px rgba(255, 230, 170, 0.06);
+}
+
+.card-shell-xxt .card-rarity {
+  color: #e7c982;
+  font-size: 10px;
+  line-height: 1;
+}
+
+.card-shell-xxt > strong {
+  display: block;
+  color: #fff2cf;
+}
+
+.r3-card-art {
+  inset: 50px 8px auto;
+  height: 48px;
+  opacity: 0.68;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.card-shell-xxt::before {
+  inset: 50px 8px auto 8px;
+  height: 48px;
+  opacity: 0.58;
+}
+
+.card-shell-xxt .card-body {
+  margin-top: 52px;
+  background: rgba(8, 10, 9, 0.86);
+  border-color: rgba(218, 176, 95, 0.42);
+}
+
+.card-shell-xxt .style-badges,
+.card-shell-xxt .effect-badges {
+  padding: 2px 3px;
+  border: 1px solid rgba(218, 176, 95, 0.16);
+  border-radius: 6px;
+  background: rgba(8, 10, 9, 0.64);
+}
+
+.card-shell-xxt .myth-tags {
+  width: fit-content;
+  max-width: 100%;
+  padding: 2px 5px;
+  border: 1px solid rgba(218, 176, 95, 0.16);
+  border-radius: 6px;
+  background: rgba(8, 10, 9, 0.66);
+}
+
+.card-shell-xxt .card-cost,
+.uiimg-card-shell .card-cost {
+  width: 30px;
+  height: 30px;
+  color: #f3ddb2;
+  border: 1px solid rgba(218, 176, 95, 0.85);
+  border-radius: 9px;
+  background:
+    linear-gradient(145deg, #2a1a10 0%, #604021 48%, #8a5b2b 72%, #2a1a10 100%);
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.55),
+    inset 0 0 0 1px rgba(255, 230, 170, 0.12);
+  clip-path: polygon(16% 0, 84% 0, 100% 16%, 100% 84%, 84% 100%, 16% 100%, 0 84%, 0 16%);
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.72);
+}
+
+.reward-grid .r3-card-art {
+  inset: 52px 8px auto;
+  height: 58px;
+}
+
+.reward-grid .card-shell-xxt::before {
+  inset: 52px 8px auto 8px;
+  height: 58px;
+}
+
+.reward-grid .card-shell-xxt .card-body {
+  margin-top: 62px;
+}
+
+@media (min-width: 769px) {
+  .combat-layout .hand .r3-card-art {
+    inset: 52px 8px auto;
+    height: 48px;
+  }
+
+  .combat-layout .hand .card-shell-xxt::before {
+    inset: 52px 8px auto 8px;
+    height: 48px;
+  }
+
+  .combat-layout .hand .card-shell-xxt .card-body {
+    margin-top: 52px;
+  }
+}
+
+@media (max-width: 768px) {
+  .combat-layout .hand .r3-card-art {
+    inset: 54px 7px auto;
+    height: 28px;
+  }
+
+  .combat-layout .hand .card-shell-xxt::before {
+    inset: 54px 7px auto 7px;
+    height: 28px;
+  }
+
+  .combat-layout .hand .game-card .card-body {
+    margin-top: 42px;
+    background: rgba(8, 10, 9, 0.88);
+  }
+
+  .combat-layout .hand .card-shell-xxt .card-rarity,
+  .combat-layout .hand .card-shell-xxt > strong {
+    padding: 1px 4px;
+    max-width: calc(100% - 32px);
+  }
+
+  .combat-layout .hand .card-shell-xxt .card-cost,
+  .combat-layout .hand .uiimg-card-shell .card-cost {
+    width: 26px;
+    height: 26px;
+    font-size: 12px;
+  }
+}
+
+/* ============================================================
+   UI R4.2 LAYOUT DENSITY POLISH
+   Narrow fix: card titles, target indicator, player panel, battle log.
+   ============================================================ */
+
+.card-shell-xxt > strong {
+  min-width: 0;
+  max-width: calc(100% - 36px);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.05;
+}
+
+.combat-layout .hand .card-shell-xxt > strong {
+  font-size: 14px;
+}
+
+.enemy {
+  cursor: pointer;
+}
+
+.enemy.selected {
+  border-width: 2px;
+  border-color: rgba(225, 178, 88, 0.96);
+  box-shadow:
+    0 0 0 1px rgba(80, 31, 20, 0.76),
+    0 0 18px rgba(218, 139, 68, 0.22),
+    var(--xxt-shadow);
+}
+
+.enemy:focus-visible {
+  outline: 2px solid rgba(242, 203, 112, 0.85);
+  outline-offset: 3px;
+}
+
+.combat-layout .run-panel {
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  min-width: 0;
+}
+
+.combat-layout .run-panel .floor-head {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.combat-layout .run-panel .floor-actions {
+  margin-left: auto;
+  justify-content: flex-end;
+  flex-wrap: nowrap;
+}
+
+.combat-layout .run-panel > .player-vitals-row {
+  grid-column: 1 / -1;
+  grid-row: 2;
+}
+
+.combat-layout .run-panel > .run-mode-row {
+  grid-column: 1 / -1;
+  grid-row: 3;
+  flex-wrap: nowrap;
+  min-width: 0;
+}
+
+.combat-layout .run-panel > .run-stats-grid {
+  grid-column: 1 / -1;
+  grid-row: 4;
+}
+
+.combat-layout .run-panel > .roll-info {
+  grid-column: 1 / -1;
+  grid-row: 5;
+}
+
+.combat-layout .run-panel .player-vitals-row,
+.mobile-run-summary .player-vitals-row {
+  flex-wrap: nowrap;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.player-vitals-status {
+  min-width: 0;
+  flex: 1 1 auto;
+  flex-wrap: nowrap;
+  overflow: hidden;
+}
+
+.player-vitals-status .status-chip-inline {
+  flex: 0 0 auto;
+  max-width: 78px;
+  white-space: nowrap;
+}
+
+.player-vitals-status .status-chip-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.player-vitals-status .status-overflow {
+  max-width: 38px;
+}
+
+.combat-layout .action-banner {
+  max-height: 96px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  padding-right: 8px;
+  font-size: 13px;
+  line-height: 1.28;
+}
+
+.combat-layout .action-banner strong {
+  font-size: 13px;
+  line-height: 1.28;
+}
+
+.combat-layout .action-banner .latest-action {
+  font-size: 14px;
+}
+
+@media (min-width: 769px) {
+  .combat-layout {
+    grid-template-columns: 300px minmax(820px, 930px);
+    max-width: 1250px;
+  }
+
+  .combat-layout .run-panel .player-vitals-row {
+    width: 100%;
+  }
+
+  .combat-layout .run-panel .player-gold-slot {
+    flex: 0 0 76px;
+    width: 76px;
+    min-width: 0;
+    margin-left: auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .mobile-run-summary {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      "top actions"
+      "vitals actions"
+      "stats actions";
+    align-items: start;
+    column-gap: 6px;
+  }
+
+  .mobile-run-summary .ms-top {
+    grid-area: top;
+  }
+
+  .mobile-run-summary .ms-vitals {
+    grid-area: vitals;
+  }
+
+  .mobile-run-summary .ms-stats {
+    grid-area: stats;
+  }
+
+  .mobile-run-summary .ms-actions {
+    grid-area: actions;
+    align-self: end;
+    justify-self: end;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    max-width: 132px;
+  }
+
+  .mobile-run-summary .player-life-slot {
+    flex: 0 0 auto;
+  }
+
+  .mobile-run-summary .player-gold-slot {
+    flex: 0 0 76px;
+    width: 76px;
+    min-width: 0;
+    margin-left: auto;
+  }
+
+  .mobile-run-summary .player-vitals-status {
+    flex: 1 1 auto;
+    max-width: 112px;
+  }
+
+  .mobile-run-summary .player-vitals-status .status-chip-inline {
+    max-width: 66px;
+  }
+
+  .combat-layout .hand .card-shell-xxt > strong {
+    max-width: calc(100% - 28px);
+    padding: 1px 3px;
+    font-size: 9.5px;
+    line-height: 1.05;
+  }
+
+  .combat-layout .action-banner {
+    max-height: 86px;
+    font-size: 10px;
+    line-height: 1.24;
+  }
+
+  .combat-layout .action-banner strong {
+    font-size: 10px;
+    line-height: 1.24;
+  }
+
+  .combat-layout .action-banner .latest-action {
+    font-size: 11px;
+  }
+
+}
+
+/* ============================================================
+   UI R4.3 PLAYER STATUS / TARGET POLISH
+   Narrow fix: gold/action placement, target text removal, HP/block bars.
+   ============================================================ */
+
+.enemy.selected::after {
+  content: none !important;
+  display: none !important;
+}
+
+.combat-layout .run-panel {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.combat-layout .run-panel .floor-head {
+  grid-row: 1;
+  align-items: flex-start;
+}
+
+.player-action-column {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: flex-start;
+  gap: 6px;
+  margin-left: auto;
+}
+
+.player-action-column .player-gold-slot {
+  flex: 0 0 auto;
+  width: 76px;
+  min-width: 76px;
+  min-height: 42px;
+  justify-self: end;
+}
+
+.player-action-column .floor-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 4px;
+  margin-left: 0;
+}
+
+.combat-layout .run-panel > .player-live-row {
+  grid-column: 1 / -1;
+  grid-row: 2;
+}
+
+.combat-layout .run-panel > .run-mode-row {
+  grid-row: 3;
+}
+
+.combat-layout .run-panel > .roll-info {
+  grid-row: 4;
+}
+
+.player-live-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.player-resource-bars {
+  flex: 0 0 150px;
+  display: grid;
+  gap: 5px;
+  min-width: 132px;
+}
+
+.player-resource-meter {
+  height: 24px;
+  border-color: rgba(216, 195, 146, 0.45);
+  background: rgba(15, 16, 14, 0.72);
+}
+
+.player-resource-meter em {
+  color: #fff2d0;
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 900;
+  line-height: 1;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.72);
+}
+
+.player-hp-meter .meter-fill {
+  background: linear-gradient(90deg, #842e26, #b74a38);
+}
+
+.player-block-meter .meter-fill {
+  background: linear-gradient(90deg, #3f484b, #717d7f);
+}
+
+.player-vitals-status {
+  flex: 1 1 auto;
+  align-self: center;
+}
+
+@media (min-width: 769px) {
+  .combat-layout .run-panel {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .combat-layout .run-panel .floor-head {
+    gap: 10px;
+  }
+
+  .combat-layout .run-panel .floor-head h2 {
+    min-width: 0;
+  }
+
+  .combat-layout .run-panel .player-vitals-status {
+    max-width: 102px;
+  }
+}
+
+@media (max-width: 768px) {
+  .mobile-run-summary {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      "top actions"
+      "vitals actions"
+      "stats actions";
+    column-gap: 7px;
+  }
+
+  .mobile-run-summary .ms-vitals.player-live-row {
+    grid-area: vitals;
+    align-items: center;
+  }
+
+  .mobile-run-summary .ms-actions.player-action-column {
+    grid-area: actions;
+    align-self: start;
+    width: 82px;
+    max-width: 82px;
+  }
+
+  .mobile-run-summary .ms-actions .player-gold-slot {
+    width: 76px;
+    min-width: 76px;
+    min-height: 42px;
+  }
+
+  .mobile-run-summary .ms-actions .floor-actions {
+    flex-wrap: nowrap;
+  }
+
+  .mobile-run-summary .player-resource-bars {
+    flex-basis: 112px;
+    min-width: 104px;
+    gap: 4px;
+  }
+
+  .mobile-run-summary .player-resource-meter {
+    height: 22px;
+  }
+
+  .mobile-run-summary .player-resource-meter em {
+    font-size: 12px;
+  }
+
+  .mobile-run-summary .player-vitals-status {
+    max-width: 98px;
+  }
+}
+
+/* ============================================================
+   UI R4.4 PLAYER STATUS SPACE POLISH
+   Narrow fix: compact right info column and wider one-line buff area.
+   ============================================================ */
+
+.player-action-column {
+  width: 82px;
+  min-width: 82px;
+  align-items: stretch;
+  gap: 4px;
+}
+
+.player-action-column .player-gold-slot,
+.player-gold-strip {
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  height: 24px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 2px 7px;
+  border: 1px solid rgba(218, 176, 95, 0.72);
+  border-radius: 7px;
+  background:
+    linear-gradient(180deg, rgba(54, 36, 20, 0.92), rgba(24, 20, 14, 0.88)),
+    rgba(17, 18, 15, 0.8);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 229, 168, 0.08),
+    0 1px 4px rgba(0, 0, 0, 0.28);
+  color: #f2d99e;
+  white-space: nowrap;
+}
+
+.combat-layout .run-panel .player-action-column .player-gold-slot,
+.mobile-run-summary .ms-actions.player-action-column .player-gold-slot {
+  flex: 0 0 24px;
+  width: 100%;
+  min-width: 0;
+  max-width: none;
+  min-height: 0;
+  height: 24px;
+}
+
+.player-gold-strip .uiimg-stat-icon {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+}
+
+.player-gold-strip strong {
+  color: #f8e5b4;
+  font-size: 13px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.player-roll-strip {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 18px;
+  padding: 1px 5px;
+  border: 1px solid rgba(191, 156, 91, 0.42);
+  border-radius: 6px;
+  background: rgba(14, 18, 16, 0.62);
+  color: rgba(241, 221, 176, 0.9);
+  font-size: 10.5px;
+  font-weight: 800;
+  line-height: 1.35;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.player-action-column .floor-actions {
+  width: 100%;
+}
+
+.player-action-column .floor-actions button {
+  flex: 1 1 0;
+  min-width: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+.combat-layout .run-panel .player-vitals-status,
+.mobile-run-summary .player-vitals-status {
+  max-width: none;
+}
+
+.player-vitals-status .status-chip-inline {
+  max-width: 38px;
+}
+
+.player-vitals-status .status-overflow {
+  max-width: 30px;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+@media (max-width: 768px) {
+  .mobile-run-summary {
+    grid-template-areas:
+      "top actions"
+      "vitals actions";
+    column-gap: 7px;
+  }
+
+  .mobile-run-summary .ms-actions.player-action-column {
+    width: 82px;
+    max-width: 82px;
+    gap: 3px;
+  }
+
+  .mobile-run-summary .ms-actions .player-gold-slot {
+    width: 100%;
+    min-width: 0;
+    flex-basis: 22px;
+    height: 22px;
+  }
+
+  .mobile-run-summary .player-gold-strip .uiimg-stat-icon {
+    width: 16px;
+    height: 16px;
+    flex-basis: 16px;
+  }
+
+  .mobile-run-summary .player-gold-strip strong {
+    font-size: 12px;
+  }
+
+  .mobile-run-summary .player-roll-strip {
+    min-height: 17px;
+    padding-top: 1px;
+    padding-bottom: 1px;
+    font-size: 10px;
+  }
+
+  .mobile-run-summary .player-vitals-status .status-chip-inline {
+    max-width: 36px;
+  }
+}
+
+/* ============================================================
+   UI R4.5 HAND / CARD DENSITY POLISH
+   Narrow fix: readable hand counters and larger card art windows.
+   ============================================================ */
+
+.combat-layout .pile-strip {
+  gap: 4px;
+}
+
+.combat-layout .pile-strip > span,
+.combat-layout .pile-strip > button {
+  min-height: 20px;
+  padding: 2px 6px;
+  color: #f4dfb0;
+  border: 1px solid rgba(190, 150, 72, 0.75);
+  border-radius: 999px;
+  background:
+    linear-gradient(180deg, rgba(39, 27, 17, 0.92), rgba(16, 14, 11, 0.9));
+  background-color: #1c1710;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 226, 164, 0.06),
+    0 1px 3px rgba(0, 0, 0, 0.22);
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1.15;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.68);
+}
+
+.combat-layout .pile-strip > button.pile-button {
+  cursor: pointer;
+}
+
+.combat-layout .hand .card-shell-xxt.uiimg-card-shell {
+  gap: 2px 6px;
+  padding: 5px 6px 4px;
+}
+
+.combat-layout .hand .card-shell-xxt .card-rarity,
+.combat-layout .hand .card-shell-xxt > strong {
+  padding: 1px 4px;
+  border-radius: 5px;
+}
+
+.combat-layout .hand .card-shell-xxt .card-rarity {
+  font-size: 8px;
+  line-height: 1;
+}
+
+.combat-layout .hand .card-shell-xxt > strong {
+  font-size: 12px;
+  line-height: 1;
+}
+
+.combat-layout .hand .r3-card-art {
+  inset: 38px 7px auto;
+  height: 64px;
+  opacity: 0.72;
+}
+
+.combat-layout .hand .card-shell-xxt::before {
+  inset: 38px 7px auto 7px;
+  height: 64px;
+}
+
+.combat-layout .hand .card-shell-xxt .card-body {
+  min-height: 26px;
+  margin-top: 66px;
+  padding: 3px 5px;
+  font-size: 10px;
+  line-height: 1.15;
+}
+
+.combat-layout .hand .card-shell-xxt .style-badges,
+.combat-layout .hand .card-shell-xxt .effect-badges {
+  min-height: 0;
+  max-height: 16px;
+  padding: 1px 2px;
+  gap: 2px;
+  overflow: hidden;
+}
+
+.combat-layout .hand .card-shell-xxt .style-badges span,
+.combat-layout .hand .card-shell-xxt .effect-badges span {
+  padding: 1px 3px;
+  font-size: 8px;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.combat-layout .hand .card-shell-xxt .myth-tags {
+  max-width: 100%;
+  max-height: 14px;
+  padding: 1px 3px;
+  overflow: hidden;
+  font-size: 8px;
+  line-height: 1;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 768px) {
+  .combat-layout .pile-strip {
+    gap: 3px;
+  }
+
+  .combat-layout .pile-strip > span,
+  .combat-layout .pile-strip > button {
+    min-height: 18px;
+    padding: 1px 5px;
+    font-size: 10px;
+  }
+
+  .combat-layout .hand .card-shell-xxt.uiimg-card-shell {
+    padding: 4px 5px 4px;
+    gap: 1px 4px;
+  }
+
+  .combat-layout .hand .card-shell-xxt .card-rarity,
+  .combat-layout .hand .card-shell-xxt > strong {
+    padding: 1px 3px;
+  }
+
+  .combat-layout .hand .card-shell-xxt > strong {
+    font-size: 9.5px;
+    line-height: 1;
+  }
+
+  .combat-layout .hand .card-shell-xxt .card-rarity {
+    font-size: 7px;
+  }
+
+  .combat-layout .hand .r3-card-art {
+    inset: 34px 6px auto;
+    height: 42px;
+  }
+
+  .combat-layout .hand .card-shell-xxt::before {
+    inset: 34px 6px auto 6px;
+    height: 42px;
+  }
+
+  .combat-layout .hand .game-card .card-body,
+  .combat-layout .hand .card-shell-xxt .card-body {
+    min-height: 22px;
+    margin-top: 47px;
+    padding: 2px 4px;
+    font-size: 7.6px;
+    line-height: 1.12;
+  }
+
+  .combat-layout .hand .card-shell-xxt .style-badges,
+  .combat-layout .hand .card-shell-xxt .effect-badges {
+    max-height: 13px;
+    padding: 1px;
+  }
+
+  .combat-layout .hand .card-shell-xxt .style-badges span,
+  .combat-layout .hand .card-shell-xxt .effect-badges span,
+  .combat-layout .hand .card-shell-xxt .myth-tags {
+    font-size: 6.8px;
+    line-height: 1;
+  }
+
+  .combat-layout .hand .card-shell-xxt .myth-tags {
+    max-height: 12px;
+    padding: 1px 2px;
+  }
+}
+
+/* ============================================================
+   UI R4.6 CARD FOOTER OVERLAP FIX
+   Narrow fix: one compact footer, visible tag limit, and source line separation.
+   ============================================================ */
+
+.card-shell-xxt .card-footer-xxt {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-rows: 14px 10px;
+  gap: 2px;
+  min-width: 0;
+  min-height: 26px;
+  max-height: 28px;
+  overflow: hidden;
+}
+
+.card-shell-xxt .card-tag-row {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 2px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.card-shell-xxt .card-tag-chip {
+  display: inline-flex;
+  flex: 0 1 auto;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  max-width: 42%;
+  height: 14px;
+  padding: 0 4px;
+  overflow: hidden;
+  border: 1px solid rgba(222, 184, 98, 0.36);
+  border-radius: 5px;
+  color: #f5dfab;
+  background: rgba(12, 14, 12, 0.74);
+  box-shadow: inset 0 0 0 1px rgba(255, 231, 171, 0.05);
+  font-size: 7.6px;
+  font-weight: 800;
+  line-height: 1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.card-shell-xxt .card-tag-overflow {
+  flex: 0 0 auto;
+  max-width: 26px;
+  color: #f7e6bd;
+  border-color: rgba(218, 176, 95, 0.58);
+  background: rgba(62, 42, 22, 0.82);
+  cursor: help;
+}
+
+.card-shell-xxt .card-source-xxt {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: 10px;
+  min-height: 10px;
+  padding: 0 3px;
+  overflow: hidden;
+  border: 1px solid rgba(218, 176, 95, 0.16);
+  border-radius: 4px;
+  color: rgba(244, 220, 169, 0.9);
+  background: rgba(8, 10, 9, 0.58);
+  font-size: 7.2px;
+  font-weight: 800;
+  line-height: 9px;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.combat-layout .hand .card-shell-xxt .card-footer-xxt {
+  margin-top: 0;
+}
+
+@media (max-width: 768px) {
+  .combat-layout .hand .card-shell-xxt .card-footer-xxt {
+    grid-template-rows: 11px 8px;
+    gap: 1px;
+    min-height: 20px;
+    max-height: 22px;
+  }
+
+  .combat-layout .hand .card-shell-xxt .card-tag-row {
+    gap: 1px;
+  }
+
+  .combat-layout .hand .card-shell-xxt .card-tag-chip {
+    height: 11px;
+    max-width: 34%;
+    padding: 0 2px;
+    border-radius: 4px;
+    font-size: 6.1px;
+    line-height: 1;
+  }
+
+  .combat-layout .hand .card-shell-xxt .card-tag-overflow {
+    max-width: 22px;
+  }
+
+  .combat-layout .hand .card-shell-xxt .card-source-xxt {
+    height: 8px;
+    min-height: 8px;
+    padding: 0 2px;
+    font-size: 6px;
+    line-height: 7px;
+  }
+}
+
+/* ============================================================
+   UI R4.7 CARD INNER LAYOUT FIX
+   Narrow fix: move cost into header, flatten description, align tags/source.
+   ============================================================ */
+
+.combat-layout .hand .card-shell-xxt .card-cost,
+.combat-layout .hand .uiimg-card-shell .card-cost {
+  top: 1px;
+  right: 8px;
+}
+
+.combat-layout .hand .card-shell-xxt .card-body {
+  min-height: 22px;
+  height: 22px;
+  max-height: 22px;
+  margin-top: 66px;
+  padding: 2px 5px;
+  overflow: hidden;
+  font-size: 9px;
+  line-height: 1.12;
+}
+
+.combat-layout .hand .card-shell-xxt .card-footer-xxt {
+  grid-column: 1 / -1;
+  justify-self: stretch;
+  width: 100%;
+  grid-template-rows: 15px 11px;
+  gap: 2px;
+  min-height: 28px;
+  max-height: 28px;
+  justify-items: stretch;
+}
+
+.combat-layout .hand .card-shell-xxt .card-tag-row {
+  height: 15px;
+  justify-content: flex-start;
+  gap: 3px;
+}
+
+.combat-layout .hand .card-shell-xxt .card-tag-chip {
+  height: 15px;
+  max-width: 38%;
+  padding: 0 4px;
+  font-size: 7.5px;
+  line-height: 1;
+}
+
+.combat-layout .hand .card-shell-xxt .card-tag-overflow {
+  max-width: 25px;
+}
+
+.combat-layout .hand .card-shell-xxt .card-source-xxt {
+  justify-self: center;
+  width: min(74px, 70%);
+  height: 11px;
+  min-height: 11px;
+  padding: 0 4px;
+  font-size: 7.1px;
+  line-height: 10px;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .combat-layout .hand .card-shell-xxt .card-cost,
+  .combat-layout .hand .uiimg-card-shell .card-cost {
+    top: 2px;
+    right: 6px;
+    width: 24px;
+    height: 24px;
+    font-size: 11px;
+  }
+
+  .combat-layout .hand .game-card .card-body,
+  .combat-layout .hand .card-shell-xxt .card-body {
+    min-height: 18px;
+    height: 20px;
+    max-height: 20px;
+    margin-top: 47px;
+    padding: 2px 3px;
+    font-size: 7px;
+    line-height: 1.08;
+  }
+
+  .combat-layout .hand .card-shell-xxt .card-footer-xxt {
+    grid-template-rows: 12px 9px;
+    gap: 1px;
+    min-height: 22px;
+    max-height: 22px;
+  }
+
+  .combat-layout .hand .card-shell-xxt .card-tag-row {
+    height: 12px;
+    gap: 2px;
+  }
+
+  .combat-layout .hand .card-shell-xxt .card-tag-chip {
+    height: 12px;
+    max-width: 34%;
+    padding: 0 2px;
+    font-size: 6px;
+  }
+
+  .combat-layout .hand .card-shell-xxt .card-tag-overflow {
+    max-width: 20px;
+  }
+
+  .combat-layout .hand .card-shell-xxt .card-source-xxt {
+    width: min(58px, 70%);
+    height: 9px;
+    min-height: 9px;
+    padding: 0 2px;
+    font-size: 5.8px;
+    line-height: 8px;
+  }
+}
+
+/* ============================================================
+   UI R4.8 CARD ART FINAL STRETCH
+   Narrow fix: lower the text panel and give the art window the recovered space.
+   ============================================================ */
+
+.combat-layout .hand .r3-card-art {
+  height: 67px;
+}
+
+.combat-layout .hand .card-shell-xxt::before {
+  height: 67px;
+}
+
+.combat-layout .hand .card-shell-xxt .card-body {
+  min-height: 20px;
+  height: 20px;
+  max-height: 20px;
+  margin-top: 69px;
+  padding: 2px 5px;
+  line-height: 1.08;
+}
+
+.combat-layout .hand .card-shell-xxt .card-footer-xxt {
+  margin-top: 0;
+}
+
+@media (max-width: 768px) {
+  .combat-layout .hand .r3-card-art {
+    height: 56px;
+  }
+
+  .combat-layout .hand .card-shell-xxt::before {
+    height: 56px;
+  }
+
+  .combat-layout .hand .game-card .card-body,
+  .combat-layout .hand .card-shell-xxt .card-body {
+    align-self: end;
+    min-height: 20px;
+    height: 20px;
+    max-height: 20px;
+    margin-top: 0;
+    padding: 1px 3px;
+    font-size: 6.9px;
+    line-height: 1.08;
+  }
+
+  .combat-layout .hand .card-shell-xxt .card-footer-xxt {
+    margin-top: 2px;
+  }
+}
+
+/* ============================================================
+   UI R5 FULL ASSETS IMPORT FINAL OVERRIDES
+   Keep UI-R4.8 structure, replace only visual asset URLs.
+   ============================================================ */
+
+.home {
+  background-image:
+    linear-gradient(180deg, rgba(12, 10, 8, 0.18), rgba(10, 10, 8, 0.36)),
+    url('/assets/ui-r5/backgrounds/bg_home_mural_gate.png');
+  background-size: cover, cover;
+  background-position: center, center 48%;
+}
+
+.r3-combat-bg {
+  background-image:
+    linear-gradient(180deg, rgba(12, 10, 8, 0.06), rgba(13, 12, 10, 0.2) 42%, rgba(13, 11, 9, 0.32)),
+    radial-gradient(circle at 50% 18%, rgba(235, 179, 92, 0.12), transparent 34%),
+    url('/assets/ui-r5/backgrounds/bg_combat_xiaoxitian_hall.png');
+}
+
+.r3-reward-bg {
+  background-image:
+    linear-gradient(180deg, rgba(16, 12, 9, 0.2), rgba(18, 13, 9, 0.32)),
+    radial-gradient(circle at 50% 18%, rgba(235, 179, 92, 0.12), transparent 36%),
+    url('/assets/ui-r5/backgrounds/bg_reward_altar.png');
+}
+
+.discard-pick-panel {
+  background-image:
+    linear-gradient(180deg, rgba(14, 12, 10, 0.22), rgba(10, 10, 8, 0.4)),
+    radial-gradient(circle at 50% 18%, rgba(218, 176, 95, 0.12), transparent 34%),
+    url('/assets/ui-r5/backgrounds/bg_gatherash_talisman_altar.png');
+}
+
+.combat-layout .enemy {
+  background-image:
+    linear-gradient(90deg, rgba(33, 24, 18, 0.92), rgba(19, 22, 19, 0.78) 46%, rgba(31, 23, 18, 0.92)),
+    url('/assets/ui-r5/panels/panel_enemy_niche.png');
+  background-size: cover, 100% 100%;
+  background-position: center, center;
+}
+
+.combat-layout .enemy.selected {
+  background-image:
+    linear-gradient(90deg, rgba(39, 25, 18, 0.9), rgba(22, 24, 19, 0.76) 46%, rgba(39, 25, 18, 0.9)),
+    url('/assets/ui-r5/panels/panel_enemy_niche_selected.png');
+}
+
+.r5-enemy-battle {
+  object-position: center 42%;
+}
+
+.r5-card-art {
+  object-fit: cover;
+  object-position: center 44%;
+}
+
+.combat-layout .hand .card-shell-xxt .card-cost,
+.combat-layout .hand .uiimg-card-shell .card-cost {
+  background:
+    linear-gradient(145deg, rgba(58, 38, 22, 0.38), rgba(138, 91, 43, 0.18)),
+    url('/assets/ui-r5/tokens/cost_token_octagon_64.png') center / cover no-repeat;
+  border-color: rgba(218, 176, 95, 0.52);
+}
+
+.combat-layout .hand-area,
+.combat-layout .hand-head {
+  background-image:
+    linear-gradient(180deg, rgba(12, 14, 12, 0.7), rgba(18, 15, 10, 0.72)),
+    url('/assets/ui-r5/panels/panel_hand_area_scroll.png');
+  background-size: cover, 100% 100%;
+  background-position: center, center;
+}
+
+.action-banner {
+  background-image:
+    linear-gradient(180deg, rgba(12, 14, 12, 0.74), rgba(18, 15, 10, 0.76)),
+    url('/assets/ui-r5/panels/panel_battle_log_scroll.png');
+  background-size: cover, 100% 100%;
+}
+
+.detail-panel {
+  background-image:
+    linear-gradient(180deg, rgba(12, 14, 12, 0.84), rgba(18, 15, 10, 0.86)),
+    url('/assets/ui-r5/panels/panel_status_tooltip.png');
+  background-size: cover, 100% 100%;
+}

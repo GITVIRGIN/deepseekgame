@@ -9,7 +9,24 @@ import { startPlayerTurn, previewEnemyIntent } from "../src/core/combat.js";
 import { trueMartialFormationAttackBonus, trueMartialFormationInfo, initializeTrueMartialFormation } from "../src/core/combat.js";
 import { completeRunVictory } from "../src/core/goals.js";
 import { DIFFICULTY_BEGINNER, DIFFICULTY_REGULAR, DIFFICULTY_TRUE_MARTIAL, MIN_DECK_SIZE, ROLL_MAX_BEGINNER, ROLL_MAX_REGULAR, ROLL_MAX_TRUE_MARTIAL, TRUE_MARTIAL_MAX_FLOOR, MAX_FLOOR, difficultyTuning } from "../src/core/types.js";
-import { generateRewards, rollTrueMartialRelicReward } from "../src/core/rewards.js";
+import {
+  cardsForTier,
+  fusionCandidateCards,
+  generateRewards,
+  isFusionCard,
+  rollTrueMartialRelicReward,
+  trueMartialBaseCardsForTier,
+} from "../src/core/rewards.js";
+import {
+  canonicalFusionKey,
+  deckStyleScores,
+  eligibleDualRouteCards,
+  eligibleDualFusions,
+  eligibleTripleFusions,
+  eligibleHeavenlyTriggers,
+  fusionRouteProgress,
+  fusionStateBucket,
+} from "../src/core/archetypes.js";
 import { prepareRouteChoice } from "../src/core/nodes.js";
 
 let passed = 0, failed = 0;
@@ -2113,6 +2130,258 @@ test("CQC: 迁移不清理已有 meta.mythMastery", () => {
   let old = { meta: { mythMastery: { testFaction: 5 } }, run: { seed: 1, floor: 1 } };
   let next = migrateGameState(old);
   assert(next.meta.mythMastery.testFaction === 5, "mythMastery should survive migration");
+});
+
+// ===== T2-A3: trueMartial fusion route reward gating =====
+
+function rewardTestState(style = "physical", floor = 7, rewardKind = "normal") {
+  let s = createInitialState();
+  s = startRun(s, style);
+  s.run.floor = floor;
+  s.run.currentNode = { type: "main", tier: Math.min(5, Math.ceil(floor / 5)), rewardKind };
+  s.phase = "reward";
+  return s;
+}
+
+function addCardsToDeck(run, ids) {
+  for (const id of ids) {
+    const inst = makeCard(run, id);
+    inst.acquiredFloor = run.floor ?? 1;
+    run.deck.push(inst);
+  }
+}
+
+function rewardCardIds(rewards) {
+  return rewards.filter((reward) => reward.type === "card").map((reward) => reward.value);
+}
+
+test("T2-A3: normal/regular pools exclude trueMartial and fusion cards", () => {
+  for (const tier of [1, 2, 3, 4, 5]) {
+    for (const premium of [false, true]) {
+      const pool = cardsForTier(tier, premium);
+      assert(pool.every((card) => !card.trueMartial), `normal pool tier=${tier} premium=${premium} contains trueMartial`);
+      assert(pool.every((card) => !isFusionCard(card)), `normal pool tier=${tier} premium=${premium} contains fusion`);
+    }
+  }
+
+  let regular = createInitialState();
+  regular = startRun(regular, null, DIFFICULTY_REGULAR);
+  regular.run.floor = 9;
+  regular.run.currentNode = { type: "main", tier: 3, rewardKind: "normal" };
+  const rewards = generateRewards(regular);
+  for (const id of rewardCardIds(rewards)) {
+    assert(!cards[id].trueMartial, `regular generated trueMartial card ${id}`);
+    assert(!isFusionCard(cards[id]), `regular generated fusion card ${id}`);
+  }
+});
+
+test("T2-A3: trueMartial floor <=4 excludes all fusion cards", () => {
+  let s = rewardTestState("physical", 4, "normal");
+  assert(eligibleDualFusions(s.run, cards).length === 0, "dual eligible before floor 5");
+  assert(eligibleTripleFusions(s.run, cards).length === 0, "triple eligible before floor 15");
+  const pool = trueMartialBaseCardsForTier(s.run, 1, false);
+  assert(pool.every((card) => !isFusionCard(card)), "TM base pool contains fusion");
+  assert(fusionCandidateCards(s.run, 2).length === 0, "floor 4 should not have dual route candidates");
+  assert(fusionCandidateCards(s.run, 3).length === 0, "floor 4 should not have triple candidates");
+  for (let seed = 1; seed <= 20; seed += 1) {
+    s.run.seed = seed;
+    const rewards = generateRewards(s);
+    assert(rewardCardIds(rewards).every((id) => !cards[id].fusionTier), `floor 4 generated fusion with seed=${seed}`);
+  }
+});
+
+test("T2-A3: floor 5-6 allows base stage only", () => {
+  let s = rewardTestState("physical", 5, "normal");
+  addCardsToDeck(s.run, ["thunderCall", "thunderCall"]);
+  const dualKeys = eligibleDualFusions(s.run, cards).map((pair) => canonicalFusionKey(pair));
+  assert(dualKeys.includes("physical+spell"), `eligible dual keys missing physical+spell: ${dualKeys.join(",")}`);
+  const candidates = fusionCandidateCards(s.run, 2).map((card) => card.id);
+  assert(candidates.includes("thunderBreakArmyBase"), `base candidate missing: ${candidates.join(",")}`);
+  assert(candidates.every((id) => cards[id].fusionStage === "base"), `non-base candidate at floor 5: ${candidates.join(",")}`);
+  assert(fusionCandidateCards(s.run, 3).length === 0, "floor 5 should not have triple candidates");
+});
+
+test("T2-A3: floor 7-9 hasBase allows commit but not formed or higher", () => {
+  let s = rewardTestState("physical", 7, "normal");
+  addCardsToDeck(s.run, ["thunderCall", "thunderCall", "thunderBreakArmyBase"]);
+  const candidates = fusionCandidateCards(s.run, 2).map((card) => card.id);
+  assert(candidates.includes("thunderBreakArmyBase"), `base should remain available: ${candidates.join(",")}`);
+  assert(candidates.includes("thunderBladeAwakening"), `commit should unlock after base: ${candidates.join(",")}`);
+  assert(!candidates.includes("thunderBreakArmy"), `formed should not unlock before floor 10: ${candidates.join(",")}`);
+  assert(!candidates.includes("thunderWarGodSlash"), `highroll should not unlock before floor 15: ${candidates.join(",")}`);
+  assert(candidates.every((id) => cards[id].fusionStage !== "formed" && cards[id].fusionStage !== "highrollA" && cards[id].fusionStage !== "highrollB" && cards[id].fusionStage !== "mastery"), `higher stage candidate at floor 7: ${candidates.join(",")}`);
+  assert(fusionCandidateCards(s.run, 3).length === 0, "floor 7 should not have triple candidates");
+});
+
+test("T2-A4: route sticky continuation keeps commit after initial dual gate drops", () => {
+  let s = rewardTestState("physical", 7, "normal");
+  s.run.deck = [];
+  s.run.archetypeAffinity = {};
+  addCardsToDeck(s.run, ["thunderBreakArmyBase"]);
+  const dualKeys = eligibleDualFusions(s.run, cards).map((pair) => canonicalFusionKey(pair));
+  assert(!dualKeys.includes("physical+spell"), `physical+spell should have dropped initial gate: ${dualKeys.join(",")}`);
+  const candidates = fusionCandidateCards(s.run, 2).map((card) => card.id);
+  assert(candidates.includes("thunderBladeAwakening"), `route continuation should keep commit candidate: ${candidates.join(",")}`);
+});
+
+test("T2-A3: floor 7-9 spell+bleed opens only base/core route stages", () => {
+  let s = rewardTestState("spell", 7, "normal");
+  addCardsToDeck(s.run, ["bloodFang", "bloodFang"]);
+  const dualKeys = eligibleDualFusions(s.run, cards).map((pair) => canonicalFusionKey(pair));
+  assert(dualKeys.includes("spell+bleed"), `eligible dual keys missing spell+bleed: ${dualKeys.join(",")}`);
+  const candidates = fusionCandidateCards(s.run, 2).map((card) => card.id);
+  assert(candidates.includes("thunderBloodBase"), `base candidate missing: ${candidates.join(",")}`);
+  assert(!candidates.includes("thunderBloodExecution"), `apex should not appear at floor 7: ${candidates.join(",")}`);
+  assert(fusionCandidateCards(s.run, 3).length === 0, "floor 7 should not have triple candidates");
+});
+
+test("T2-A3: floor 10-14 route count >=2 with base allows formed but not highroll", () => {
+  let s = rewardTestState("physical", 10, "normal");
+  addCardsToDeck(s.run, ["thunderCall", "thunderCall", "thunderBreakArmyBase", "thunderBladeAwakening"]);
+  const candidates = fusionCandidateCards(s.run, 2).map((card) => card.id);
+  assert(candidates.includes("thunderBreakArmy"), `formed should unlock at floor 10 with count>=2: ${candidates.join(",")}`);
+  assert(!candidates.some((id) => cards[id].fusionStage === "highrollA" || cards[id].fusionStage === "highrollB"), `highroll should not appear at floor 10: ${candidates.join(",")}`);
+  assert(fusionCandidateCards(s.run, 3).length === 0, "floor 10 should not have triple candidates");
+});
+
+test("T2-A3: floor 15 without dualMastered has no triple candidates (trigger-only)", () => {
+  let s = rewardTestState("physical", 15, "normal");
+  addCardsToDeck(s.run, ["thunderCall", "thunderCall", "bloodRecycle", "thunderBreakArmyBase", "thunderBreakArmy", "thunderWarGodSlash"]);
+  assert(fusionStateBucket(s.run, cards) === "dualFormed", "three route cards should be dualFormed");
+  assert(eligibleTripleFusions(s.run, cards).length === 0, "triple eligible without dualMastered");
+  assert(fusionCandidateCards(s.run, 3).length === 0, "triple candidate without dualMastered");
+});
+
+test("T2-A3: floor 19 dualMastered opens matching heavenly trigger only", () => {
+  let s = rewardTestState("physical", 19, "tierPremium");
+  addCardsToDeck(s.run, [
+    "thunderBreakArmyBase", "thunderBladeAwakening", "thunderBreakArmy",
+    "thunderWarGodSlash", "breakArmyThunderMomentum", "thunderLordBreakArmy",
+    "bloodFang", "shellTap",
+  ]);
+  // Check that route is dualMastered
+  assert(fusionStateBucket(s.run, cards) === "dualMastered", "physical+spell with 6 cards + mastery should be dualMastered");
+  // Triple fusion cards should NOT be in regular candidates
+  assert(fusionCandidateCards(s.run, 3).length === 0, "triple should not be in base candidate pool");
+  // Heavenly triggers should be eligible
+  const triggers = eligibleHeavenlyTriggers(s.run, cards).map((t) => t.id);
+  assert(triggers.length > 0, `dualMastered at floor 19 should have eligible triggers: ${triggers.join(",")}`);
+  // Verify triple is NOT directly in reward pool by generating many rewards
+  for (let seed = 200; seed < 260; seed += 1) {
+    s.run.seed = seed;
+    const rewards = generateRewards(s);
+    const cardIds = rewardCardIds(rewards);
+    assert(cardIds.every((id) => cards[id].fusionTier !== 3 || cards[id].heavenlyTrigger), `triple appeared directly in reward seed=${seed}: ${cardIds.join(",")}`);
+  }
+});
+
+test("T2-A4: route count 4 with highroll unlocks mastery candidate", () => {
+  let s = rewardTestState("physical", 19, "normal");
+  s.run.deck = [];
+  s.run.archetypeAffinity = {};
+  addCardsToDeck(s.run, ["thunderBreakArmyBase", "thunderBladeAwakening", "thunderBreakArmy", "thunderWarGodSlash"]);
+  assert(fusionStateBucket(s.run, cards) === "dualHighroll", "four route cards with highroll should be dualHighroll");
+  const candidates = fusionCandidateCards(s.run, 2).map((card) => card.id);
+  assert(candidates.includes("thunderLordBreakArmy"), `mastery should unlock at rc4 with highroll: ${candidates.join(",")}`);
+});
+
+test("T2-A4: choosing heavenly trigger adds triple ultimate and not trigger card", () => {
+  let s = rewardTestState("physical", 19, "normal");
+  s.run.deck = [];
+  addCardsToDeck(s.run, [
+    "thunderBreakArmyBase", "thunderBladeAwakening", "thunderBreakArmy",
+    "thunderWarGodSlash", "breakArmyThunderMomentum", "thunderLordBreakArmy",
+  ]);
+  s.run.rewards = [
+    { id: "test_trigger", type: "card", value: "triggerThunderBloodBreakArmy" },
+    { id: "test_strike", type: "card", value: "strike" },
+    { id: "test_guard", type: "card", value: "guard" },
+  ];
+  s = reduceGame(s, { type: "chooseReward", rewardId: "test_trigger" });
+  const deckIds = s.run.deck.map((inst) => inst.cardId);
+  assert(deckIds.includes("thunderBloodBreakArmy"), "target triple ultimate should enter deck");
+  assert(!deckIds.includes("triggerThunderBloodBreakArmy"), "heavenly trigger card must not enter deck");
+  assert(s.run.heavenlyTriggerPickCount === 1, "trigger pick should be recorded");
+});
+
+test("T2-A4: ineligible heavenly trigger pick does not add triple", () => {
+  let s = rewardTestState("physical", 19, "normal");
+  s.run.deck = [];
+  addCardsToDeck(s.run, ["thunderBreakArmyBase", "thunderBladeAwakening", "thunderBreakArmy"]);
+  s.run.rewards = [
+    { id: "bad_trigger", type: "card", value: "triggerThunderBloodBreakArmy" },
+    { id: "test_strike", type: "card", value: "strike" },
+    { id: "test_guard", type: "card", value: "guard" },
+  ];
+  s = reduceGame(s, { type: "chooseReward", rewardId: "bad_trigger" });
+  const deckIds = s.run.deck.map((inst) => inst.cardId);
+  assert(!deckIds.includes("thunderBloodBreakArmy"), "ineligible trigger must not add triple");
+  assert((s.run.rewardViolations || []).some((item) => item.type === "ineligibleHeavenlyTriggerPick"), "ineligible pick violation should be recorded");
+});
+
+test("T2-A3: reward choices contain at most one fusion card", () => {
+  let s = rewardTestState("physical", 19, "tierPremium");
+  addCardsToDeck(s.run, [
+    "thunderBreakArmyBase",
+    "thunderBreakArmy",
+    "thunderWarGodSlash",
+    "thunderBreakArmyBase",
+    "thunderBreakArmy",
+    "thunderWarGodSlash",
+    "bloodFang",
+    "shellTap",
+  ]);
+  for (let seed = 10; seed < 60; seed += 1) {
+    s.run.seed = seed;
+    const rewards = generateRewards(s);
+    const fusionCount = rewardCardIds(rewards).filter((id) => isFusionCard(cards[id])).length;
+    assert(fusionCount <= 1, `more than one fusion in reward seed=${seed}: ${rewardCardIds(rewards).join(",")}`);
+  }
+});
+
+test("T2-A3: low hp heal reward is not replaced by fusion injection", () => {
+  let s = rewardTestState("physical", 7, "normal");
+  addCardsToDeck(s.run, ["thunderCall", "thunderCall", "thunderBreakArmyBase"]);
+  s.run.hp = Math.floor(s.run.maxHp * 0.35);
+  for (let seed = 100; seed < 180; seed += 1) {
+    s.run.seed = seed;
+    const rewards = generateRewards(s);
+    assert(rewards.some((reward) => reward.type === "heal"), `low hp heal missing seed=${seed}`);
+  }
+});
+
+test("T2-A3: fusionRouteProgress counts duplicates and buckets route progress", () => {
+  let s = rewardTestState("physical", 15, "normal");
+  s.run.deck = [];
+  addCardsToDeck(s.run, ["thunderBreakArmyBase"]);
+  assert(fusionStateBucket(s.run, cards) === "dualEntry", "one route card should be dualEntry");
+  addCardsToDeck(s.run, ["thunderBladeAwakening"]);
+  assert(fusionStateBucket(s.run, cards) === "dualCommit", "two route cards should be dualCommit");
+  addCardsToDeck(s.run, ["thunderBreakArmy"]);
+  assert(fusionStateBucket(s.run, cards) === "dualFormed", "three same-route cards with formed should be dualFormed");
+  addCardsToDeck(s.run, ["thunderWarGodSlash"]);
+  assert(fusionStateBucket(s.run, cards) === "dualHighroll", "four same-route cards should be dualHighroll");
+  addCardsToDeck(s.run, ["breakArmyThunderMomentum", "thunderLordBreakArmy"]);
+  const progress = fusionRouteProgress(s.run, cards)["physical+spell"];
+  assert(progress.routeCardCount === 6, `expected duplicate count 6, got ${progress.routeCardCount}`);
+  assert(progress.baseCount === 1 && progress.commitCount === 1 && progress.formedCount === 1 && progress.highrollACount === 1 && progress.highrollBCount === 1 && progress.masteryCount === 1, `stage counts should match: base=${progress.baseCount} commit=${progress.commitCount} formed=${progress.formedCount} highrollA=${progress.highrollACount} highrollB=${progress.highrollBCount} mastery=${progress.masteryCount}`);
+  assert(fusionStateBucket(s.run, cards) === "dualMastered", "six same-route cards with mastery should be dualMastered");
+  addCardsToDeck(s.run, ["thunderBloodBreakArmy"]);
+  assert(fusionStateBucket(s.run, cards) === "tripleFormed", "triple should outrank dualMastered");
+});
+
+test("T2-A3: deckStyleScores counts fusionStyles without unknown or NaN", () => {
+  let s = rewardTestState("physical", 15, "normal");
+  s.run.deck = [];
+  addCardsToDeck(s.run, ["thunderBreakArmy", "thunderBloodBreakArmy"]);
+  const scores = deckStyleScores(s.run, cards);
+  const keys = Object.keys(scores).sort();
+  assert(keys.join(",") === ["bleed", "control", "physical", "poison", "shell", "spell"].sort().join(","), `bad score keys: ${keys.join(",")}`);
+  for (const [style, score] of Object.entries(scores)) {
+    assert(Number.isFinite(score), `${style} score is not finite`);
+  }
+  assert(scores.physical > 0 && scores.spell > 0, "dual fusion styles not counted");
+  assert(scores.bleed > 0, "triple fusion third style not counted");
 });
 
 (async () => {

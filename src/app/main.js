@@ -10,6 +10,8 @@ import { createRunGoal, goalProgress } from "../core/goals.js";
 import { talentCost, talentDefinitions, talentLevel } from "../core/progression.js";
 import { MYTH_FACTIONS, MYTH_MASTERY_MAX, MYTH_MASTERY_PERKS, cardMythBoost, effectiveCardCost, hasMythMasteryPerk } from "../core/myth.js";
 import { clearCloudConfig, connectCloud, downloadCloudSave, loadCloudConfig, saveCloudConfig, uploadCloudSave } from "../core/cloud.js";
+import { R3_BACKGROUNDS, R3_PANELS, r3CardArtUrl, r3FallbackCardArtUrl, cardVisualCategory, r3EffectIconUrl } from "../ui/uiR3Assets.js";
+import { R5_ICONS, r5CardArtUrl, r5FallbackCardArtUrl, r5EnemyBattleUrl, r5FallbackEnemyBattleUrl, r5EffectIconUrl } from "../ui/uiR5Assets.js";
 
 const app = document.querySelector("#app");
 let state = loadGame();
@@ -23,11 +25,87 @@ let cloudMessage = "";
 let cloudTimer = null;
 let suppressCardClickUntil = 0;
 let replayRecording = null;
+let combatEventFeedback = null;
+let combatEventFeedbackTimer = null;
+
+const COMBAT_EVENT_FEEDBACK_ASSETS = {
+  attack: "/assets/ui-r5/effects/effect_attack_impact_mural_crack_r5_256.png",
+  block: "/assets/ui-r5/effects/effect_block_guardian_shield_r5_256.png",
+  thunder: "/assets/ui-r5/effects/effect_thunder_lightning_strike_r5_256.png",
+  burn: "/assets/ui-r5/effects/effect_burn_flame_eruption_r5_256.png",
+  poison: "/assets/ui-r5/effects/effect_poison_toxic_cloud_r5_256.png",
+  bind: "/assets/ui-r5/effects/effect_bind_talisman_lock_r5_256.png",
+};
+
+const UI_IMAGE_R1_BASE = "/assets/ui-image-r1/";
+const R5_UI_ICON_OVERRIDES = {
+  "ui-gold.svg": R5_ICONS.gold,
+  "ui-relic.svg": R5_ICONS.relic,
+  "ui-reward.svg": R5_ICONS.scroll,
+  "ui-scroll-hint.svg": R5_ICONS.scroll,
+  "intent-attack.svg": "/assets/ui-r5/effects/effect_battleIntent_icon.png",
+  "intent-block.svg": "/assets/ui-r5/effects/effect_blockShield_icon.png",
+};
+const statusIconFiles = {
+  burn: "status-burn.svg",
+  spikes: "status-thorn.svg",
+  bleed: "status-bleed.svg",
+  poison: "status-poison.svg",
+  blockShield: "status-shield.svg",
+  ward: "status-shield.svg",
+  bind: "status-bind.svg",
+  thunderMark: "status-thunder.svg",
+  thunderFireMark: "status-thunder.svg",
+  weak: "status-weak.svg",
+  vulnerable: "status-weak.svg",
+};
+
+function uiImagePath(fileName) {
+  if (R5_UI_ICON_OVERRIDES[fileName]) return R5_UI_ICON_OVERRIDES[fileName];
+  return `${UI_IMAGE_R1_BASE}${fileName}`;
+}
+
+function uiIcon(fileName, alt, className = "uiimg-icon") {
+  const node = image(uiImagePath(fileName), alt);
+  node.className = className;
+  node.loading = "eager";
+  node.decoding = "async";
+  return node;
+}
+
+function statusIcon(statusId, className = "uiimg-status-icon") {
+  const r5Url = r5EffectIconUrl(statusId);
+  if (r5Url) {
+    const node = image(r5Url, getStatusDisplayName(statusId));
+    node.className = `${className} r5-status-icon`;
+    node.loading = "eager";
+    node.decoding = "async";
+    return node;
+  }
+  const r3Url = r3EffectIconUrl(statusId);
+  if (r3Url) {
+    const node = image(r3Url, getStatusDisplayName(statusId));
+    node.className = className;
+    node.loading = "eager";
+    node.decoding = "async";
+    return node;
+  }
+  const fileName = statusIconFiles[statusId];
+  return fileName ? uiIcon(fileName, getStatusDisplayName(statusId), className) : null;
+}
+
+function cardFrameRarity(rarity) {
+  if (rarity === "legendary") return "legendary";
+  if (rarity === "epic") return "rare";
+  if (rarity === "rare") return "uncommon";
+  return "common";
+}
 
 function dispatch(action) {
   if (replayRecording && state.phase !== "gameOver") {
     replayRecording.actions.push({ phase: state.phase, action });
   }
+  const pendingCombatFeedback = combatFeedbackForAction(action);
   // V2.5: reset UI state on new game start
   const newGameActions = new Set(["startRun", "startRegular", "startTrueMartial"]);
   if (newGameActions.has(action.type)) {
@@ -50,12 +128,50 @@ function dispatch(action) {
 
   saveGame(state);
   scheduleCloudSync();
+  if (pendingCombatFeedback && state.phase === "combat") {
+    showCombatEventFeedback(pendingCombatFeedback);
+  }
   render();
+}
+
+function combatFeedbackForAction(action) {
+  if (action.type !== "playCard") return null;
+  const cardInstance = state.run?.combat?.hand?.find((item) => item.uid === action.cardUid);
+  const definition = cardInstance ? cards[cardInstance.cardId] : null;
+  const effects = definition ? effectiveCardData(definition).effects ?? [] : [];
+  // Determine target enemy index from targetUid
+  const enemies = state.run?.combat?.enemies ?? [];
+  const targetEnemyUid = action.targetUid ?? selectedTargetUid ?? null;
+  const targetIndex = targetEnemyUid ? enemies.findIndex((e) => e.uid === targetEnemyUid) : -1;
+  const base = { targetActorType: "enemy", targetEnemyUid, targetIndex };
+  if (effects.some((effect) => effect.type === "thunderMark")) return { ...base, kind: "thunder" };
+  if (effects.some((effect) => effect.type === "status" && effect.status === "burn")) return { ...base, kind: "burn" };
+  if (effects.some((effect) => effect.type === "status" && effect.status === "poison")) return { ...base, kind: "poison" };
+  if (effects.some((effect) => effect.type === "status" && effect.status === "bind")) return { ...base, kind: "bind" };
+  if (effects.some((effect) => ["damage", "execute", "bleedBurst"].includes(effect.type))) return { ...base, kind: "attack" };
+  const blockEffect = effects.find((effect) => effect.type === "block" || effect.status === "blockShield" || effect.status === "ward");
+  if (blockEffect) {
+    if (blockEffect.target === "enemy") return { ...base, kind: "block" };
+    return { kind: "block", targetActorType: "player", targetEnemyUid: null, targetIndex: -1 };
+  }
+  return null;
+}
+
+function showCombatEventFeedback(feedback) {
+  window.clearTimeout(combatEventFeedbackTimer);
+  combatEventFeedback = { ...feedback, id: Date.now() };
+  const feedbackId = combatEventFeedback.id;
+  combatEventFeedbackTimer = window.setTimeout(() => {
+    if (combatEventFeedback?.id !== feedbackId) return;
+    combatEventFeedback = null;
+    if (state.phase === "combat") render();
+  }, 780);
 }
 
 function render() {
   app.innerHTML = "";
   app.append(renderShell());
+  positionCombatEventFeedback();
 }
 
 function renderShell() {
@@ -129,7 +245,7 @@ function renderHeader() {
   header.append(
     el("div", "brand", [
       image("./assets/seal.svg", "玄箓印"),
-      el("div", "", [el("h1", "", "玄箓行"), el("p", "", `v${gameVersion.label}`)]),
+      el("div", "", [el("h1", "", "玄箓行"), el("p", "", `v${gameVersion.label} UI-R5 FULL-ASSETS-IMPORT`)]),
     ]),
     el("div", "topbar-actions", [
       el("div", "meta", [
@@ -229,11 +345,12 @@ function renderCombat() {
     renderRunPanel(run),
     renderMobileRunSummary(run),  // HF5: mobile-only horizontal player summary
     renderTrueMartialFormationPanel(run),
-    el("section", "battlefield", [
+    el("section", "battlefield r3-combat-bg", [
       renderActionBanner(combat.log),
       el("div", "enemy-row", combat.enemies.map(renderEnemy)),
+      renderCombatEventFeedbackLayer(),
       renderHand(run, combat),
-      el("div", "hand-swipe-hint", "← 左右滑动查看更多手牌 →"),  // HF10: mobile scroll hint
+      el("div", "hand-swipe-hint", [uiIcon("ui-scroll-hint.svg", "scroll", "uiimg-scroll-hint-icon"), el("span", "", "左右滑动查看更多手牌")]),  // HF10: scroll hint
     ]),
     renderLog(combat.log),
   );
@@ -310,12 +427,12 @@ function renderShopItem(stockItem) {
 
 function renderReward() {
   const run = state.run;
-  const view = el("section", "reward-view");
+  const view = el("section", "reward-view r3-reward-bg");
   const rollRemaining = (run.rollsMax ?? 3) - (run.rollsUsed ?? 0);
   view.append(
-    el("h2", "", state.message),
+    el("h2", "reward-title", [uiIcon("ui-reward.svg", "reward", "uiimg-title-icon"), el("span", "", state.message)]),
     el("p", "", `第 ${run.floor} 层已清净，选择一份机缘继续前行。`),
-    el("strong", "gold-drop", `本关掉落 ${run.lastGoldDrop ?? 0} 金`),
+    el("strong", "gold-drop", [uiIcon("ui-gold.svg", "gold", "uiimg-inline-icon"), el("span", "", `本关掉落 ${run.lastGoldDrop ?? 0} 金`)]),
   );
 
   const rewards = el("div", "reward-grid");
@@ -510,30 +627,18 @@ function renderRunPanel(run) {
   if (travelBadge) travelBadge.title = "入门难度专属。每场战斗开始时触发行旅护持，并根据牌组倾向提供小幅扶助。";
 
   const maxFloor = run.trueMartial ? TRUE_MARTIAL_MAX_FLOOR : MAX_FLOOR;
+  const actionColumn = renderPlayerActionColumn(run);
 
   // HF6: filter nulls before native DOM append — prevents "null" text
   panel.append(...[
     el("div", "floor-head", [
       el("h2", "", `第 ${run.floor}/${maxFloor} 层`),
-      el("div", "floor-actions", [
-        button("修行", "ghost micro", () => { progressionOpen = true; render(); }),
-        button("放弃", "danger micro", () => dispatch({ type: "abandonRun" })),
-      ]),
+      actionColumn,
     ]),
     el("div", "run-mode-row", [diffBadge, travelBadge].filter(Boolean)),
-    el("div", "run-stats-grid", [
-      stat("生命", `${run.hp}/${run.maxHp}`),
-      stat("格挡", run.combat?.block ?? 0),
-      stat("金", run.gold),
-    ]),
-    pChips.length > 0
-      ? el("div", "run-status-row", [
-          el("span", "run-status-label", "状态"),
-          el("div", "player-status-chip-row", pChips),
-        ])
-      : null,
-    el("div", "roll-info", [
-      el("span", "", `刷新次数：${run.rollsUsed ?? 0} / ${run.rollsMax ?? 3}`),
+    el("div", "player-live-row", [
+      renderPlayerResourceBars(run),
+      el("div", "player-status-chip-row player-vitals-status", pChips.length > 0 ? pChips : [el("span", "status-chip-inline status-empty", "状态 0")]),
     ]),
   ].filter(Boolean));
   return panel;
@@ -549,18 +654,44 @@ function renderMobileRunSummary(run) {
       el("span", "ms-floor", `第${run.floor}/${maxFloor}层`),
       el("span", "difficulty-badge", diffLabel),
     ]),
-    el("div", "ms-stats", [
-      el("span", "ms-stat", `❤${run.hp}/${run.maxHp}`),
-      el("span", "ms-stat", `🛡${run.combat?.block ?? 0}`),
-      el("span", "ms-stat", `💰${run.gold}`),
+    el("div", "ms-vitals player-live-row", [
+      renderPlayerResourceBars(run),
+      el("div", "player-status-chip-row player-vitals-status", pChips.length > 0 ? pChips : [el("span", "status-chip-inline status-empty", "状态 0")]),
     ]),
-    pChips.length > 0 ? el("div", "ms-status", pChips) : null,
-    el("div", "ms-actions", [
-      el("span", "ms-roll", `刷新${run.rollsUsed ?? 0}/${run.rollsMax ?? 3}`),
+    renderPlayerActionColumn(run, "ms-actions"),
+  ].filter(Boolean));
+}
+
+function renderPlayerActionColumn(run, extraClass = "") {
+  return el("div", `player-action-column ${extraClass}`.trim(), [
+    renderGoldStrip(run),
+    renderPlayerRollStrip(run),
+    el("div", "floor-actions", [
       button("修行", "ghost micro", () => { progressionOpen = true; render(); }),
       button("放弃", "danger micro", () => dispatch({ type: "abandonRun" })),
     ]),
-  ].filter(Boolean));
+  ]);
+}
+
+function renderGoldStrip(run) {
+  return el("div", "player-gold-strip player-gold-slot", [
+    uiIcon("ui-gold.svg", "金", "uiimg-stat-icon"),
+    el("strong", "", String(run.gold ?? 0)),
+  ]);
+}
+
+function renderPlayerRollStrip(run) {
+  return el("div", "player-roll-strip", `刷新 ${run.rollsUsed ?? 0}/${run.rollsMax ?? 3}`);
+}
+
+function renderPlayerResourceBars(run) {
+  const hpPercent = Math.max(0, Math.round((run.hp / run.maxHp) * 100));
+  const block = Math.max(0, run.combat?.block ?? 0);
+  const blockPercent = Math.min(100, Math.round((block / 24) * 100));
+  return el("div", "player-resource-bars", [
+    meter(hpPercent, `${run.hp}/${run.maxHp}`, "player-resource-meter player-hp-meter"),
+    meter(blockPercent, `格挡 ${block}`, block > 0 ? "player-resource-meter player-block-meter active" : "player-resource-meter player-block-meter"),
+  ]);
 }
 
 // UI1: status helper functions
@@ -601,7 +732,11 @@ function getPlayerStatusEntries(run) {
 }
 
 // Determine visible chip limit based on viewport
-function statusChipLimit() { return window.innerWidth <= 520 ? 2 : 3; }
+function statusChipLimit() {
+  if (window.innerWidth <= 480) return 3;
+  if (window.innerWidth <= 1440) return 2;
+  return 3;
+}
 
 export function formatPlayerStatusChips(run) {
   const entries = getPlayerStatusEntries(run);
@@ -611,7 +746,11 @@ export function formatPlayerStatusChips(run) {
   const allNames = entries.map(s => `${getStatusDisplayName(s.id)} ${s.stacks}`).join(", ");
   const chips = shown.map(s => {
     const label = `${getStatusDisplayName(s.id)} ${s.stacks}`;
-    const node = el("span", `status-chip-inline status-${s.id}`, label);
+    const node = el("span", `status-chip-inline status-${s.id}`, [
+      statusIcon(s.id),
+      el("span", "status-chip-text", label),
+    ].filter(Boolean));
+    node.dataset.status = s.id;
     node.title = allNames;
     node.style.cursor = "pointer";
     // Click toggles popover
@@ -693,24 +832,52 @@ function cardFunctionRank(definition) {
 function renderEnemy(enemy) {
   const isSelected = enemy.uid === selectedTargetUid;
   const card = el("article", `enemy ${isSelected ? "selected" : ""}`);
+  card.dataset.enemyUid = enemy.uid;
+  const selectEnemy = () => {
+    if (enemy.hp <= 0) return;
+    selectedTargetUid = enemy.uid;
+    render();
+  };
   const hpPercent = Math.max(0, Math.round((enemy.hp / enemy.maxHp) * 100));
+  const battleUrl = r5EnemyBattleUrl(enemy.enemyId);
 
   const isAnchor = state.run?.combat?.flags?.trueMartialFormation?.anchorUid === enemy.uid && enemy.hp > 0;
+  const battleImg = image(battleUrl, enemy.name);
+  battleImg.className = "r5-enemy-battle";
+  battleImg.loading = "eager";
+  battleImg.dataset.enemyId = enemy.enemyId ?? "";
+  battleImg.dataset.r5Battle = battleUrl ?? "";
+  battleImg.onerror = () => {
+    if (battleImg.dataset.fallbackApplied) return;
+    battleImg.dataset.fallbackApplied = "true";
+    battleImg.src = r5FallbackEnemyBattleUrl();
+  };
   // HF6: filter nulls
   card.append(...[
+    battleImg,
     el("div", "enemy-title", [el("h3", "", enemy.name), isAnchor ? el("span", "tm-anchor-badge", "阵眼") : null, renderIntentButton(enemy)].filter(Boolean)),
     meter(hpPercent, `${enemy.hp}/${enemy.maxHp}`, "hp-meter"),
     blockMeter(enemy.block),
     renderBarImpacts(enemy.statuses, "enemy"),
     renderStatusLine("状态", enemy.statuses),
-    button(isSelected ? "目标" : "选中", isSelected ? "primary small" : "ghost small", () => {
-      selectedTargetUid = enemy.uid;
-      render();
-    }),
   ].filter(Boolean));
 
   if (enemy.hp <= 0) {
     card.classList.add("defeated");
+  } else {
+    card.tabIndex = 0;
+    card.setAttribute("role", "button");
+    card.setAttribute("aria-pressed", isSelected ? "true" : "false");
+    card.title = isSelected ? "当前选中" : "点击选中";
+    card.addEventListener("click", (event) => {
+      if (event.target.closest("button")) return;
+      selectEnemy();
+    });
+    card.addEventListener("keydown", (event) => {
+      if (event.key !== "Enter" && event.key !== " ") return;
+      event.preventDefault();
+      selectEnemy();
+    });
   }
 
   return card;
@@ -823,8 +990,10 @@ function effectiveCardData(definition) {
 }
 
 function renderCard(definition, onClick, options = {}) {
-  const node = el("button", `game-card rarity-${definition.rarity}`);
+  const node = el("button", `game-card rarity-${definition.rarity} uiimg-card-shell card-shell-xxt`);
   node.type = "button";
+  node.dataset.rarity = cardFrameRarity(definition.rarity);
+  node.dataset.tone = cardVisualTone(definition);
   node.addEventListener("click", (event) => {
     if (Date.now() < suppressCardClickUntil) {
       event.preventDefault();
@@ -835,16 +1004,40 @@ function renderCard(definition, onClick, options = {}) {
   const displayCost = options.costInfo?.cost ?? definition.cost;
   const costText = options.costInfo?.firstFree ? `免/${definition.cost}` : displayCost === definition.cost ? `${definition.cost}` : `${displayCost}/${definition.cost}`;
   const cardText = effectiveCardData(definition).text;
+  const vcat = cardVisualCategory(definition);
+  const r5ArtUrl = r5CardArtUrl(definition.id);
+  const cardArtImg = image(r5ArtUrl || r3CardArtUrl(vcat), definition.name);
+  cardArtImg.className = "r3-card-art r5-card-art";
+  cardArtImg.loading = "lazy";
+  cardArtImg.decoding = "async";
+  cardArtImg.dataset.cardId = definition.id;
+  cardArtImg.dataset.r5Art = r5ArtUrl || "";
+  cardArtImg.onerror = () => {
+    if (cardArtImg.dataset.fallbackApplied) return;
+    cardArtImg.dataset.fallbackApplied = "true";
+    cardArtImg.src = r5FallbackCardArtUrl() || r3FallbackCardArtUrl();
+  };
   node.append(
+    cardArtImg,
     el("span", "card-rarity", rarityInfo[definition.rarity].label),
     el("strong", "", definition.name),
     el("span", "card-cost", costText),
     el("p", "card-body", cardText),
-    renderCardStyle(definition),
-    renderEffectBadges(definition),
-    el("span", "myth-tags", definition.mythTags.join(" / ")),
+    renderCardFooter(definition),
   );
   return node;
+}
+
+function cardVisualTone(definition) {
+  const effects = effectiveCardData(definition).effects ?? [];
+  if (effects.some((effect) => effect.status === "poison")) return "poison";
+  if (effects.some((effect) => effect.status === "burn")) return "burn";
+  if (effects.some((effect) => effect.status === "thunderMark" || effect.type === "triggerThunder")) return "thunder";
+  if (effects.some((effect) => effect.status === "spikes")) return "thorn";
+  if (effects.some((effect) => effect.type === "block" || effect.status === "blockShield" || effect.status === "ward")) return "guard";
+  if (effects.some((effect) => ["damage", "execute", "bleedBurst"].includes(effect.type))) return "attack";
+  if (effects.some((effect) => ["draw", "gainEnergy", "recoverDiscard"].includes(effect.type))) return "ritual";
+  return "mural";
 }
 
 function detailForCard(definition) {
@@ -895,6 +1088,43 @@ function renderCardStyle(definition) {
   ].filter(Boolean));
 }
 
+function renderCardFooter(definition) {
+  const styleLabels = [
+    definition.style ? styleInfo[definition.style]?.label ?? definition.style : null,
+    definition.grade ? gradeInfo[definition.grade] ?? `${definition.grade} 阶` : null,
+  ].filter(Boolean);
+  const effectLabels = cardEffectLabels(definition);
+  const tagItems = [
+    ...styleLabels.map((label) => ({ label, type: "style" })),
+    ...effectLabels.map((label) => ({ label, type: "effect" })),
+  ];
+  const visibleTags = tagItems.slice(0, 2);
+  const hiddenTags = tagItems.slice(2);
+  const fullDetail = [
+    ...tagItems.map((item) => item.label),
+    ...(definition.mythTags ?? []),
+  ].filter(Boolean).join(" / ");
+
+  const tagRow = el("div", "card-tag-row", visibleTags.map((item) => el("span", `card-tag-chip card-tag-${item.type}`, item.label)));
+  if (hiddenTags.length > 0) {
+    const overflow = el("span", "card-tag-chip card-tag-overflow", `+${hiddenTags.length}`);
+    overflow.title = fullDetail;
+    overflow.setAttribute("aria-label", `完整标签：${fullDetail}`);
+    overflow.addEventListener("pointerdown", (event) => event.stopPropagation());
+    overflow.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      suppressCardClickUntil = Date.now() + 250;
+      showDetail(detailForCard(definition));
+    });
+    tagRow.append(overflow);
+  }
+
+  const source = el("span", "myth-tags card-source-xxt", (definition.mythTags ?? []).join(" / "));
+  source.title = fullDetail;
+  return el("div", "card-footer-xxt", [tagRow, source]);
+}
+
 function canPlayCard(definition, run) {
   const costInfo = effectiveCardCost(run, definition);
   if (run.energy < costInfo.cost) return false;
@@ -916,7 +1146,7 @@ function renderRewardChoice(reward) {
     // V3.1: show blood sacrifice label/text if present
     node.append(
       el("span", "card-rarity", reward.bloodSacrifice ? "血祭" : rarityInfo[relic.rarity].label),
-      el("strong", "", reward.label || relic.name),
+      el("strong", "relic-title", [uiIcon("ui-relic.svg", "relic", "uiimg-inline-icon"), el("span", "", reward.label || relic.name)]),
       el("p", "", reward.text || relic.text)
     );
     return node;
@@ -926,19 +1156,22 @@ function renderRewardChoice(reward) {
     const node = el("button", "relic-choice rarity-legendary");
     node.type = "button";
     node.addEventListener("click", () => dispatch({ type: "chooseReward", rewardId: reward.id }));
-    node.append(el("span", "card-rarity", "异兆"), el("strong", "", "玄箓残片"), el("p", "", "特殊通关目标进度 +1。普通遗物不会触发特殊通关。"));
+    node.append(el("span", "card-rarity", "异兆"), el("strong", "relic-title", [uiIcon("ui-reward.svg", "reward", "uiimg-inline-icon"), el("span", "", "玄箓残片")]), el("p", "", "特殊通关目标进度 +1。普通遗物不会触发特殊通关。"));
     return node;
   }
 
   if (reward.type === "gold") {
-    return button(`获得 ${reward.value} 金`, "primary", () => dispatch({ type: "chooseReward", rewardId: reward.id }));
+    const node = el("button", "primary reward-gold-choice", [uiIcon("ui-gold.svg", "gold", "uiimg-inline-icon"), el("span", "", `获得 ${reward.value} 金`)]);
+    node.type = "button";
+    node.addEventListener("click", () => dispatch({ type: "chooseReward", rewardId: reward.id }));
+    return node;
   }
 
   if (reward.type === "purge") {
     const node = el("button", "relic-choice rarity-rare");
     node.type = "button";
     node.addEventListener("click", () => dispatch({ type: "chooseReward", rewardId: reward.id }));
-    node.append(el("span", "card-rarity", "剔牌"), el("strong", "", reward.label || "斩念机缘"), el("p", "", reward.text || "剔除一张可删除牌。"));
+    node.append(el("span", "card-rarity", "剔牌"), el("strong", "relic-title", [uiIcon("ui-reward.svg", "reward", "uiimg-inline-icon"), el("span", "", reward.label || "斩念机缘")]), el("p", "", reward.text || "剔除一张可删除牌。"));
     return node;
   }
 
@@ -955,7 +1188,7 @@ function renderRelics(ids) {
     "relic-list",
     ids.map((id) => {
       const relic = relics[id];
-      return el("div", `relic rarity-${relic.rarity}`, [el("strong", "", relic.name), el("span", "", relic.text)]);
+      return el("div", `relic rarity-${relic.rarity}`, [el("strong", "relic-title", [uiIcon("ui-relic.svg", "relic", "uiimg-inline-icon"), el("span", "", relic.name)]), el("span", "", relic.text)]);
     }),
   );
 }
@@ -969,8 +1202,93 @@ function renderLog(log) {
   return el("aside", "log", [el("h2", "", "战斗记录"), ...visible.map((line) => el("p", "", line))]);
 }
 
+function renderCombatEventFeedbackLayer() {
+  if (!combatEventFeedback) return null;
+  const src = COMBAT_EVENT_FEEDBACK_ASSETS[combatEventFeedback.kind];
+  if (!src) return null;
+  const img = image(src, `${combatEventFeedback.kind} feedback`);
+  img.className = "combat-event-feedback";
+  img.loading = "eager";
+  img.decoding = "async";
+  img.dataset.feedbackKind = combatEventFeedback.kind;
+  const layer = el("div", `combat-event-feedback-layer feedback-${combatEventFeedback.kind}`, [img]);
+  // Target anchoring: position burst over the target enemy card
+  const { targetActorType, targetEnemyUid, targetIndex, kind } = combatEventFeedback;
+  layer.dataset.targetActorType = targetActorType ?? "unknown";
+  if (targetEnemyUid != null && targetIndex >= 0) {
+    layer.dataset.anchorTarget = targetEnemyUid;
+    layer.dataset.anchorIndex = String(targetIndex);
+  }
+  if (kind === "block" && targetActorType === "unknown") {
+    // Block feedback stays on player side — use CSS default (shifted left)
+    return layer;
+  }
+  if (targetEnemyUid != null && targetIndex >= 0) {
+    const combatEl = document.querySelector(".combat-layout");
+    const enemyEl = combatEl?.querySelector(`.enemy[data-enemy-uid="${targetEnemyUid}"]`);
+    if (enemyEl) {
+      const enemyRect = enemyEl.getBoundingClientRect();
+      const combatRect = combatEl.getBoundingClientRect();
+      // Center burst on enemy card, slightly above center for visual impact
+      const left = enemyRect.left - combatRect.left + enemyRect.width / 2;
+      const top = enemyRect.top - combatRect.top + enemyRect.height * 0.35;
+      layer.style.left = left + "px";
+      layer.style.top = top + "px";
+      layer.style.transform = "translate(-50%, -50%)";
+      layer.dataset.anchored = "true";
+      layer.dataset.anchorTarget = targetEnemyUid;
+    } else {
+      layer.dataset.anchored = "false";
+      layer.dataset.anchorFallback = "enemy-dom-not-found";
+    }
+  } else if (targetActorType !== "player") {
+    layer.dataset.anchored = "false";
+    layer.dataset.anchorFallback = "no-target-uid";
+  }
+  return layer;
+}
+
+function positionCombatEventFeedback() {
+  const layer = document.querySelector(".combat-event-feedback-layer");
+  if (!layer) return;
+  const battlefield = layer.closest(".battlefield");
+  if (!battlefield) return;
+  if (layer.dataset.targetActorType === "player") {
+    const playerFeedbackArea = battlefield.querySelector(".hand-head");
+    if (!playerFeedbackArea) {
+      layer.dataset.anchored = "false";
+      layer.dataset.anchorFallback = "player-feedback-dom-not-found-after-render";
+      return;
+    }
+    const playerRect = playerFeedbackArea.getBoundingClientRect();
+    const battlefieldRect = battlefield.getBoundingClientRect();
+    layer.style.left = `${playerRect.left - battlefieldRect.left + playerRect.width / 2}px`;
+    layer.style.top = `${playerRect.top - battlefieldRect.top + playerRect.height / 2}px`;
+    layer.style.transform = "translate(-50%, -50%)";
+    layer.dataset.anchored = "true";
+    layer.dataset.anchorActor = "player";
+    delete layer.dataset.anchorFallback;
+    return;
+  }
+  const targetEnemyUid = layer.dataset.anchorTarget;
+  if (!targetEnemyUid) return;
+  const enemyEl = battlefield?.querySelector(`.enemy[data-enemy-uid="${targetEnemyUid}"]`);
+  if (!battlefield || !enemyEl) {
+    layer.dataset.anchored = "false";
+    layer.dataset.anchorFallback = "enemy-dom-not-found-after-render";
+    return;
+  }
+  const enemyRect = enemyEl.getBoundingClientRect();
+  const battlefieldRect = battlefield.getBoundingClientRect();
+  layer.style.left = `${enemyRect.left - battlefieldRect.left + enemyRect.width / 2}px`;
+  layer.style.top = `${enemyRect.top - battlefieldRect.top + enemyRect.height * 0.42}px`;
+  layer.style.transform = "translate(-50%, -50%)";
+  layer.dataset.anchored = "true";
+  delete layer.dataset.anchorFallback;
+}
+
 function renderActionBanner(log) {
-  const lines = log.slice(-3).reverse();
+  const lines = log.slice(-10).reverse();
   return el("section", "action-banner", [el("span", "muted", "刚刚"), ...lines.map((line, index) => el("strong", index === 0 ? "latest-action" : "", line))]);
 }
 
@@ -1140,8 +1458,12 @@ function renderStatusChips(statuses) {
     "div",
     "status-chips",
     active.map((status) => {
-      const node = el("button", `status-chip status-${status.id}`, `${statusInfo[status.id]?.label ?? status.id} ${status.stacks}`);
+      const node = el("button", `status-chip status-${status.id}`, [
+        statusIcon(status.id),
+        el("span", "status-chip-text", `${statusInfo[status.id]?.label ?? status.id} ${status.stacks}`),
+      ].filter(Boolean));
       node.type = "button";
+      node.dataset.status = status.id;
       node.addEventListener("click", () => showDetail(detailForStatus(status)));
       return node;
     }),
@@ -1190,10 +1512,21 @@ function cardFunctionLabel(definition) {
 }
 
 function renderIntentButton(enemy) {
-  const node = el("button", "intent", intentButtonText(enemy));
+  const node = el("button", "intent", [
+    intentIcon(enemy),
+    el("span", "", intentButtonText(enemy)),
+  ].filter(Boolean));
   node.type = "button";
   node.addEventListener("click", () => showDetail(detailForIntent(enemy)));
   return node;
+}
+
+function intentIcon(enemy) {
+  const preview = previewEnemyIntent(state.run, enemy);
+  const type = preview?.type ?? enemy.intent?.type;
+  if (type === "attack") return uiIcon("intent-attack.svg", "attack", "uiimg-intent-icon");
+  if (type === "block") return uiIcon("intent-block.svg", "block", "uiimg-intent-icon");
+  return statusIcon(enemy.intent?.status, "uiimg-intent-icon");
 }
 
 function intentButtonText(enemy) {
@@ -1562,6 +1895,15 @@ function renderRunSummary(run) {
     stat("生命", `${run.hp}/${run.maxHp}`),
     stat("牌组", run.deck.length),
     stat("遗物", run.relics.length),
+  ]);
+}
+
+function statWithIcon(label, value, iconFile, className = "") {
+  const text = (value != null) ? String(value) : "--";
+  return el("div", `stat uiimg-stat ${className}`, [
+    uiIcon(iconFile, label, "uiimg-stat-icon"),
+    el("span", "", label),
+    el("strong", "", text),
   ]);
 }
 

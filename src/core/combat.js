@@ -409,6 +409,7 @@ export function finishCombatIfWon(state) {
   }
 
   run.rewards = generateRewards(state);
+  run.pendingChoice = null;  // UI2: clear discard pick when combat ends
   run.combat = null;
   state.phase = "reward";
   state.message = "战斗胜利，择一份机缘。";
@@ -717,8 +718,10 @@ function createEnemiesForFloor(run) {
         : floor >= 16
           ? randomInt(run, 2, 3)
           : floor >= 10
-            ? 2 // V3.10: TM 10-15 fixed 2 enemies
-            : randomInt(run, 1, 2);
+            ? randomInt(run, 2, 3) // TM-T2A6-P1: 10-15 2-3 enemies
+            : floor >= 6
+              ? 2 // TM-T2A6-P1: 6-9 fixed 2 enemies
+              : randomInt(run, 1, 2);
     const result = [];
     for (let index = 0; index < count; index += 1) {
       result.push(makeEnemy(run, choice(run, pool)));
@@ -784,11 +787,19 @@ function makeEnemy(run, enemyId) {
 }
 
 function enemyHpMultiplier(run) {
-  if (run.floor < 8) return 1;
+  if (run.floor < 8 && !run.trueMartial) return 1;
+  if (run.trueMartial && run.floor < 6) return 1;
 
   const tune = difficultyTuning[run.difficulty] || difficultyTuning.beginner;
-  const lateFloor = Math.max(0, run.floor - 8);
   const pressure = runPowerPressure(run);
+
+  // TM-T2A6-P1: trueMartial early-mid HP scaling from floor 6
+  if (run.trueMartial && run.floor <= 14) {
+    const tmFloor = run.floor - 6;
+    return (1 + Math.min(0.85, 0.08 + tmFloor * 0.015 + pressure * 0.035)) * tune.lateEnemyPressure;
+  }
+
+  const lateFloor = Math.max(0, run.floor - 8);
   return (1 + Math.min(0.85, lateFloor * 0.025 + pressure * 0.035)) * tune.lateEnemyPressure;
 }
 
@@ -881,6 +892,12 @@ function enemyAttackBonus(run, enemy, options = {}) {
 }
 
 function enemyIntentBonus(run) {
+  // TM-T2A6-P1: trueMartial early intent bonus from floor 6
+  if (run.trueMartial) {
+    if (run.floor < 6) return 0;
+    if (run.floor <= 9) return 1;
+  }
+
   if (run.floor < 10) return 0;
 
   return Math.min(8, Math.floor(runPowerPressure(run) * 0.35 + Math.max(0, run.floor - 10) * 0.25));

@@ -1,9 +1,21 @@
+import fs from "fs";
+import path from "path";
 import { cards, relics as allRelics } from "../src/core/data.js";
+import { pathToFileURL } from "url";
 import { createRunGoal, markSpecialGoalBaseline } from "../src/core/goals.js";
 import { prepareRouteChoice } from "../src/core/nodes.js";
 import { reduceGame } from "../src/core/reducer.js";
 import { createInitialState, startRun } from "../src/core/state.js";
 import { DIFFICULTY_REGULAR, DIFFICULTY_TRUE_MARTIAL } from "../src/core/types.js";
+import {
+  bridgeStyles,
+  canonicalFusionKey,
+  deckStyleScores,
+  eligibleDualRouteCards,
+  eligibleHeavenlyTriggers,
+  fusionRouteProgress,
+  masteredFusionRoutes,
+} from "../src/core/archetypes.js";
 
 // ============ GAME CONSTANTS (must match src/core/effects.js) ============
 const TM_POJUN_TRUE_DAMAGE = 9;
@@ -32,22 +44,60 @@ const SINGLE_PROFILE = args.profile ?? null;         // optional single style
 const SEED_BASE = Number(args.seedBase ?? 2026052700);
 
 const STYLES = ["physical", "spell", "bleed", "shell", "poison", "control"];
-const NAMES = { physical: "物理", spell: "法术", bleed: "流血", shell: "龟壳", poison: "中毒", control: "控制" };
+const NAMES = { physical: "physical", spell: "spell", bleed: "bleed", shell: "turtle/shell", poison: "poison", control: "control" };
+
+const RAW_OUT = args.rawOut ?? null;
+const controlCardsPerTurnCap = 4;
+const noProgressActionCap = 6;
+const CONTROL_STATUS_IDS = new Set(["chaos", "bind", "stun", "stasis"]);
+const PROGRESS_EFFECT_TYPES = new Set([
+  "damage",
+  "execute",
+  "poisonBurst",
+  "bleedSiphon",
+  "thunderMark",
+  "burn",
+  "directAttack",
+  "scalingDamage",
+  "finisher",
+  "spikeBurst",
+  "shellReflect",
+]);
+const PROGRESS_STATUS_IDS = new Set(["poison", "bleed", "thunderMark", "burn"]);
+const TIMEOUT_REASONS = new Set([
+  "stepLimit5000",
+  "singleTurnCombatLoop",
+  "controlNoProgress",
+  "repeatedStateSignature",
+  "endTurnNoOpLoop",
+  "unknownPendingChoice",
+  "unknown",
+]);
+const endTurnNoOpCap = 8;
+const rawOutputRows = [];
 
 // ============ SEED GENERATION (fully deterministic from seedBase) ============
 const SEED_BASES = Array.from({ length: SEED_COUNT }, (_, i) => (SEED_BASE + i * 999983) >>> 0);
-function genSeeds(styleIdx, totalRuns) {
-  const seeds = [];
+function genSeedRecords(styleIdx, totalRuns) {
+  const records = [];
   const basePerSeed = Math.floor(totalRuns / SEED_COUNT);
   let remainder = totalRuns - basePerSeed * SEED_COUNT;
-  for (let s = 0; s < SEED_COUNT; s++) {
+  for (let seedGroup = 0; seedGroup < SEED_COUNT; seedGroup++) {
     const count = basePerSeed + (remainder > 0 ? 1 : 0);
     if (remainder > 0) remainder--;
-    for (let i = 0; i < count; i++) {
-      seeds.push((SEED_BASES[s] + styleIdx * 7919 + i * 92821) >>> 0);
+    for (let runIndex = 0; runIndex < count; runIndex++) {
+      records.push({
+        seed: (SEED_BASES[seedGroup] + styleIdx * 7919 + runIndex * 92821) >>> 0,
+        seedGroup,
+        runIndex,
+      });
     }
   }
-  return seeds;
+  return records;
+}
+
+function genSeeds(styleIdx, totalRuns) {
+  return genSeedRecords(styleIdx, totalRuns).map((record) => record.seed);
 }
 
 // ============ HELPERS ============
@@ -55,6 +105,198 @@ function hasTMRelic(run, id) { return run.trueMartial && (run.relics || []).incl
 function aliveEnemy(run) { return run?.combat?.enemies?.find(e => e.hp > 0) ?? null; }
 function mapHand(hand) { return hand.map(inst => ({ inst, card: cards[inst.cardId] })); }
 function statusStacks(fighter, id) { return fighter?.statuses?.find(s => s.id === id)?.stacks ?? 0; }
+
+function displayStyle(profile) {
+  return profile === "shell" ? "turtle/shell" : profile;
+}
+
+function cardHasProgressEffect(card) {
+  return (card?.effects || []).some((effect) => {
+    if (PROGRESS_EFFECT_TYPES.has(effect.type)) return true;
+    return effect.type === "status" && PROGRESS_STATUS_IDS.has(effect.status);
+  });
+}
+
+function isPureControlCard(card) {
+  const effects = card?.effects || [];
+  return effects.some((effect) => effect.type === "status" && CONTROL_STATUS_IDS.has(effect.status))
+    && !effects.some((effect) => {
+      if (PROGRESS_EFFECT_TYPES.has(effect.type)) return true;
+      return effect.type === "status" && PROGRESS_STATUS_IDS.has(effect.status);
+    });
+}
+
+function enemyIsControlled(run) {
+  return (run?.combat?.enemies || []).some((enemy) => {
+    if (enemy.hp <= 0) return false;
+    return (enemy.statuses || []).some((status) => CONTROL_STATUS_IDS.has(status.id) && (status.stacks || 0) > 0);
+  });
+}
+
+function pickProgressCard(run, playable, scoreFn) {
+  const progress = playable.filter((item) => cardHasProgressEffect(item.card));
+  if (!progress.length) return null;
+  return progress
+    .sort((a, b) => scoreFn(run, b.card) - scoreFn(run, a.card))[0];
+}
+
+function ensureRcState(combat) {
+  if (!combat._rcs || combat._rcs.turn !== (combat.turn || 0)) {
+    combat._rcs = {
+      turn: combat.turn || 0,
+      cardsPlayed: 0,
+      ctrlCards: 0,
+      controlCardsPerTurnCap,
+      noProgressActionCap,
+      noProgressActions: 0,
+      sigs: [],
+      aggressive: false,
+      noDmgTurns: combat._rcs?.noDmgTurns || 0,
+      lastEhp: combat._rcs?.lastEhp ?? null,
+    };
+    const curEhp = (combat.enemies || []).reduce((sum, enemy) => sum + Math.max(0, enemy.hp), 0);
+    if (combat._rcs.lastEhp !== null && curEhp >= combat._rcs.lastEhp) combat._rcs.noDmgTurns++;
+    else if (combat._rcs.lastEhp !== null && curEhp < combat._rcs.lastEhp) combat._rcs.noDmgTurns = 0;
+    combat._rcs.lastEhp = curEhp;
+  }
+  combat._rcs.controlCardsPerTurnCap = controlCardsPerTurnCap;
+  combat._rcs.noProgressActionCap = noProgressActionCap;
+  combat._rcs.noProgressActions = combat._rcs.noProgressActions || 0;
+  return combat._rcs;
+}
+
+function stateSignature(run, combat) {
+  return [
+    run.hp,
+    combat.block || 0,
+    run.energy,
+    (combat.hand || []).map((item) => item.cardId).sort().join(","),
+    (combat.drawPile || []).length,
+    (combat.discardPile || []).length,
+    (combat.enemies || []).map((enemy) => `${enemy.uid}:${enemy.hp}:${enemy.block || 0}`).join(","),
+    (combat.enemies || []).flatMap((enemy) => (enemy.statuses || []).map((status) => `${enemy.uid}:${status.id}:${status.stacks}`)).join(","),
+    combat.turn,
+  ].join("|");
+}
+
+function statusValue(fighter, id) {
+  return statusStacks(fighter, id);
+}
+
+function stateProgressSignature(state) {
+  const run = state?.run ?? {};
+  const combat = run.combat ?? {};
+  const enemies = (combat.enemies || []).map((enemy) => ({
+    uid: enemy.uid,
+    id: enemy.id ?? enemy.uid,
+    hp: enemy.hp ?? 0,
+    block: enemy.block ?? 0,
+    poison: statusValue(enemy, "poison"),
+    bleed: statusValue(enemy, "bleed"),
+    thunderMark: statusValue(enemy, "thunderMark"),
+    burn: statusValue(enemy, "burn"),
+    stun: statusValue(enemy, "stun"),
+    weak: statusValue(enemy, "weak"),
+    vulnerable: statusValue(enemy, "vulnerable"),
+    alive: (enemy.hp ?? 0) > 0,
+  }));
+  return JSON.stringify({
+    phase: state?.phase ?? null,
+    floor: run.floor ?? null,
+    combatTurn: combat.turn ?? null,
+    combatRound: combat.round ?? null,
+    combatActionCounter: combat.actionCounter ?? null,
+    pendingChoiceType: pendingChoiceType(run),
+    playerHp: run.hp ?? null,
+    playerBlock: combat.block ?? 0,
+    playerEnergy: run.energy ?? null,
+    handCardIds: (combat.hand || []).map((item) => item.cardId),
+    drawPileSize: (combat.drawPile || []).length,
+    discardPileSize: (combat.discardPile || []).length,
+    exhaustPileSize: (combat.exhaustPile || []).length,
+    enemyIds: enemies.map((enemy) => enemy.id),
+    enemies,
+    combatLogLength: (combat.log || []).length,
+  });
+}
+
+function combatProgressSnapshot(run) {
+  const combat = run?.combat;
+  if (!combat) return null;
+  const enemyRows = (combat.enemies || []).map((enemy) => ({
+    uid: enemy.uid,
+    hp: Math.max(0, enemy.hp || 0),
+    block: enemy.block || 0,
+    alive: enemy.hp > 0,
+    poison: statusStacks(enemy, "poison"),
+    bleed: statusStacks(enemy, "bleed"),
+    thunderMark: statusStacks(enemy, "thunderMark"),
+    burn: statusStacks(enemy, "burn"),
+  }));
+  const countProgress = (pile) => (pile || []).filter((inst) => cardHasProgressEffect(cards[inst.cardId])).length;
+  return {
+    energy: run.energy || 0,
+    handProgress: countProgress(combat.hand),
+    drawProgress: countProgress(combat.drawPile),
+    discardProgress: countProgress(combat.discardPile),
+    enemyHp: enemyRows.reduce((sum, enemy) => sum + enemy.hp, 0),
+    enemyBlock: enemyRows.reduce((sum, enemy) => sum + enemy.block, 0),
+    enemyAlive: enemyRows.filter((enemy) => enemy.alive).length,
+    poison: enemyRows.reduce((sum, enemy) => sum + enemy.poison, 0),
+    bleed: enemyRows.reduce((sum, enemy) => sum + enemy.bleed, 0),
+    thunderMark: enemyRows.reduce((sum, enemy) => sum + enemy.thunderMark, 0),
+    burn: enemyRows.reduce((sum, enemy) => sum + enemy.burn, 0),
+  };
+}
+
+function actionMadeProgress(before, after, action, card) {
+  if (!before || !after || action?.type !== "playCard") return true;
+  if (after.enemyAlive < before.enemyAlive) return true;
+  if (after.enemyHp < before.enemyHp) return true;
+  if (after.poison !== before.poison) return true;
+  if (after.bleed !== before.bleed) return true;
+  if (after.thunderMark !== before.thunderMark) return true;
+  if (after.burn !== before.burn) return true;
+  if (after.enemyBlock < before.enemyBlock) return true;
+  if (after.handProgress > before.handProgress) return true;
+  if (after.drawProgress > before.drawProgress) return true;
+  if (after.discardProgress > before.discardProgress) return true;
+  return before.energy > after.energy && cardHasProgressEffect(card);
+}
+
+function rememberAction(history, beforeState, afterState, action, steps, stepCombat, beforeSignature, afterSignature) {
+  const changed = beforeSignature !== afterSignature;
+  const pendingChoiceBefore = pendingChoiceType(beforeState.run);
+  const pendingChoiceAfter = pendingChoiceType(afterState.run);
+  const card = action?.cardUid
+    ? (beforeState.run?.combat?.hand || []).find((item) => item.uid === action.cardUid)
+    : null;
+  const cardDef = card ? cards[card.cardId] : null;
+  history.push({
+    globalStep: steps,
+    step: steps,
+    stepCombat,
+    phase: beforeState.phase,
+    floor: beforeState.run?.floor ?? null,
+    turn: beforeState.run?.combat?.turn ?? null,
+    energy: beforeState.run?.energy ?? null,
+    actionType: action?.type ?? "unknown",
+    action: action?.type ?? "unknown",
+    cardUid: action?.cardUid ?? null,
+    cardId: cardDef?.id ?? card?.cardId ?? null,
+    cardName: cardDef?.name ?? null,
+    simReason: action?.simReason ?? null,
+    reason: action?.simReason ?? null,
+    beforeSignature,
+    afterSignature,
+    changed,
+    pendingChoiceBefore,
+    pendingChoiceAfter,
+    pendingChoiceType: action?.pendingChoiceType ?? pendingChoiceBefore ?? pendingChoiceAfter ?? null,
+  });
+  while (history.length > 20) history.shift();
+  return history[history.length - 1];
+}
 
 // ============ SEEDED RUN SETUP ============
 function seededRun(seed, tmStyle = null, difficulty = null) {
@@ -126,6 +368,12 @@ function pickReward(s, profile = "balanced") {
   if (energyRel && run.maxEnergy < 4) return energyRel;
   const heal = rewards.find(r => r.type === "heal");
   if (heal && run.hp <= run.maxHp * 0.35) return heal;
+  if (run.hp <= run.maxHp * 0.35) {
+    const survival = rewards
+      .filter((r) => r.type === "card" && isHealOrSurvivalCard(cards[r.value]))
+      .sort((a, b) => rewardScore(run, b, profile) - rewardScore(run, a, profile))[0];
+    if (survival) return survival;
+  }
   if (floor < 8) {
     const relic = rewards.find(r => r.type === "relic");
     if (relic) return relic;
@@ -142,7 +390,81 @@ function rewardScore(run, reward, profile = "balanced") {
   if (reward.type === "heal") return run.hp <= run.maxHp * 0.5 ? 70 : 10;
   const card = cards[reward.value];
   if (!card) return 0;
+  if (run.hp <= run.maxHp * 0.35 && isHealOrSurvivalCard(card)) return 260;
   let s = 5;
+  const scores = deckStyleScores(run, cards);
+  const ownedCardIds = new Set((run.deck || []).map((inst) => inst.cardId));
+  const floor = run.floor ?? 1;
+
+  // T2-A5: Heavenly trigger cards
+  if (card.heavenlyTrigger && card.triggerTripleCardId) {
+    const eligible = eligibleHeavenlyTriggers(run, cards);
+    const isEligible = eligible.some((t) => t.id === card.id);
+    if (!isEligible) return -999;
+    s += 480;
+    if (floor >= 19) s += 100;
+    const alreadyHas = (run.deck || []).some((inst) => inst.cardId === card.triggerTripleCardId);
+    if (!alreadyHas) s += 100;
+    else return -200;
+    if (run.hp <= run.maxHp * 0.35) s -= 80;
+    return s;
+  }
+
+  // T2-A3: Triple fusion (should not appear as direct reward)
+  if (card.fusionTier === 3 && !card.heavenlyTrigger) {
+    return -999;
+  }
+
+  if (card.fusionTier === 2) {
+    const progress = fusionRouteProgress(run, cards);
+    const route = progress[card.fusionRoute];
+    const eligible = new Set(eligibleDualRouteCards(run, cards).map((routeCard) => routeCard.id));
+    if (!eligible.has(card.id)) return -999;
+
+    if (run.hp <= run.maxHp * 0.35) s -= 60;
+
+    const stage = card.fusionStage;
+    if (stage === "base") {
+      if ((route?.routeCardCount ?? 0) === 0) s += 90;
+      if (floor <= 6) s += 35;
+      if (route?.hasBase) s -= 25;
+    } else if (stage === "commit") {
+      if (!route?.hasBase) return -999;
+      s += 110;
+      if (route.routeCardCount === 1) s += 60;
+    } else if (stage === "formed") {
+      if (!route?.hasBase || route.routeCardCount < 2) return -999;
+      s += 150;
+      if (route.routeCardCount === 2) s += 70;
+    } else if (stage === "highrollA" || stage === "highrollB") {
+      if (!route?.hasBase || !route?.hasFormed || route.routeCardCount < 3) return -999;
+      s += 190;
+      if (route.routeCardCount === 3) s += 80;
+      if (route.routeCardCount === 4) s += 70;
+    } else if (stage === "mastery") {
+      if (!route?.hasBase || !route?.hasFormed || route.routeCardCount < 4) return -999;
+      s += 270;
+      if (route.routeCardCount === 4) s += 80;
+      if (route.routeCardCount >= 5) s += 150;
+      if (!route.hasHighrollA && !route.hasHighrollB && route.routeCardCount === 4) s -= 80;
+    }
+
+    // T2-A5 extra route weights
+    if (route?.hasMastery && route.routeCardCount < 6 && card.fusionRoute === route.routeKey) s += 240;
+    if (route?.routeCardCount >= 5 && !route?.hasMastery && stage === "mastery") s += 160;
+    if (card.fusionStyles?.includes(profile)) s += 40;
+    if ((card.fusionStyles || []).every((style) => (scores[style] ?? 0) >= 7)) s += 25;
+    if (card.fusionStyles?.includes("control")) s -= 20;
+    if (ownedCardIds.has(card.id)) s -= 5;
+    return s;
+  }
+
+  if (card.trueMartial && !card.fusionStyles && !card.heavenlyTrigger) {
+    if (card.style === profile) s += 35;
+    if (bridgeStyles(profile).includes(card.style)) s += 20;
+    if (profile === "poison" && card.style === "poison" && run.floor <= 12) s += 20;
+  }
+
   if (card.rarity === "legendary") s += 45;
   else if (card.rarity === "epic") s += 30;
   else if (card.rarity === "rare") s += 15;
@@ -162,6 +484,16 @@ function rewardScore(run, reward, profile = "balanced") {
   return s;
 }
 
+function isHealOrSurvivalCard(card) {
+  return Boolean(card?.effects?.some((effect) => (
+    effect.type === "heal" ||
+    effect.type === "block" ||
+    effect.type === "cleanse" ||
+    effect.type === "doubleBlock" ||
+    effect.type === "shellReflect"
+  )));
+}
+
 // ============ COMBAT: estimate ============
 function estimateIncoming(run) {
   return (run.combat?.enemies || []).filter(e => e.hp > 0).reduce((s, e) => {
@@ -170,9 +502,113 @@ function estimateIncoming(run) {
   }, 0);
 }
 
-function handleDiscard(run) {
-  const pick = run.combat.discardPile.find(c => c.uid !== run.pendingChoice.sourceUid);
-  return pick ? { type: "pickDiscardCard", cardUid: pick.uid } : { type: "cancelDiscardPick" };
+function cardInstanceScore(run, cardInstance, profile = "balanced") {
+  const card = cards[cardInstance?.cardId];
+  if (!card) return -999;
+  return Math.max(basicCardScore(run, card), styleAwareCardScore(run, card, profile));
+}
+
+function lowValueCardUid(run, cardInstances, profile = "balanced") {
+  const basicIds = new Set(["strike", "guard", "yellowCharm", "meditate"]);
+  const ranked = [...(cardInstances || [])]
+    .filter((inst) => cards[inst.cardId])
+    .sort((a, b) => {
+      const ac = cards[a.cardId];
+      const bc = cards[b.cardId];
+      const aBasic = basicIds.has(a.cardId) ? -200 : 0;
+      const bBasic = basicIds.has(b.cardId) ? -200 : 0;
+      const aProfile = ac.style === profile || cardHasProgressEffect(ac) ? 50 : 0;
+      const bProfile = bc.style === profile || cardHasProgressEffect(bc) ? 50 : 0;
+      return (aBasic + aProfile + cardInstanceScore(run, a, profile)) - (bBasic + bProfile + cardInstanceScore(run, b, profile));
+    });
+  return ranked[0]?.uid ?? null;
+}
+
+function highValueCardUid(run, cardInstances, profile = "balanced") {
+  const ranked = [...(cardInstances || [])]
+    .filter((inst) => cards[inst.cardId])
+    .sort((a, b) => cardInstanceScore(run, b, profile) - cardInstanceScore(run, a, profile));
+  return ranked[0]?.uid ?? null;
+}
+
+function recoverableDiscardCardsForChoice(run) {
+  const combat = run?.combat;
+  const choice = run?.pendingChoice;
+  if (!combat || !choice) return [];
+  const excluded = new Set(choice.excludeStyles ?? []);
+  return (combat.discardPile || []).filter((card) => {
+    if (card.uid === choice.sourceUid) return false;
+    const style = cards[card.cardId]?.style;
+    return !style || !excluded.has(style);
+  });
+}
+
+function handleDiscard(run, profile = "balanced") {
+  const recoverable = recoverableDiscardCardsForChoice(run);
+  const pickUid = highValueCardUid(run, recoverable, profile);
+  return pickUid
+    ? { type: "pickDiscardCard", cardUid: pickUid, simReason: "pendingChoice:discardPick" }
+    : { type: "cancelDiscardPick", simReason: "pendingChoice:discardPickEmpty" };
+}
+
+function pendingChoiceType(run) {
+  if (!run) return null;
+  if (run.pendingChoice?.type) return run.pendingChoice.type;
+  if (run.pendingPurge) return "pendingPurge";
+  for (const key of ["pendingReward", "pendingEvent", "pendingShop", "pendingCardRemove", "pendingCardUpgrade", "pendingCardSelect"]) {
+    if (run[key]) return key;
+  }
+  return null;
+}
+
+function chooseBlockingAction(state, profile = "balanced") {
+  const run = state?.run;
+  if (!run) return null;
+
+  if (run.pendingPurge) {
+    return { type: "confirmPurge", cardUid: pickPurgeCardAI(run), simReason: "pendingPurge" };
+  }
+
+  const choice = run.pendingChoice;
+  if (!choice) return null;
+  const type = choice.type ?? "unknown";
+
+  if (type === "discardPick") return handleDiscard(run, profile);
+
+  if (["purgePick", "removeCard", "cardRemove"].includes(type)) {
+    return { type: "confirmPurge", cardUid: lowValueCardUid(run, run.deck, profile), simReason: `pendingChoice:${type}`, pendingChoiceType: type };
+  }
+
+  if (["upgradePick", "cardUpgrade"].includes(type)) {
+    return { type: "upgradeCard", cardUid: highValueCardUid(run, run.deck, profile), simReason: `pendingChoice:${type}`, pendingChoiceType: type };
+  }
+
+  if (["rewardPick", "cardReward"].includes(type) && (run.rewards || []).length) {
+    return { type: "chooseReward", rewardId: pickReward(state, profile).id, simReason: `pendingChoice:${type}`, pendingChoiceType: type };
+  }
+
+  if (type === "relicPick" && (run.rewards || []).length) {
+    const relicReward = (run.rewards || []).find((reward) => reward.type === "relic") ?? pickReward(state, profile);
+    return { type: "chooseReward", rewardId: relicReward.id, simReason: "pendingChoice:relicPick", pendingChoiceType: type };
+  }
+
+  if (type === "shopChoice" && state.phase === "shop") {
+    const stock = (run.shopStock ?? []).filter((item) => !item.sold);
+    const affordable = stock.filter((item) => run.gold >= item.price);
+    const purge = affordable.find((item) => item.effect?.type === "removeCard" || item.effect?.type === "purge" || item.type === "removeCard");
+    if (purge) return { type: "buyShopItem", itemId: purge.id, simReason: "pendingChoice:shopChoice", pendingChoiceType: type };
+    const profileCard = affordable.find((item) => item.cardId && cards[item.cardId]?.style === profile);
+    if (profileCard) return { type: "buyShopItem", itemId: profileCard.id, simReason: "pendingChoice:shopChoice", pendingChoiceType: type };
+    const relicItem = affordable.find((item) => item.type === "relic" || item.effect?.type === "relic");
+    if (relicItem) return { type: "buyShopItem", itemId: relicItem.id, simReason: "pendingChoice:shopChoice", pendingChoiceType: type };
+    return { type: "leaveShop", simReason: "pendingChoice:shopChoice", pendingChoiceType: type };
+  }
+
+  if (type === "eventChoice") {
+    return { type: "chooseEventOption", optionIndex: 0, simReason: "unknownPendingChoice", pendingChoiceType: type };
+  }
+
+  return { type: "unknownPendingChoice", simReason: "unknownPendingChoice", pendingChoiceType: type };
 }
 
 // ============ COMBAT: find helpers ============
@@ -236,15 +672,29 @@ function basicCardScore(run, card) {
 }
 
 function basicCombatAct(s, stepC) {
-  if (stepC > 200) return { type: "endTurn" };
   const run = s.run;
   const combat = run.combat;
+  if (!combat) return { type: "endTurn" };
+  const blockingAction = chooseBlockingAction(s, "balanced");
+  if (blockingAction) return blockingAction;
+  if (stepC > 200) return { type: "endTurn", simReason: "singleTurnCombatLoop" };
+  const rc = ensureRcState(combat);
+  rc.cardsPlayed++;
+  if (rc.cardsPlayed > 40) return { type: "endTurn" };
+  if ((rc.noProgressActions || 0) >= noProgressActionCap) {
+    rc.noProgressActions = 0;
+    return { type: "endTurn", simReason: "controlNoProgress" };
+  }
+  // Stall detection
+  const sig = stateSignature(run, combat);
+  rc.sigs.push(sig); if (rc.sigs.length > 12) rc.sigs.shift();
+  if (rc.sigs.length >= 8 && rc.sigs.every(s => s === sig)) return { type: "endTurn", simReason: "repeatedStateSignature" };
+  if (rc.noDmgTurns >= 8) rc.aggressive = true;
+  if (rc.noDmgTurns < 4) rc.aggressive = false;
   const hand = combat.hand.filter(inst => !(cards[inst.cardId]?.id === "meditate" && run.energy >= run.maxEnergy));
   const hpPct = run.hp / run.maxHp;
   const block = combat.block ?? 0;
   const enemyDmg = estimateIncoming(run);
-
-  if (run.pendingChoice?.type === "discardPick") return handleDiscard(run);
 
   const canKill = findKill(run, hand);
   if (canKill && hpPct > 0.2) return { type: "playCard", cardUid: canKill.uid, targetUid: null };
@@ -261,8 +711,29 @@ function basicCombatAct(s, stepC) {
     .filter(h => run.energy >= h.card.cost && (h.card.id !== "meditate" || run.energy < run.maxEnergy));
   if (playable.length === 0) return { type: "endTurn" };
 
-  playable.sort((a, b) => basicCardScore(run, b.card) - basicCardScore(run, a.card));
+  if (enemyIsControlled(run)) {
+    const progress = pickProgressCard(run, playable, basicCardScore);
+    if (progress) return { type: "playCard", cardUid: progress.inst.uid, targetUid: null };
+  }
+
+  playable.sort((a, b) => {
+    let sa = basicCardScore(run, a.card);
+    let sb = basicCardScore(run, b.card);
+    if (enemyIsControlled(run)) {
+      if (cardHasProgressEffect(a.card)) sa += 500;
+      if (cardHasProgressEffect(b.card)) sb += 500;
+      if (isPureControlCard(a.card)) sa -= 800;
+      if (isPureControlCard(b.card)) sb -= 800;
+    }
+    if (isPureControlCard(a.card) && rc.ctrlCards >= controlCardsPerTurnCap) sa = -999;
+    if (isPureControlCard(b.card) && rc.ctrlCards >= controlCardsPerTurnCap) sb = -999;
+    return sb - sa;
+  });
   if (basicCardScore(run, playable[0].card) < 0 && hpPct > 0.5) return { type: "endTurn" };
+  if (isPureControlCard(playable[0].card)) {
+    if (rc.ctrlCards >= controlCardsPerTurnCap) return { type: "endTurn", simReason: "controlNoProgress" };
+    rc.ctrlCards++;
+  }
   return { type: "playCard", cardUid: playable[0].inst.uid, targetUid: null };
 }
 
@@ -561,9 +1032,11 @@ function controlAI(run, hand) {
     return s;
   }, 0);
   const control = hand.filter(h => ok(h) && h.card.effects.some(e => ["chaos","bind","stun","stasis"].includes(e.status)));
+  const progress = hand.filter(h => ok(h) && cardHasProgressEffect(h.card));
   const dmg = hand.filter(h => ok(h) && h.card.effects.some(e => e.type === "damage"));
-  if (controlPressure >= 5 && dmg.length > 0) return makeAction(dmg.sort((a,b)=>(b.card.effects.find(e=>e.type==="damage")?.value||0)-(a.card.effects.find(e=>e.type==="damage")?.value||0))[0]);
+  if (controlPressure >= 5 && progress.length > 0) return makeAction(progress.sort((a,b)=>styleAwareCardScore(run,b.card,"control")-styleAwareCardScore(run,a.card,"control"))[0]);
   if (control.length > 0 && controlPressure < 4) return makeAction(control[0]);
+  if (progress.length > 0) return makeAction(progress[0]);
   if (dmg.length > 0) return makeAction(dmg[0]);
   if (control.length > 0) return makeAction(control[0]);
   if (run.hp <= run.maxHp * 0.3) { const b=hand.filter(h=>ok(h)&&h.card.effects.some(e=>e.type==="block")); if(b.length>0)return makeAction(b[0]); }
@@ -571,17 +1044,33 @@ function controlAI(run, hand) {
 }
 
 function styleAwareCombatAct(s, stepC, profile = "balanced") {
-  if (stepC > 200) return { type: "endTurn" };
   const run = s.run;
   const combat = run.combat;
+  if (!combat) return { type: "endTurn" };
+  const blockingAction = chooseBlockingAction(s, profile);
+  if (blockingAction) return blockingAction;
+  if (stepC > 200) return { type: "endTurn", simReason: "singleTurnCombatLoop" };
+  const rc = ensureRcState(combat);
+  rc.cardsPlayed++;
+  if (rc.cardsPlayed > 40) return { type: "endTurn" };
+  if ((rc.noProgressActions || 0) >= noProgressActionCap) {
+    rc.noProgressActions = 0;
+    return { type: "endTurn", simReason: "controlNoProgress" };
+  }
+
+  // Stall detection: same state signature 8+ actions → endTurn
+  const sig = stateSignature(run, combat);
+  rc.sigs.push(sig); if (rc.sigs.length > 12) rc.sigs.shift();
+  if (rc.sigs.length >= 8 && rc.sigs.every(s => s === sig)) return { type: "endTurn", simReason: "repeatedStateSignature" };
+
+  if (rc.noDmgTurns >= 8) rc.aggressive = true;
+  if (rc.noDmgTurns < 4) rc.aggressive = false;
+
   const hand = combat.hand.filter(inst => !(cards[inst.cardId]?.id === "meditate" && run.energy >= run.maxEnergy));
   const hpPct = run.hp / run.maxHp;
   const block = combat.block ?? 0;
   const enemyDmg = estimateIncoming(run);
   const isTM = run.trueMartial;
-
-  // 1) pendingChoice
-  if (run.pendingChoice?.type === "discardPick") return handleDiscard(run);
 
   // 2) Can kill any enemy?
   const canKill = findKill(run, hand);
@@ -595,7 +1084,14 @@ function styleAwareCombatAct(s, stepC, profile = "balanced") {
     if (healCard) return { type: "playCard", cardUid: healCard.uid, targetUid: null };
   }
 
-  // 4) Try profile-specific AI (each now handles its own priority internally)
+  const playableNow = hand.map(inst => ({ inst, card: cards[inst.cardId] }))
+    .filter(h => run.energy >= h.card.cost && (h.card.id !== "meditate" || run.energy < run.maxEnergy));
+  if (enemyIsControlled(run)) {
+    const progress = pickProgressCard(run, playableNow, (activeRun, card) => styleAwareCardScore(activeRun, card, profile));
+    if (progress) return { type: "playCard", cardUid: progress.inst.uid, targetUid: null };
+  }
+
+  // 4) Try profile-specific AI
   if (isTM && profile !== "balanced") {
     let profileAct = null;
     if (profile === "bleed") profileAct = bleedAI(run, hand);
@@ -607,17 +1103,32 @@ function styleAwareCombatAct(s, stepC, profile = "balanced") {
     if (profileAct) return profileAct;
   }
 
-  // 5) Draw/energy: positive value when energy to spare
+  // 5) Draw/energy
   const drawCard = findBest(run, hand, e => e.type === "draw" || e.type === "gainEnergy");
   if (drawCard && run.energy >= 2) return { type: "playCard", cardUid: drawCard.uid, targetUid: null };
 
-  // 6) Scored fallback: play best card, or endTurn if nothing good
-  const playable = hand.map(inst => ({ inst, card: cards[inst.cardId] }))
-    .filter(h => run.energy >= h.card.cost && (h.card.id !== "meditate" || run.energy < run.maxEnergy));
+  // 6) Scored fallback with RC3 control guardrails
+  const playable = playableNow;
   if (playable.length === 0) return { type: "endTurn" };
 
-  playable.sort((a, b) => styleAwareCardScore(run, b.card, profile) - styleAwareCardScore(run, a.card, profile));
+  playable.sort((a, b) => {
+    let sa = styleAwareCardScore(run, a.card, profile);
+    let sb = styleAwareCardScore(run, b.card, profile);
+    if (rc.aggressive || enemyIsControlled(run)) {
+      if (cardHasProgressEffect(a.card)) sa += 500;
+      if (cardHasProgressEffect(b.card)) sb += 500;
+      if (isPureControlCard(a.card)) sa -= 800;
+      if (isPureControlCard(b.card)) sb -= 800;
+    }
+    if (isPureControlCard(a.card) && rc.ctrlCards >= controlCardsPerTurnCap) sa = -999;
+    if (isPureControlCard(b.card) && rc.ctrlCards >= controlCardsPerTurnCap) sb = -999;
+    return sb - sa;
+  });
   const best = playable[0];
+  if (isPureControlCard(best.card)) {
+    if (rc.ctrlCards >= controlCardsPerTurnCap) return { type: "endTurn", simReason: "controlNoProgress" };
+    rc.ctrlCards++;
+  }
   if (styleAwareCardScore(run, best.card, profile) < -20 && hpPct > 0.4) return { type: "endTurn" };
   return { type: "playCard", cardUid: best.inst.uid, targetUid: null };
 }
@@ -638,78 +1149,196 @@ function pickPurgeCardAI(run) {
     return true;
   });
   if (purgeable.length === 0) return null;
-  // Prioritize basic cards
-  purgeable.sort((a, b) => {
-    const aBasic = basicIds.includes(a.cardId) ? 0 : 1;
-    const bBasic = basicIds.includes(b.cardId) ? 0 : 1;
-    return aBasic - bBasic;
-  });
-  return purgeable[0].uid;
+  return lowValueCardUid(run, purgeable, run.trueMartialStyle ?? "balanced");
+}
+
+function decideNextAction(state, profile, strategy, stepCombat) {
+  const blocking = chooseBlockingAction(state, profile);
+  if (blocking) return blocking;
+
+  if (state.phase === "route") {
+    return { type: "chooseNode", nodeId: pickRoute(state.run).id, simReason: "route" };
+  }
+  if (state.phase === "shop") {
+    return { type: "__stateResult", nextState: shopAct(state), simReason: "shopAct" };
+  }
+  if (state.phase === "reward") {
+    return { type: "chooseReward", rewardId: pickReward(state, profile).id, simReason: "reward" };
+  }
+  if (state.phase === "combat") {
+    return strategy === "basic"
+      ? basicCombatAct(state, stepCombat)
+      : styleAwareCombatAct(state, stepCombat, profile);
+  }
+  return { type: "unknownPhase", simReason: "unknown" };
 }
 
 function runOne(seed, profile, trueMartial, strategy, difficulty = null) {
   let s = seededRun(seed, trueMartial ? profile : null, difficulty);
   let steps = 0;
   let stepCombat = 0;
+  let turns = 0;
+  let lastTurnKey = null;
+  let timeoutReasonCandidate = null;
+  let forcedTimeoutReason = null;
+  let endTurnNoOpCount = 0;
+  let consecutiveEndTurnNoOp = 0;
+  let unknownPendingChoiceCount = 0;
+  let lastPendingChoiceType = null;
+  const timeoutLastActions = [];
+
+  const noteTurn = (state) => {
+    const combat = state.run?.combat;
+    if (state.phase !== "combat" || !combat) return;
+    const key = `${state.run?.floor ?? 0}:${combat.turn ?? 0}`;
+    if (key !== lastTurnKey) {
+      turns++;
+      lastTurnKey = key;
+    }
+  };
 
   while (s.phase !== "gameOver" && steps < 5000) {
+    noteTurn(s);
     steps++;
     if (s.phase === "combat") stepCombat++;
     else stepCombat = 0;
 
-    // Handle pendingPurge (blocks all other actions)
-    if (s.run?.pendingPurge) {
-      const cardUid = pickPurgeCardAI(s.run);
-      // CQA-P2-001: dispatch even when null — reducer handles safe exit
-      s = reduceGame(s, { type: "confirmPurge", cardUid: cardUid || null });
-      continue;
+    const beforeState = s;
+    const beforeSignature = stateProgressSignature(beforeState);
+    const beforeProgress = combatProgressSnapshot(s.run);
+    const beforeTurn = s.run?.combat?.turn ?? null;
+    const act = decideNextAction(s, profile, strategy, stepCombat);
+    if (TIMEOUT_REASONS.has(act?.simReason)) timeoutReasonCandidate = act.simReason;
+    if (act?.type === "unknownPendingChoice") {
+      unknownPendingChoiceCount++;
+      lastPendingChoiceType = act.pendingChoiceType ?? pendingChoiceType(s.run);
+      forcedTimeoutReason = "unknownPendingChoice";
     }
 
-    if (s.phase === "route") {
-      s = reduceGame(s, { type: "chooseNode", nodeId: pickRoute(s.run).id });
-      continue;
+    let nextState = null;
+    let card = null;
+    if (act?.type === "__stateResult") {
+      nextState = act.nextState;
+    } else {
+      const cardInst = act?.cardUid
+        ? (s.run?.combat?.hand || []).find((item) => item.uid === act.cardUid)
+        : null;
+      card = cardInst ? cards[cardInst.cardId] : null;
+      nextState = reduceGame(s, act);
     }
-    if (s.phase === "shop") {
-      s = shopAct(s);
-      continue;
+
+    s = nextState;
+    noteTurn(s);
+
+    const afterSignature = stateProgressSignature(s);
+    const actionRecord = rememberAction(timeoutLastActions, beforeState, s, act, steps, stepCombat, beforeSignature, afterSignature);
+
+    if (actionRecord.pendingChoiceBefore && !actionRecord.changed && act?.type !== "endTurn") {
+      unknownPendingChoiceCount++;
+      lastPendingChoiceType = actionRecord.pendingChoiceBefore;
+      forcedTimeoutReason = "unknownPendingChoice";
+      actionRecord.simReason = "unknownPendingChoice";
+      actionRecord.reason = "unknownPendingChoice";
     }
-    if (s.phase === "reward") {
-      s = reduceGame(s, { type: "chooseReward", rewardId: pickReward(s, profile).id });
-      continue;
+
+    const afterProgress = combatProgressSnapshot(s.run);
+    const sameTurn = s.phase === "combat"
+      && s.run?.combat
+      && beforeTurn === (s.run.combat.turn ?? null);
+    if (sameTurn && act.type === "playCard") {
+      const rc = ensureRcState(s.run.combat);
+      if (actionMadeProgress(beforeProgress, afterProgress, act, card)) {
+        rc.noProgressActions = 0;
+      } else {
+        rc.noProgressActions = (rc.noProgressActions || 0) + 1;
+        if (rc.noProgressActions >= noProgressActionCap) timeoutReasonCandidate = "controlNoProgress";
+      }
     }
-    if (s.phase === "combat") {
-      const act = strategy === "basic"
-        ? basicCombatAct(s, stepCombat)
-        : styleAwareCombatAct(s, stepCombat, profile);
-      s = reduceGame(s, act);
+
+    if (act?.type === "endTurn" && !actionRecord.changed) {
+      endTurnNoOpCount++;
+      consecutiveEndTurnNoOp++;
+      actionRecord.simReason = actionRecord.simReason ?? "noOpEndTurn";
+      actionRecord.reason = actionRecord.simReason;
+      actionRecord.noOpEndTurn = true;
+      if (actionRecord.pendingChoiceBefore) {
+        lastPendingChoiceType = actionRecord.pendingChoiceBefore;
+      } else if (consecutiveEndTurnNoOp >= endTurnNoOpCap) {
+        forcedTimeoutReason = "endTurnNoOpLoop";
+      }
+    } else if (act?.type !== "endTurn" || actionRecord.changed) {
+      consecutiveEndTurnNoOp = 0;
     }
+
+    if (forcedTimeoutReason) break;
   }
   // V1.8.2: timeout — return timedOut marker, don't pollute win rate
-  if (steps >= 5000 && s.phase !== "gameOver") {
+  if ((forcedTimeoutReason || steps >= 5000) && s.phase !== "gameOver") {
+    const timeoutReason = TIMEOUT_REASONS.has(forcedTimeoutReason ?? timeoutReasonCandidate)
+      ? (forcedTimeoutReason ?? timeoutReasonCandidate)
+      : "stepLimit5000";
     return {
       floor: s.run?.floor ?? 0,
       won: false,
       timedOut: true,
+      timeout: true,
+      outcome: "timeout",
+      timeoutReason,
+      timeoutLastActions: timeoutLastActions.length ? timeoutLastActions : [{
+        globalStep: steps,
+        step: steps,
+        stepCombat,
+        phase: s.phase,
+        actionType: "timeout",
+        action: "timeout",
+        simReason: timeoutReason,
+        reason: timeoutReason,
+        changed: false,
+        pendingChoiceBefore: pendingChoiceType(s.run),
+        pendingChoiceAfter: pendingChoiceType(s.run),
+        turn: s.run?.combat?.turn ?? null,
+      }],
       deck: s.run?.deck.length ?? 0,
       relics: s.run?.relics.length ?? 0,
       energy: s.run?.maxEnergy ?? 3,
       hp: s.run?.hp ?? 0,
+      steps,
+      turns,
       phase: s.phase,
       pendingPurge: Boolean(s.run?.pendingPurge),
+      pendingChoiceType: lastPendingChoiceType ?? pendingChoiceType(s.run),
+      endTurnNoOpCount,
+      unknownPendingChoiceCount,
       seed: s.run?.seed,
       profile,
+      controlCardsPerTurnCap,
+      noProgressActionCap,
     };
   }
   // V1.8: validate terminal state consistency (enhanced)
   assertTerminalState(s, steps);
+  const won = isVictory(s.run);
   return {
     floor: s.run?.floor ?? 0,
-    won: isVictory(s.run),
+    won,
     timedOut: false,
+    timeout: false,
+    outcome: won ? "win" : "loss",
+    timeoutReason: null,
+    timeoutLastActions: [],
     deck: s.run?.deck.length ?? 0,
     relics: s.run?.relics.length ?? 0,
     energy: s.run?.maxEnergy ?? 3,
     hp: s.run?.hp ?? 0,
+    steps,
+    turns,
+    pendingChoiceType: null,
+    endTurnNoOpCount,
+    unknownPendingChoiceCount,
+    seed: s.run?.seed,
+    profile,
+    controlCardsPerTurnCap,
+    noProgressActionCap,
   };
 }
 
@@ -741,6 +1370,36 @@ function assertTerminalState(state, steps) {
   }
 }
 
+function toRawRunRecord(result, meta) {
+  const timeout = Boolean(result.timedOut || result.timeout);
+  return {
+    runId: `${meta.mode}:${meta.profile}:s${meta.seedGroup}:r${meta.runIndex}:seed${meta.seed}`,
+    mode: meta.mode,
+    difficulty: meta.difficulty,
+    profile: meta.profile,
+    displayStyle: displayStyle(meta.profile),
+    seed: meta.seed,
+    seedGroup: meta.seedGroup,
+    runIndex: meta.runIndex,
+    outcome: result.outcome ?? (timeout ? "timeout" : result.won ? "win" : "loss"),
+    win: Boolean(result.won),
+    timeout,
+    crash: false,
+    floor: result.floor ?? 0,
+    steps: result.steps ?? null,
+    turns: result.turns ?? 0,
+    finalHp: result.hp ?? 0,
+    finalDeckSize: result.deck ?? 0,
+    finalRelicCount: result.relics ?? 0,
+    timeoutReason: timeout ? (TIMEOUT_REASONS.has(result.timeoutReason) ? result.timeoutReason : "unknown") : null,
+    timeoutLastActions: timeout ? (result.timeoutLastActions || []) : [],
+    pendingChoiceType: result.pendingChoiceType ?? null,
+    endTurnNoOpCount: result.endTurnNoOpCount ?? 0,
+    unknownPendingChoiceCount: result.unknownPendingChoiceCount ?? 0,
+    controlCardsPerTurnCap,
+  };
+}
+
 // ============ BATCH RUNNER ============
 function runBatch(profiles, trueMartial, strategy, difficulty = null) {
   const modeLabel = trueMartial ? "trueMartial" : (difficulty === "regular" ? "regular" : "normal");
@@ -751,13 +1410,31 @@ function runBatch(profiles, trueMartial, strategy, difficulty = null) {
     let wins = 0, losses = 0, timeouts = 0, floors = 0, decks = 0, relics = 0, energy = 0;
     const deathFloors = [];
     const timeoutSamples = [];
-    const seeds = genSeeds(STYLES.indexOf(profile), RUNS);
+    const seedRecords = genSeedRecords(STYLES.indexOf(profile), RUNS);
 
-    for (const seed of seeds) {
+    for (const seedRecord of seedRecords) {
+      const seed = seedRecord.seed;
       const r = runOne(seed, profile, trueMartial, strategy, difficulty);
+      if (RAW_OUT) {
+        rawOutputRows.push(toRawRunRecord(r, {
+          mode: modeLabel,
+          difficulty: modeLabel,
+          profile,
+          seed,
+          seedGroup: seedRecord.seedGroup,
+          runIndex: seedRecord.runIndex,
+        }));
+      }
       if (r.timedOut) {
         timeouts++;
-        if (timeoutSamples.length < 3) timeoutSamples.push({ seed, floor: r.floor, phase: r.phase, pendingPurge: r.pendingPurge });
+        if (timeoutSamples.length < 3) timeoutSamples.push({
+          seed,
+          floor: r.floor,
+          phase: r.phase,
+          pendingPurge: r.pendingPurge,
+          timeoutReason: r.timeoutReason,
+          timeoutLastActions: r.timeoutLastActions,
+        });
       } else if (r.won) {
         wins++;
       } else {
@@ -770,7 +1447,7 @@ function runBatch(profiles, trueMartial, strategy, difficulty = null) {
       energy += r.energy;
     }
 
-    const total = seeds.length;
+    const total = seedRecords.length;
     const effective = wins + losses;
     const early = deathFloors.filter(f => f <= 6).length;
     const mid = deathFloors.filter(f => f >= 7 && f <= 12).length;
@@ -863,22 +1540,50 @@ function printJSON(allResults) {
   console.log(JSON.stringify(flat, null, 2));
 }
 
-// ============ MAIN ============
-const profiles = SINGLE_PROFILE ? [SINGLE_PROFILE] : STYLES;
-const allResults = [];
+export {
+  STYLES,
+  seededRun,
+  pickRoute,
+  shopAct,
+  pickReward,
+  rewardScore,
+  basicCombatAct,
+  styleAwareCombatAct,
+  runOne,
+  isVictory,
+  displayStyle,
+  controlCardsPerTurnCap,
+  noProgressActionCap,
+  endTurnNoOpCap,
+  toRawRunRecord,
+};
 
-if (MODE === "normal" || MODE === "both") {
-  allResults.push({ mode: "normal", strategy: STRATEGY, results: runBatch(profiles, false, STRATEGY) });
-}
-if (MODE === "regular" || MODE === "both") {
-  allResults.push({ mode: "regular", strategy: STRATEGY, results: runBatch(profiles, false, STRATEGY, DIFFICULTY_REGULAR) });
-}
-if (MODE === "trueMartial" || MODE === "both") {
-  allResults.push({ mode: "trueMartial", strategy: STRATEGY, results: runBatch(profiles, true, STRATEGY) });
+function main() {
+  const profiles = SINGLE_PROFILE ? [SINGLE_PROFILE] : STYLES;
+  const allResults = [];
+
+  if (MODE === "normal" || MODE === "both") {
+    allResults.push({ mode: "normal", strategy: STRATEGY, results: runBatch(profiles, false, STRATEGY) });
+  }
+  if (MODE === "regular" || MODE === "both") {
+    allResults.push({ mode: "regular", strategy: STRATEGY, results: runBatch(profiles, false, STRATEGY, DIFFICULTY_REGULAR) });
+  }
+  if (MODE === "trueMartial" || MODE === "both") {
+    allResults.push({ mode: "trueMartial", strategy: STRATEGY, results: runBatch(profiles, true, STRATEGY) });
+  }
+
+  if (JSON_OUT) {
+    printJSON(allResults);
+  } else {
+    printTable(allResults);
+  }
+
+  if (RAW_OUT) {
+    fs.mkdirSync(path.dirname(RAW_OUT), { recursive: true });
+    fs.writeFileSync(RAW_OUT, `${rawOutputRows.map((row) => JSON.stringify(row)).join("\n")}\n`, "utf8");
+  }
 }
 
-if (JSON_OUT) {
-  printJSON(allResults);
-} else {
-  printTable(allResults);
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  main();
 }

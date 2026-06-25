@@ -10,12 +10,22 @@ const mime = {
   ".js": "text/javascript; charset=utf-8",
   ".css": "text/css; charset=utf-8",
   ".svg": "image/svg+xml",
+  ".png": "image/png",
+  ".jpg": "image/jpeg",
+  ".jpeg": "image/jpeg",
+  ".webp": "image/webp",
   ".json": "application/json; charset=utf-8",
 };
 
 function fileFor(url) {
   const rawPath = decodeURIComponent(new URL(url, "http://localhost").pathname);
-  const cleanPath = normalize(rawPath).replace(/^([/\\])+/, "");
+  const cleanPath = normalize(rawPath).replace(/^([/\\])+/, "").replace(/\\/g, "/");
+  if (cleanPath.startsWith("assets/")) {
+    const publicAssetTarget = resolve(join(root, "public", cleanPath));
+    if (publicAssetTarget.startsWith(root) && existsSync(publicAssetTarget) && statSync(publicAssetTarget).isFile()) {
+      return publicAssetTarget;
+    }
+  }
   const target = resolve(join(root, cleanPath || "index.html"));
 
   if (!target.startsWith(root)) {

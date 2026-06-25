@@ -179,6 +179,10 @@ export function applyMythCombatStartBonuses(run) {
 }
 
 export function effectiveCardCost(run, card) {
+  // UI2: trueMartial mode-specific card cost override
+  if (run?.trueMartial && card?.trueMartial?.cost !== undefined) {
+    return { cost: card.trueMartial.cost, baseCost: card.trueMartial.cost, reduced: 0, firstFree: false };
+  }
   const baseCost = card?.cost ?? 0;
   const isHonghuangCard = card?.mythTags?.includes("洪荒");
   const combat = run?.combat;

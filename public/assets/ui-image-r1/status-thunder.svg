@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Thunder Mark">
+  <title>Thunder Mark</title>
+  <defs>
+    <radialGradient id="g" cx="32" cy="24" r="38" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#4b3a5f"/>
+      <stop offset="1" stop-color="#28220f"/>
+    </radialGradient>
+    <filter id="s" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-opacity=".35"/>
+    </filter>
+  </defs>
+  <rect x="5" y="5" width="54" height="54" rx="14" fill="url(#g)" stroke="#ffe978" stroke-width="3"/>
+  <g filter="url(#s)" stroke-linecap="round" stroke-linejoin="round">
+    
+<path d="M38 8L17 35h13l-5 21 22-29H34l4-19z" fill="#ffd84a" stroke="#fff2a0" stroke-width="2"/>
+<path d="M48 14l4-5M52 25h6M14 48l-5 4" stroke="#fff2a0" stroke-width="3"/>
+
+  </g>
+</svg>

@@ -766,6 +766,15 @@ export const cards = {
       { type: "status", target: "allEnemies", status: "bind", stacks: 2 },
       { type: "block", target: "self", value: 8 },
     ],
+    // UI2: trueMartial mode nerf — cost 2, bind 1, block 6
+    trueMartial: {
+      cost: 2,
+      text: "对所有敌人施加 1 层禁锢，获得 6 点格挡。（真武调整）",
+      effects: [
+        { type: "status", target: "allEnemies", status: "bind", stacks: 1 },
+        { type: "block", target: "self", value: 6 },
+      ],
+    },
   },
   mirrorMind: {
     id: "mirrorMind",
