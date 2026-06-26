@@ -1,0 +1,88 @@
+{
+  "packageName": "deepseekgame-ui-r5-map-stage-backgrounds-pack",
+  "version": "draft-reference-v1",
+  "project": "deepseekgame",
+  "targetImportDir": "D:/workspace/deepseekgame/UI/ui-r5-map-stage-backgrounds",
+  "style": "山西小西天壁画/彩塑/道教玄幻，暗底金线、暖橙红、铜绿辅助；去掉无意义中心圆环，该有仪式/观台时才允许圆形构图。",
+  "stages": [
+    {
+      "index": 1,
+      "stageName": "山门外（初入）",
+      "slug": "shanmenwai_initial",
+      "runtimeCandidate": "runtime_candidates/map_stage_bg_01_shanmenwai_initial_runtime_candidate_1920x1080.png",
+      "sourceSheet": "reference_sheets/ui-r5-map-stage-background-sheet-9-no-center-ring.png",
+      "note": "Auto-cropped from accepted concept sheet; verify no label/frame remains before runtime import."
+    },
+    {
+      "index": 2,
+      "stageName": "山间古道",
+      "slug": "shanjian_gudao",
+      "runtimeCandidate": "runtime_candidates/map_stage_bg_02_shanjian_gudao_runtime_candidate_1920x1080.png",
+      "sourceSheet": "reference_sheets/ui-r5-map-stage-background-sheet-9-no-center-ring.png",
+      "note": "Auto-cropped from accepted concept sheet; verify no label/frame remains before runtime import."
+    },
+    {
+      "index": 3,
+      "stageName": "断崖栈道",
+      "slug": "duanya_zhandao",
+      "runtimeCandidate": "runtime_candidates/map_stage_bg_03_duanya_zhandao_runtime_candidate_1920x1080.png",
+      "sourceSheet": "reference_sheets/ui-r5-map-stage-background-sheet-9-no-center-ring.png",
+      "note": "Auto-cropped from accepted concept sheet; verify no label/frame remains before runtime import."
+    },
+    {
+      "index": 4,
+      "stageName": "妖气弥漫之地",
+      "slug": "yaoqi_miman",
+      "runtimeCandidate": "runtime_candidates/map_stage_bg_04_yaoqi_miman_runtime_candidate_1920x1080.png",
+      "sourceSheet": "reference_sheets/ui-r5-map-stage-background-sheet-9-no-center-ring.png",
+      "note": "Auto-cropped from accepted concept sheet; verify no label/frame remains before runtime import."
+    },
+    {
+      "index": 5,
+      "stageName": "古庙遗址",
+      "slug": "gumiao_yizhi",
+      "runtimeCandidate": "runtime_candidates/map_stage_bg_05_gumiao_yizhi_runtime_candidate_1920x1080.png",
+      "sourceSheet": "reference_sheets/ui-r5-map-stage-background-sheet-9-no-center-ring.png",
+      "note": "Auto-cropped from accepted concept sheet; verify no label/frame remains before runtime import."
+    },
+    {
+      "index": 6,
+      "stageName": "悬空观台",
+      "slug": "xuankong_guantai",
+      "runtimeCandidate": "runtime_candidates/map_stage_bg_06_xuankong_guantai_runtime_candidate_1920x1080.png",
+      "sourceSheet": "reference_sheets/ui-r5-map-stage-background-sheet-9-no-center-ring.png",
+      "note": "Auto-cropped from accepted concept sheet; verify no label/frame remains before runtime import."
+    },
+    {
+      "index": 7,
+      "stageName": "灵泉秘境",
+      "slug": "lingquan_mijing",
+      "runtimeCandidate": "runtime_candidates/map_stage_bg_07_lingquan_mijing_runtime_candidate_1920x1080.png",
+      "sourceSheet": "reference_sheets/ui-r5-map-stage-background-sheet-9-no-center-ring.png",
+      "note": "Auto-cropped from accepted concept sheet; verify no label/frame remains before runtime import."
+    },
+    {
+      "index": 8,
+      "stageName": "天象异变之地",
+      "slug": "tianxiang_yibian",
+      "runtimeCandidate": "runtime_candidates/map_stage_bg_08_tianxiang_yibian_runtime_candidate_1920x1080.png",
+      "sourceSheet": "reference_sheets/ui-r5-map-stage-background-sheet-9-no-center-ring.png",
+      "note": "Auto-cropped from accepted concept sheet; verify no label/frame remains before runtime import."
+    },
+    {
+      "index": 9,
+      "stageName": "幽谷迷踪",
+      "slug": "yougu_mizong",
+      "runtimeCandidate": "runtime_candidates/map_stage_bg_09_yougu_mizong_runtime_candidate_1920x1080.png",
+      "sourceSheet": "reference_sheets/ui-r5-map-stage-background-sheet-9-no-center-ring.png",
+      "note": "Auto-cropped from accepted concept sheet; verify no label/frame remains before runtime import."
+    }
+  ],
+  "doNot": [
+    "不要把参考合集整张直接作为游戏运行时背景",
+    "不要引入中心圆环作为通用底纹",
+    "不要修改 public/assets/ui-r5/cards",
+    "不要发布 GitHub Pages",
+    "不要 git commit/tag/push"
+  ]
+}

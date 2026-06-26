@@ -355,6 +355,53 @@ export const R5_PANELS = {
   "topStatusBar": assetUrl("/assets/ui-r5/panels/panel_top_status_wood_gold.png"),
   "mythPanel": assetUrl("/assets/ui-r5/panels/panel_myth_cultivation.png")
 };
+export const R5_MAP_STAGE_BACKGROUNDS = {
+  stageGate: {
+    key: "stageGate",
+    label: "shanmenwai-initial",
+    url: assetUrl("/assets/ui-r5/map-backgrounds/map_stage_bg_01_shanmenwai_initial_runtime_candidate_1920x1080.png"),
+  },
+  mountainRoad: {
+    key: "mountainRoad",
+    label: "shanjian-gudao",
+    url: assetUrl("/assets/ui-r5/map-backgrounds/map_stage_bg_02_shanjian_gudao_runtime_candidate_1920x1080.png"),
+  },
+  cliffPath: {
+    key: "cliffPath",
+    label: "duanya-zhandao",
+    url: assetUrl("/assets/ui-r5/map-backgrounds/map_stage_bg_03_duanya_zhandao_runtime_candidate_1920x1080.png"),
+  },
+  demonMist: {
+    key: "demonMist",
+    label: "yaoqi-miman",
+    url: assetUrl("/assets/ui-r5/map-backgrounds/map_stage_bg_04_yaoqi_miman_runtime_candidate_1920x1080.png"),
+  },
+  ruinedTemple: {
+    key: "ruinedTemple",
+    label: "gumiao-yizhi",
+    url: assetUrl("/assets/ui-r5/map-backgrounds/map_stage_bg_05_gumiao_yizhi_runtime_candidate_1920x1080.png"),
+  },
+  skyPlatform: {
+    key: "skyPlatform",
+    label: "xuankong-guantai",
+    url: assetUrl("/assets/ui-r5/map-backgrounds/map_stage_bg_06_xuankong_guantai_runtime_candidate_1920x1080.png"),
+  },
+  spiritSpring: {
+    key: "spiritSpring",
+    label: "lingquan-mijing",
+    url: assetUrl("/assets/ui-r5/map-backgrounds/map_stage_bg_07_lingquan_mijing_runtime_candidate_1920x1080.png"),
+  },
+  omenSky: {
+    key: "omenSky",
+    label: "tianxiang-yibian",
+    url: assetUrl("/assets/ui-r5/map-backgrounds/map_stage_bg_08_tianxiang_yibian_runtime_candidate_1920x1080.png"),
+  },
+  darkValley: {
+    key: "darkValley",
+    label: "yougu-mizong",
+    url: assetUrl("/assets/ui-r5/map-backgrounds/map_stage_bg_09_yougu_mizong_runtime_candidate_1920x1080.png"),
+  },
+};
 export const R5_TOKENS = { cost: `${R5_BASE}/tokens/cost_token_octagon_64.png` };
 export const R5_ICONS = { deck: `${R5_BASE}/icons/icon_deck.png`, discard: `${R5_BASE}/icons/icon_discard.png`, gold: `${R5_BASE}/icons/icon_gold.png`, hp: `${R5_BASE}/icons/icon_hp.png`, relic: `${R5_BASE}/icons/icon_relic.png`, scroll: `${R5_BASE}/icons/icon_scroll.png`, settings: `${R5_BASE}/icons/icon_settings.png`, target: `${R5_BASE}/icons/icon_target.png`, plus: `${R5_BASE}/icons/icon_plus.png`, lock: `${R5_BASE}/icons/icon_lock.png` };
 const fallbackCard = cardArtMap.strike || `${R5_BASE}/cards/card_strike.png`;
@@ -367,7 +414,19 @@ export function r5FallbackEnemyBattleUrl() { return assetUrl(fallbackEnemy?.batt
 export function r5EffectIconUrl(statusId) { return assetUrl(effectAssetMap[statusId]?.iconPath || null); }
 export function r5LargeEffectUrl(statusId) { return assetUrl(effectAssetMap[statusId]?.largeEffectPath || null); }
 export function r5SceneUrl(sceneId) { return R5_BACKGROUNDS[sceneId] || R5_PANELS[sceneId] || null; }
-export function r5AssetStats() { return { cards: Object.keys(cardArtMap).length, enemies: Object.keys(enemyAssetMap).length, effects: Object.keys(effectAssetMap).length, backgrounds: Object.keys(R5_BACKGROUNDS).length, panels: Object.keys(R5_PANELS).length }; }
+export function mapStageBackgroundForFloor(floor = 1) {
+  const numericFloor = Number.isFinite(Number(floor)) ? Number(floor) : 1;
+  if (numericFloor <= 1) return R5_MAP_STAGE_BACKGROUNDS.stageGate;
+  if (numericFloor <= 2) return R5_MAP_STAGE_BACKGROUNDS.mountainRoad;
+  if (numericFloor <= 4) return R5_MAP_STAGE_BACKGROUNDS.cliffPath;
+  if (numericFloor <= 6) return R5_MAP_STAGE_BACKGROUNDS.ruinedTemple;
+  if (numericFloor <= 9) return R5_MAP_STAGE_BACKGROUNDS.demonMist;
+  if (numericFloor <= 12) return R5_MAP_STAGE_BACKGROUNDS.spiritSpring;
+  if (numericFloor <= 14) return R5_MAP_STAGE_BACKGROUNDS.skyPlatform;
+  if (numericFloor <= 18) return R5_MAP_STAGE_BACKGROUNDS.darkValley;
+  return R5_MAP_STAGE_BACKGROUNDS.omenSky;
+}
+export function r5AssetStats() { return { cards: Object.keys(cardArtMap).length, enemies: Object.keys(enemyAssetMap).length, effects: Object.keys(effectAssetMap).length, backgrounds: Object.keys(R5_BACKGROUNDS).length, panels: Object.keys(R5_PANELS).length, mapBackgrounds: Object.keys(R5_MAP_STAGE_BACKGROUNDS).length }; }
 export function r5MissingCardIds(cardIds) { return cardIds.filter((id) => !cardArtMap[id]); }
 export function r5MissingEnemyIds(enemyIds) { return enemyIds.filter((id) => !enemyAssetMap[id]); }
 export function r5EnemyAssetEntries() { return Object.entries(enemyAssetMap).map(([enemyId, value]) => ({ enemyId, ...value, battlePath: assetUrl(value.battlePath) })); }

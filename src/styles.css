@@ -1383,6 +1383,48 @@ p {
   background-size: cover, 100% 100%;
 }
 
+/* UI-R5 map stage backgrounds import P0.
+   Asset-only binding: stage scene art replaces exposed placeholder combat backdrops. */
+.combat-layout .battlefield.r3-combat-bg[data-map-stage-background] {
+  background-image:
+    linear-gradient(180deg, rgba(8, 7, 6, 0.22), rgba(13, 11, 9, 0.24) 44%, rgba(8, 7, 6, 0.48)),
+    radial-gradient(circle at 50% 18%, rgba(218, 176, 95, 0.12), transparent 34%),
+    var(--r5-map-stage-bg);
+  background-size: cover, 860px 500px, cover;
+  background-position: center, 50% 14%, center;
+  background-repeat: no-repeat;
+}
+
+.combat-layout .enemy.defeated[data-map-stage-background] {
+  background-image:
+    linear-gradient(90deg, rgba(18, 13, 9, 0.9), rgba(13, 17, 14, 0.78) 48%, rgba(20, 14, 10, 0.9)),
+    var(--r5-map-stage-bg);
+  background-size: cover, cover;
+  background-position: center, center;
+  border-color: rgba(218, 176, 95, 0.38);
+}
+
+.combat-layout .enemy.defeated[data-map-stage-background]::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(8, 7, 6, 0.08), rgba(8, 7, 6, 0.28));
+  box-shadow: inset 0 0 0 1px rgba(218, 176, 95, 0.14);
+}
+
+@media (max-width: 768px) {
+  .combat-layout .battlefield.r3-combat-bg[data-map-stage-background] {
+    background-size: cover, 440px 300px, cover;
+    background-position: center, 64% 10%, center;
+  }
+
+  .combat-layout .enemy.defeated[data-map-stage-background] {
+    background-position: center, center 46%;
+  }
+}
+
 /* ============================================================
    UI R5 COMBAT BACKGROUND / FEEDBACK BATCH2
    Asset-only combat skin refinement; no card, logic, or layout movement.

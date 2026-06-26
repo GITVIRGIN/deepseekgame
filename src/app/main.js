@@ -12,7 +12,7 @@ import { MYTH_FACTIONS, MYTH_MASTERY_MAX, MYTH_MASTERY_PERKS, cardMythBoost, eff
 import { clearCloudConfig, connectCloud, downloadCloudSave, loadCloudConfig, saveCloudConfig, uploadCloudSave } from "../core/cloud.js";
 import { assetUrl } from "../ui/assetPath.js";
 import { R3_BACKGROUNDS, R3_PANELS, r3CardArtUrl, r3FallbackCardArtUrl, cardVisualCategory, r3EffectIconUrl } from "../ui/uiR3Assets.js";
-import { R5_ICONS, r5CardArtUrl, r5FallbackCardArtUrl, r5EnemyBattleUrl, r5FallbackEnemyBattleUrl, r5EffectIconUrl } from "../ui/uiR5Assets.js";
+import { R5_ICONS, mapStageBackgroundForFloor, r5CardArtUrl, r5FallbackCardArtUrl, r5EnemyBattleUrl, r5FallbackEnemyBattleUrl, r5EffectIconUrl } from "../ui/uiR5Assets.js";
 
 const app = document.querySelector("#app");
 let state = loadGame();
@@ -337,6 +337,7 @@ function renderCombat() {
   const run = state.run;
   const combat = run.combat;
   const view = el("section", "combat-layout");
+  const stageBackground = mapStageBackgroundForFloor(run.floor);
 
   if (!selectedTargetUid) {
     selectedTargetUid = combat.enemies.find((enemy) => enemy.hp > 0)?.uid ?? null;
@@ -355,6 +356,14 @@ function renderCombat() {
     ]),
     renderLog(combat.log),
   );
+
+  const battlefield = view.querySelector(".battlefield");
+  if (battlefield) {
+    battlefield.dataset.mapStageKey = stageBackground.key;
+    battlefield.dataset.mapStageLabel = stageBackground.label;
+    battlefield.dataset.mapStageBackground = stageBackground.url;
+    battlefield.style.setProperty("--r5-map-stage-bg", `url("${stageBackground.url}")`);
+  }
 
   return view;
 }
@@ -833,7 +842,11 @@ function cardFunctionRank(definition) {
 function renderEnemy(enemy) {
   const isSelected = enemy.uid === selectedTargetUid;
   const card = el("article", `enemy ${isSelected ? "selected" : ""}`);
+  const stageBackground = mapStageBackgroundForFloor(state.run?.floor);
   card.dataset.enemyUid = enemy.uid;
+  card.dataset.mapStageKey = stageBackground.key;
+  card.dataset.mapStageBackground = stageBackground.url;
+  card.style.setProperty("--r5-map-stage-bg", `url("${stageBackground.url}")`);
   const selectEnemy = () => {
     if (enemy.hp <= 0) return;
     selectedTargetUid = enemy.uid;
