@@ -1,3 +1,5 @@
+import { applyMythRunStartBonuses, migrateMythMastery } from "./myth.js";
+
 export const talentDefinitions = {
   body: {
     id: "body",
@@ -38,7 +40,9 @@ export function migrateMeta(meta = {}) {
   next.soul = next.soul ?? 0;
   next.totalRuns = next.totalRuns ?? 0;
   next.wins = next.wins ?? 0;
+  next.lossStreak = next.lossStreak ?? 0;
   next.talents = next.talents ?? {};
+  migrateMythMastery(next);
 
   for (const id of Object.keys(talentDefinitions)) {
     next.talents[id] = next.talents[id] ?? 0;
@@ -94,4 +98,6 @@ export function applyMetaProgression(run, meta) {
   if (talents.bloodGourd > 0 && !run.relics.includes("bloodGourd")) {
     run.relics.push("bloodGourd");
   }
+
+  applyMythRunStartBonuses(run);
 }

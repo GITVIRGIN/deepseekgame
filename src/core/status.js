@@ -2,6 +2,12 @@ import { statusInfo } from "./data.js";
 
 const STATUS_CAPS = {
   spirit: 12,
+  battleIntent: 36,
+  thunderFireMark: 3,
+  bind: 18,
+  brittle: 6,
+  controlResist: 2,
+  clearMind: 1,
 };
 
 export function statusLabel(statusId) {
@@ -73,7 +79,7 @@ export function reduceNaturalConsumableDebuff(fighter, statusId, stacks = 1) {
 }
 
 export function reduceConsumableDebuff(fighter, statusId, stacks = 1) {
-  if (["bleed", "poison", "chaos", "imprison", "stun"].includes(statusId) && statusStacks(fighter, "stasis") > 0) {
+  if (["bleed", "poison", "chaos"].includes(statusId) && statusStacks(fighter, "stasis") > 0) {
     reduceStatus(fighter, "stasis", 1);
     return false;
   }

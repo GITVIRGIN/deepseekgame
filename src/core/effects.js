@@ -1,8 +1,98 @@
 import { cards, relics } from "./data.js";
 import { drawCards, finishCombatIfWon } from "./combat.js";
-import { addStatus, reduceConsumableDebuff, reduceStatus, statusLabel, statusStacks } from "./status.js";
+import { onEnemyKilled } from "./combat-events.js";
+import { awardMythMasteryForRunEnd, cardMythBoost, consumeMythFirstStrike, mythAwardText, mythFirstStrikeDamageBonus, mythStatusDamageBonus } from "./myth.js";
+import { addStatus, clearStatus, reduceConsumableDebuff, reduceStatus, statusLabel, statusStacks } from "./status.js";
+import { difficultyTuning } from "./types.js";
 
 const SPIRIT_BONUS_PER_COST = 4;
+const PHYSICAL_INTENT_GAIN = 7;
+const THUNDER_TRIBULATION_THRESHOLD = 8;
+const THUNDER_TRIBULATION_DAMAGE = 60;
+const CONTROL_BREAK_THRESHOLD = 6;
+const CONTROL_BREAK_MIN_TYPES = 2;
+const CONTROL_BREAK_SINGLE_TYPE_THRESHOLD = 8;
+const BRITTLE_STACKS = 2;
+const BRITTLE_MULTIPLIER = 1.5;
+const CONTROL_STATUS_IDS = new Set(["chaos", "bind", "stun"]);
+const CONTROL_RESIST_STATUS = "controlResist";
+const CONTROL_RESIST_MAX = 2;
+const CONTROL_BREAK_BLOCKED_STATUSES = ["chaos", "bind", "stun"];
+const TRUE_MARTIAL_GU_FORBIDDEN_REPEAT_GUARD_IDS = new Set([
+  "guForbiddenArray",
+  "guForbiddenDetonation",
+  "guForbiddenSovereign",
+]);
+
+function applyControlStatus(state, target, statusId, stacks) {
+  if (!CONTROL_STATUS_IDS.has(statusId)) return stacks;
+  if (!target || target.uid === "player") return stacks;
+  if (!target.statuses) target.statuses = [];
+
+  if (isControlBreakLocked(state, target)) {
+    noteControlBreakBlocked(target, statusId, stacks, state.run?.combat?.turn ?? 0);
+    combatLog(state, `${target.name} control break blocks ${statusLabel(statusId)} ${stacks}.`);
+    return 0;
+  }
+
+  const resist = statusStacks(target, CONTROL_RESIST_STATUS);
+  if (resist <= 0) return stacks;
+
+  const reduced = Math.min(resist, stacks);
+  if (reduced > 0) {
+    reduceStatus(target, CONTROL_RESIST_STATUS, reduced);
+    if (reduced >= stacks) {
+      combatLog(state, `${target.name} 凭定力抵消了控制。`);
+    } else {
+      combatLog(state, `${target.name} 凭定力抵消 ${reduced} 层控制。`);
+    }
+  }
+  return Math.max(0, stacks - reduced);
+}
+
+// Track control stacks applied per target within a single card effect batch
+const _cardControlTracker = new WeakMap();
+export function beginCardControlBatch(state) {
+  _cardControlTracker.set(state, new Map());
+}
+export function endCardControlBatch(state) {
+  const map = _cardControlTracker.get(state);
+  if (!map) return;
+  _cardControlTracker.delete(state);
+  for (const [target, stacks] of map) {
+    if (stacks > 0) {
+      gainControlResist(target, Math.min(CONTROL_RESIST_MAX, stacks));
+    }
+  }
+}
+export function trackControlApplied(state, target, stacks) {
+  const map = _cardControlTracker.get(state);
+  if (!map || !target || target.uid === "player") return;
+  const prev = map.get(target) || 0;
+  map.set(target, prev + stacks);
+}
+
+export function gainControlResist(fighter, amount = 1) {
+  if (!fighter || fighter.uid === "player" || fighter.hp <= 0) return;
+  if (!fighter.statuses) fighter.statuses = [];
+  addStatus(fighter, CONTROL_RESIST_STATUS, amount);
+}
+
+export function grantClearMind(fighter) {
+  if (!fighter || fighter.uid === "player" || fighter.hp <= 0) return;
+  if (!fighter.statuses) fighter.statuses = [];
+  addStatus(fighter, "clearMind", 1);
+}
+
+export function consumeAndCheckClearMind(state, enemy) {
+  if (!enemy || enemy.uid === "player" || enemy.hp <= 0) return false;
+  if (!enemy.statuses) return false;
+  const cm = enemy.statuses.find(s => s.id === "clearMind");
+  if (!cm || cm.stacks <= 0) return false;
+  reduceStatus(enemy, "clearMind", 1);
+  combatLog(state, `${enemy.name} 凭醒神挣脱控制，强行行动。`);
+  return true;
+}
 
 function combatLog(state, text) {
   state.run?.combat?.log.push(text);
@@ -26,18 +116,18 @@ function syncPlayerFighter(run, fighter) {
   run.statuses = fighter.statuses;
 }
 
+function hasTrueMartialRelic(run, relicId) {
+  return Boolean(run?.trueMartial && run?.relics?.includes(relicId));
+}
+
 export function applyEffect(state, effect, targetUid) {
   const run = state.run;
   const combat = run?.combat;
   if (!run || !combat) return state;
 
   if (effect.type === "draw") {
-    const requested = effect.value ?? 0;
-    const crit = Math.random() < 0.1 ? 2 : 1;
-    const drawn = drawCards(state, requested * crit);
-    if (crit > 1) combatLog(state, "暴击！");
+    const drawn = drawCards(state, effect.value ?? 0);
     combatLog(state, `抽 ${drawn} 张牌。`);
-    if (drawn > 0) addStatus(playerFighter(run), "fatigue", drawn);
     return finishCombatIfWon(state);
   }
 
@@ -49,86 +139,66 @@ export function applyEffect(state, effect, targetUid) {
   }
 
   if (effect.type === "recoverDiscard") {
-    const count = effect.value ?? 1;
-    startDiscardPick(state, count, effect.sourceUid, effect.excludeStyle);
-    addStatus(playerFighter(run), "fatigue", count);
+    startDiscardPick(state, effect.value ?? 1, effect.sourceUid, effect);
     return finishCombatIfWon(state);
   }
 
   const targets = resolveTargets(run, effect.target, targetUid);
 
-  if (effect.type === "leechBleed") {
-    let totalBleed = 0;
-    const names = [];
-    for (const target of targets) {
-      totalBleed += statusStacks(target, "bleed");
-      names.push(target.name);
+  if (effect.type === "bleedSiphon") {
+    applyBleedSiphon(state, targets, effect);
+    return finishCombatIfWon(state);
+  }
+
+  if (effect.type === "shellReflect") {
+    applyShellReflect(state, targets, effect);
+    return finishCombatIfWon(state);
+  }
+
+  if (effect.type === "spikeBurst") {
+    applySpikeBurst(state, targets);
+    return finishCombatIfWon(state);
+  }
+
+  if (effect.type === "poisonBurst") {
+    if (!consumeTrueMartialPoisonBurstResolve(state, effect, targets)) {
+      combatLog(state, "trueMartial poisonBurst already resolved for this source this turn.");
+      return finishCombatIfWon(state);
     }
-    const heal = Math.floor(totalBleed * (effect.value ?? 0.3));
-    if (heal > 0) {
-      const player = playerFighter(run);
-      player.hp = Math.min(player.maxHp, player.hp + heal);
-      syncPlayerFighter(run, player);
-      combatLog(state, `从 ${names.join("、")} 的流血中汲取 ${heal} 点生命。`);
+    applyPoisonBurst(state, targets, effect);
+    for (const target of targets) {
+      if (target.hp <= 0) continue;
+      if (effect.cardStyle !== "spell") triggerThunderTribulations(state, target, effect);
+      triggerControlBreak(state, target);
     }
     return finishCombatIfWon(state);
   }
 
   for (const target of targets) {
     if (effect.type === "damage") {
-      applyCardDamage(state, target, effect.value ?? 0, effect.cardCost ?? 1, effect.cardStyle);
+      if (effect.tmExecute) {
+        const mult = target.hp <= target.maxHp * 0.5 ? 2 : 1;
+        applyCardDamage(state, target, (effect.value ?? 8) * mult, effect.cardCost ?? 1, effect.cardStyle);
+      } else {
+        applyCardDamage(state, target, boostedValue(effect), effect.cardCost ?? 1, effect.cardStyle);
+      }
     }
 
     if (effect.type === "execute") {
-      const threshold = effect.threshold ?? 0.25;
-      if (target.hp > 0 && target.hp <= target.maxHp * threshold) {
-        target.block = 0;
-        target.hp = 0;
-        combatLog(state, `${target.name} 血线见底——斩魂索命，直接斩杀！`);
-      } else {
-        applyCardDamage(state, target, effect.value ?? 25, effect.cardCost ?? 1, effect.cardStyle);
-        combatLog(state, `${target.name} 未入斩杀线，转为普通一击。`);
-      }
+      applyExecute(state, target, effect);
     }
 
     if (effect.type === "block") {
-      const blockBonus = getFactionBlockBonus(state);
-      target.block += (effect.value ?? 0) + blockBonus;
-      combatLog(state, `获得 ${effect.value} 点格挡。`);
-    }
-
-    if (effect.type === "heal") {
-      target.hp = Math.min(target.maxHp, target.hp + (effect.value ?? 0));
-      combatLog(state, `回复 ${effect.value} 点生命。`);
-    }
-
-    if (effect.type === "loseHp") {
-      target.hp = Math.max(0, target.hp - (effect.value ?? 0));
-      combatLog(state, `失去 ${effect.value} 点生命。`);
-    }
-
-    if (effect.type === "status" && effect.status) {
-      addStatus(target, effect.status, effect.stacks ?? 0);
-      combatLog(state, `${target.uid === "player" ? "你" : target.name} 获得 ${statusLabel(effect.status)} ${effect.stacks}。`);
-    }
-
-    if (effect.type === "amplifyDebuffs") {
-      const added = amplifyDebuffs(target, effect.statuses, effect.value ?? 0);
-      if (added > 0) {
-        combatLog(state, `${target.uid === "player" ? "你" : target.name} 的负面状态增长 ${added} 层。`);
+      let amount = boostedValue(effect);
+      // V3.1: inverseScaleArmor — first block each turn boosted 50%
+      if (target.uid === "player" && run.relics.includes("inverseScaleArmor") && combat.flags.inverseScaleArmorTurn !== combat.turn) {
+        const bonus = Math.ceil(amount * 0.5);
+        amount += bonus;
+        combat.flags.inverseScaleArmorTurn = combat.turn;
+        combatLog(state, `逆鳞甲护体，本回合首次格挡额外 +${bonus}。`);
       }
-    }
-
-    if (effect.type === "spikeBurst") {
-      const spikes = statusStacks(playerFighter(run), "spikes");
-      const block = run.combat?.block ?? 0;
-      const raw = Math.min(block, spikes * 3);
-      if (raw > 0) {
-        const blocked = Math.min(target.block, raw);
-        target.block -= blocked;
-        target.hp = Math.max(0, target.hp - (raw - blocked));
-        combatLog(state, `荆棘爆发！${target.name} 受到 ${raw - blocked} 点格挡反射伤害。`);
-      }
+      target.block += amount;
+      combatLog(state, `获得 ${amount} 点格挡。`);
     }
 
     if (effect.type === "doubleBlock") {
@@ -137,6 +207,79 @@ export function applyEffect(state, effect, targetUid) {
         run.combat.block *= 2;
         combatLog(state, `格挡翻倍：${before} → ${run.combat.block}。`);
       }
+    }
+
+    if (effect.type === "heal") {
+      const amount = boostedValue(effect);
+      target.hp = Math.min(target.maxHp, target.hp + amount);
+      combatLog(state, `回复 ${amount} 点生命。`);
+    }
+
+    if (effect.type === "loseHp") {
+      target.hp = Math.max(0, target.hp - (effect.value ?? 0));
+      combatLog(state, `失去 ${effect.value} 点生命。`);
+      if (target.uid === "player" && target.hp <= 0) {
+        syncPlayerFighter(run, target);
+        finishDefeat(state, "血誓反噬，残箓染赤。");
+        return state;
+      }
+    }
+
+    if (effect.type === "status" && effect.status) {
+      let stacks = boostedStacks(effect);
+      // V3.1: infernoLotus — burn applied to enemies boosted 50%
+      if (run.relics.includes("infernoLotus") && effect.status === "burn" && target.uid !== "player") {
+        const bonus = Math.ceil(stacks * 0.5);
+        stacks += bonus;
+        combatLog(state, `业火莲助燃，灼烧层数 +${bonus}。`);
+      }
+      // V3.3: bloodPrisonOath — bleed boosted 50%, lose 2 HP
+      if (run.relics.includes("bloodPrisonOath") && effect.status === "bleed" && target.uid !== "player") {
+        const bonus = Math.ceil(stacks * 0.5);
+        stacks += bonus;
+        state.run.hp = Math.max(1, state.run.hp - 2);
+        combatLog(state, `血狱誓催发，流血层数 +${bonus}，自身失去 2 点生命。`);
+      }
+      // V3.3: venomousCauldron — poison boosted 50%, gain 2 poison
+      if (run.relics.includes("venomousCauldron") && effect.status === "poison" && target.uid !== "player") {
+        const bonus = Math.ceil(stacks * 0.5);
+        stacks += bonus;
+        addStatus(state.run, "poison", 2);
+        combatLog(state, `万蛊盏催毒，毒瘴层数 +${bonus}，自身获得 2 层毒瘴。`);
+      }
+      stacks = applyControlStatus(state, target, effect.status, stacks);
+      // V3.13N-C1B: regular-only playerPoisonApplyMult scales poison applied by player to enemies
+      if (stacks > 0 && effect.status === "poison" && target.uid !== "player" && run.difficulty === "regular") {
+        stacks = Math.max(1, Math.round(stacks * difficultyTuning.regular.playerPoisonApplyMult));
+      }
+      if (stacks > 0) {
+        addStatus(target, effect.status, stacks);
+        combatLog(state, `${target.uid === "player" ? "你" : target.name} 获得 ${statusLabel(effect.status)} ${stacks}。`);
+        if (CONTROL_STATUS_IDS.has(effect.status)) trackControlApplied(state, target, stacks);
+        // V3.1: chaosBell — extra damage on control applied
+        if (run.relics.includes("chaosBell") && CONTROL_STATUS_IDS.has(effect.status)) {
+          const dmg = applyBlock(target, 4);
+          target.hp = Math.max(0, target.hp - dmg);
+          addStatus(target, "controlResist", 1);
+          combatLog(state, `乱魂铃震响，${target.name} 受到 ${dmg} 点伤害并获得 1 层定力。`);
+          if (target.hp <= 0) onEnemyKilled(state, target);
+        }
+      }
+      if (effect.status === "thunderMark" && effect.cardStyle !== "spell") triggerThunderTribulations(state, target, effect);
+      triggerControlBreak(state, target);
+    }
+
+    if (effect.type === "amplifyDebuffs") {
+      const added = amplifyDebuffs(target, effect.statuses, (effect.value ?? 0) + (effect.cardMythStatusBonus ?? 0), run);
+      if (added > 0) {
+        combatLog(state, `${target.uid === "player" ? "你" : target.name} 的负面状态增长 ${added} 层。`);
+      }
+      if (effect.cardStyle !== "spell") triggerThunderTribulations(state, target, effect);
+      triggerControlBreak(state, target);
+    }
+
+    if (effect.type === "thunderMark") {
+      applyThunderMark(state, target, effect);
     }
 
     if (target.uid === "player") {
@@ -152,40 +295,94 @@ export function applyCardDamage(state, target, baseDamage, cardCost = 1, cardSty
   const combat = run?.combat;
   if (!run || !combat || target.hp <= 0) return;
 
-  const spirit = statusStacks(playerFighter(run), "spirit");
+  const player = playerFighter(run);
+  const spirit = statusStacks(player, "spirit");
+  const battleIntent = cardStyle === "physical" ? statusStacks(player, "battleIntent") : 0;
   const curse = statusStacks(target, "curse");
-  const fury = cardStyle === "physical" ? statusStacks(playerFighter(run), "fury") : 0;
   const spiritBonus = Math.min(spirit, Math.max(1, cardCost) * SPIRIT_BONUS_PER_COST);
-  const brittle = statusStacks(target, "brittle") > 0 ? 1.5 : 1;
-  const factionDmg = getFactionDamageBonus(state, cardStyle);
-  let damage = Math.floor((baseDamage + spiritBonus + curse + fury * 3 + factionDmg) * brittle);
+  const firstStrikeBonus = mythFirstStrikeDamageBonus(run, target);
+  let damage = baseDamage + spiritBonus + battleIntent + curse + firstStrikeBonus;
+
+  if (battleIntent > 0) {
+    combatLog(state, `战意追加 ${battleIntent} 点物理伤害。`);
+  }
+  if (firstStrikeBonus > 0) {
+    consumeMythFirstStrike(run, firstStrikeBonus);
+    combatLog(state, `妖箓印满级：首击追加 ${firstStrikeBonus} 点伤害。`);
+  }
 
   if (run.relics.includes("thunderSeal") && !combat.flags.thunderSealUsed) {
     damage += 4;
     combat.flags.thunderSealUsed = true;
     combatLog(state, `${relics.thunderSeal.name} 追加 4 点雷伤。`);
   }
-  const yaoFirst = getFactionFirstHitBonus(state);
-  if (yaoFirst > 0 && !combat.flags.yaoFirstUsed) {
-    damage += yaoFirst;
-    combat.flags.yaoFirstUsed = true;
-    combatLog(state, `妖力涌动，首击追加 ${yaoFirst} 点伤害。`);
+
+  // V3.3: berserkBrand — double physical card damage
+  if (run.relics.includes("berserkBrand") && cardStyle === "physical") {
+    damage *= 2;
+    combatLog(state, "狂战烙印爆燃，物理牌伤害翻倍。");
   }
 
+  damage = applyBrittleDamage(state, target, damage);
   damage = applyBlock(target, damage);
   target.hp = Math.max(0, target.hp - damage);
   combatLog(state, `对 ${target.name} 造成 ${damage} 点伤害。`);
 
   const bleed = statusStacks(target, "bleed");
   if (bleed > 0 && target.hp > 0) {
-    const bleedDamage = applyBlock(target, bleed);
+    const bleedBonus = mythStatusDamageBonus(run, target, "bleed");
+    const rawBleedDamage = applyBrittleDamage(state, target, bleed + bleedBonus);
+    const bleedDamage = applyBlock(target, rawBleedDamage);
     target.hp = Math.max(0, target.hp - bleedDamage);
     const reduced = reduceConsumableDebuff(target, "bleed", 1);
-    combatLog(state, `${target.name} 流血爆开，格挡抵消 ${bleed - bleedDamage} 点，额外受到 ${bleedDamage} 点伤害${reduced ? "。" : "，凝滞保留了流血。"}`);
+    combatLog(state, `${target.name} 流血爆开，格挡抵消 ${rawBleedDamage - bleedDamage} 点，额外受到 ${bleedDamage} 点伤害${reduced ? "。" : "，凝滞保留了流血。"}`);
+  }
+
+  if (hasTrueMartialRelic(run, "poJunLing") && cardStyle === "physical") {
+    target.hp = Math.max(0, target.hp - 10);
+    combatLog(state, "破军令追加 10 点真伤。");
+    if (target.hp <= 0) onEnemyKilled(state, target);
   }
 
   if (target.hp <= 0) {
     onEnemyKilled(state, target);
+  }
+}
+
+function applyExecute(state, target, effect) {
+  const run = state.run;
+  const combat = run?.combat;
+  if (!run || !combat || target.hp <= 0) return;
+
+  const threshold = effect.threshold ?? 35;
+  const hpPercent = (target.hp / target.maxHp) * 100;
+  if (hpPercent <= threshold) {
+    target.hp = 0;
+    combatLog(state, `${target.name} 血线低于 ${threshold}%，被无视格挡斩杀。`);
+    onEnemyKilled(state, target);
+    return;
+  }
+
+  applyCardDamage(state, target, (effect.fallbackDamage ?? 0) + (effect.cardMythBonus ?? 0), effect.cardCost ?? 1, effect.cardStyle);
+}
+
+export 
+function applySpikeBurst(state, targets) {
+  const run = state.run;
+  const combat = run?.combat;
+  if (!run || !combat || targets.length === 0) return;
+  const spikes = statusStacks(playerFighter(run), "spikes");
+  const block = combat.block ?? 0;
+  const turtleMult = hasTrueMartialRelic(run, "turtleShell") ? 1.25 : 1;
+  const raw = Math.floor(Math.min(block, spikes * 3) * turtleMult);
+  if (raw <= 0) { combatLog(state, "棘刺无力。"); return; }
+  for (const target of targets) {
+    if (target.hp <= 0) continue;
+    const blocked = Math.min(target.block, raw);
+    target.block -= blocked;
+    target.hp = Math.max(0, target.hp - (raw - blocked));
+    combatLog(state, `荆棘爆发！${target.name} 受到 ${raw - blocked} 点反射伤害。`);
+    if (target.hp <= 0) onEnemyKilled(state, target);
   }
 }
 
@@ -205,7 +402,13 @@ export function applyIncomingDamage(state, rawDamage) {
     combatLog(state, `护体抵消 ${blockedByWard} 点伤害。`);
   }
 
-  damage = applyBlock(player, damage);
+  const hasBlockShield = player.statuses?.some(s => s.id === "blockShield" && s.stacks > 0);
+  if (hasBlockShield) {
+    const absorbed = Math.min(player.block, damage);
+    damage -= absorbed;
+  } else {
+    damage = applyBlock(player, damage);
+  }
   player.hp = Math.max(0, player.hp - damage);
   syncPlayerFighter(run, player);
   combatLog(state, `你受到 ${damage} 点伤害。`);
@@ -216,12 +419,18 @@ export function applyIncomingDamage(state, rawDamage) {
 }
 
 export function tickDamageStatus(state, fighter, statusId) {
+  const run = state?.run;
+  const combat = run?.combat;
   const stacks = statusStacks(fighter, statusId);
   if (stacks <= 0) return;
 
-  const damage = applyBlock(fighter, stacks);
+  const venomMult = hasTrueMartialRelic(run, "venomScripture") ? 2 : 1;
+  if (venomMult > 1) combatLog(state, "万毒真经生效，毒瘴伤害翻倍。");
+  const bonus = mythStatusDamageBonus(state.run, fighter, statusId);
+  const rawDamage = applyBrittleDamage(state, fighter, stacks * venomMult + bonus);
+  const damage = applyBlock(fighter, rawDamage);
   fighter.hp = Math.max(0, fighter.hp - damage);
-  const blocked = stacks - damage;
+  const blocked = rawDamage - damage;
   combatLog(state, `${fighter.uid === "player" ? "你" : fighter.name} 受到 ${statusLabel(statusId)} ${damage} 点伤害${blocked > 0 ? `，格挡抵消 ${blocked} 点` : ""}。`);
 
   if (["bleed", "poison"].includes(statusId)) {
@@ -249,12 +458,126 @@ export function tickDamageStatus(state, fighter, statusId) {
 
 export function applyCardEffects(state, cardInstance, targetUid) {
   const card = cards[cardInstance.cardId];
-  for (const effect of card.effects) {
-    applyEffect(state, { ...effect, sourceUid: cardInstance.uid, cardCost: card.cost, cardStyle: card.style }, targetUid);
-    if (state.phase !== "combat") {
-      break;
+  const mythBoost = cardMythBoost(state.run, card);
+
+  // UI2: use trueMartial-specific effects when in trueMartial mode
+  const effectiveCard = (state.run?.trueMartial && card.trueMartial) ? card.trueMartial : card;
+  const effects = effectiveCard.effects || card.effects;
+  const cardCost = effectiveCard.cost !== undefined ? effectiveCard.cost : card.cost;
+
+  if (!consumeTrueMartialGuForbiddenTrigger(state, card, cardInstance, effects, targetUid)) {
+    combatLog(state, "trueMartial guForbidden already triggered for this source this turn.");
+    finishCombatIfWon(state);
+    return;
+  }
+
+  // V3.3: berserkBrand — lose 3 HP when playing a physical card
+  if (card.style === "physical" && state.run?.relics?.includes("berserkBrand")) {
+    state.run.hp = Math.max(1, state.run.hp - 3);
+    combatLog(state, "狂战烙印燃血，打出物理牌失去 3 点生命。");
+  }
+
+  const growsBattleIntent = card.style === "physical" && card.effects.some((effect) => ["damage", "execute"].includes(effect.type));
+  if (mythBoost.active) {
+    combatLog(state, `${mythBoost.tag}箓印 ${mythBoost.level} 生效。`);
+  }
+  beginCardControlBatch(state);
+  try {
+    for (const [effectIndex, effect] of effects.entries()) {
+      applyEffect(
+        state,
+        {
+          ...effect,
+          sourceUid: cardInstance.uid,
+          sourceCardId: card.id,
+          sourceEffectIndex: effectIndex,
+          cardCost,
+          cardStyle: card.style,
+          cardMythBonus: mythBoost.numericBonus,
+          cardMythStatusBonus: mythBoost.statusBonus,
+        },
+        targetUid,
+      );
+      if (state.phase !== "combat") break;
+    }
+
+    // v0.7.7: 雷火引 — normal spell travel blessing buff
+    const combat = state.run?.combat;
+    const charge = combat?.flags?.travelSpellCharge ?? 0;
+    if (charge > 0 && state.phase === "combat" && card.style === "spell" && combat) {
+      const resolvedTargets = new Set();
+      for (const effect of effects) {
+        if (effect.type === "damage" || effect.type === "status" || effect.type === "thunderMark" || effect.type === "amplifyDebuffs" || effect.type === "poisonBurst") {
+          if (effect.target === "allEnemies") {
+            for (const e of (combat.enemies || [])) {
+              if (e.hp > 0) resolvedTargets.add(e);
+            }
+          } else if (effect.target === "enemy") {
+            const t = (combat.enemies || []).find(e => e.uid === targetUid && e.hp > 0);
+            if (t) resolvedTargets.add(t);
+          }
+        }
+      }
+      if (resolvedTargets.size > 0) {
+        combat.flags.travelSpellCharge = charge - 1;
+        for (const t of resolvedTargets) {
+          addStatus(t, "burn", 7);
+          addStatus(t, "thunderMark", 6);
+        }
+        addStatus(state.run, "spirit", 1);
+        combatLog(state, "雷火引发动，法术牵动灼烧、雷痕与灵气。");
+      }
+    }
+
+    // v0.7.7: Compute affected enemies for this spell card
+    const affectedEnemies = new Set();
+    if (state.phase === "combat" && card.style === "spell") {
+      const combat = state.run?.combat;
+      if (combat) {
+        for (const effect of effects) {
+          if (effect.target === "allEnemies") {
+            for (const e of (combat.enemies || [])) {
+              if (e.hp > 0) affectedEnemies.add(e);
+            }
+          } else if (effect.target === "enemy") {
+            const t = (combat.enemies || []).find(e => e.uid === targetUid && e.hp > 0);
+            if (t) affectedEnemies.add(t);
+          }
+        }
+      }
+    }
+
+    // v0.7.7: 雷火共鸣 — spell cards trigger burn+thunderMark → thunderFireMark
+    for (const enemy of affectedEnemies) {
+      const burnStacks = statusStacks(enemy, "burn");
+      const tmStacks = statusStacks(enemy, "thunderMark");
+      if (burnStacks >= 4 && tmStacks >= 4) {
+        reduceStatus(enemy, "burn", 4);
+        // thunderMark is catalyst, not consumed
+        addStatus(enemy, "thunderFireMark", 1);
+        combatLog(state, "雷火共鸣，灼烧附着雷痕凝成雷火烙印。");
+      }
+    }
+  } finally {
+    endCardControlBatch(state);
+  }
+
+  if (state.phase === "combat" && growsBattleIntent && statusStacks(playerFighter(state.run), "battleIntent") > 0) {
+    addStatus({ statuses: state.run.statuses }, "battleIntent", PHYSICAL_INTENT_GAIN);
+    combatLog(state, `物理攻势推进，战意 +${PHYSICAL_INTENT_GAIN}。`);
+  }
+
+  // v0.7.7: Universal tribulation check for all enemies
+  if (state.phase === "combat") {
+    const cbt = state.run?.combat;
+    if (cbt) {
+      for (const enemy of (cbt.enemies || [])) {
+        if (enemy.hp > 0) triggerThunderTribulations(state, enemy);
+      }
     }
   }
+  // UI2-THUNDER-PICKUP-CORE-REPAIR: check combat victory after tribulation damage
+  finishCombatIfWon(state);
 }
 
 export function pickDiscardCard(state, cardUid) {
@@ -263,17 +586,12 @@ export function pickDiscardCard(state, cardUid) {
   const choice = run?.pendingChoice;
   if (!run || !combat || choice?.type !== "discardPick") return state;
 
-  const index = combat.discardPile.findIndex((card) => card.uid === cardUid && card.uid !== choice.sourceUid);
-  if (index < 0) return state;
+  const availableCards = recoverableDiscardCards(combat, choice);
+  const allowed = availableCards.some((card) => card.uid === cardUid);
+  if (!allowed) return state;
 
-  // 二次校验：如果限制了流派，不允许回收该流派卡牌
-  if (choice.excludeStyle) {
-    const cardDef = cards[combat.discardPile[index].cardId];
-    if (cardDef?.style === choice.excludeStyle) {
-      combat.log.push("拾遗诀无法回收控制牌。");
-      return state;
-    }
-  }
+  const index = combat.discardPile.findIndex((card) => card.uid === cardUid);
+  if (index < 0) return state;
 
   const [card] = combat.discardPile.splice(index, 1);
   combat.hand.push(card);
@@ -296,7 +614,7 @@ export function cancelDiscardPick(state) {
   return state;
 }
 
-function startDiscardPick(state, count, sourceUid, excludeStyle = null) {
+function startDiscardPick(state, count, sourceUid, effect = {}) {
   const run = state.run;
   const combat = run?.combat;
   if (!run || !combat) return;
@@ -305,12 +623,12 @@ function startDiscardPick(state, count, sourceUid, excludeStyle = null) {
     type: "discardPick",
     count,
     sourceUid,
-    excludeStyle,
-    title: `从弃牌堆选择 ${count} 张牌加入手牌`,
+    excludeStyles: effect.excludeStyles ?? [],
+    title: effect.excludeStyles?.includes("control") ? `从弃牌堆选择 ${count} 张非控制牌加入手牌` : `从弃牌堆选择 ${count} 张牌加入手牌`,
   };
 
   if (recoverableDiscardCards(combat, choice).length === 0) {
-    combat.log.push(excludeStyle ? "弃牌堆没有可回收的非控制牌。" : "弃牌堆没有可回收的牌。");
+    combat.log.push("弃牌堆没有可回收的牌。");
     return;
   }
 
@@ -319,14 +637,12 @@ function startDiscardPick(state, count, sourceUid, excludeStyle = null) {
 }
 
 function recoverableDiscardCards(combat, choice) {
-  let list = combat.discardPile.filter((ci) => ci.uid !== choice.sourceUid);
-  if (choice.excludeStyle) {
-    list = list.filter((ci) => {
-      const def = cards[ci.cardId];
-      return def?.style !== choice.excludeStyle;
-    });
-  }
-  return list;
+  const excluded = new Set(choice.excludeStyles ?? []);
+  return combat.discardPile.filter((card) => {
+    if (card.uid === choice.sourceUid) return false;
+    const style = cards[card.cardId]?.style;
+    return !style || !excluded.has(style);
+  });
 }
 
 function resolveTargets(run, targetType, targetUid) {
@@ -345,19 +661,172 @@ function resolveTargets(run, targetType, targetUid) {
   return selected ? [selected] : combat.enemies.filter((enemy) => enemy.hp > 0).slice(0, 1);
 }
 
-function amplifyDebuffs(target, statuses, value) {
-  const debuffs = statuses ?? ["burn", "bleed", "poison", "curse", "chaos", "stasis"];
+function trueMartialGuForbiddenTargetGroupKey(run, effects, targetUid) {
+  const effect = effects.find((item) => item.type === "poisonBurst")
+    || effects.find((item) => item.target === "allEnemies" || item.target === "enemy")
+    || { target: "enemy" };
+  return resolveTargets(run, effect.target, targetUid)
+    .filter((target) => target && target.uid !== "player")
+    .map((target) => target.uid)
+    .sort()
+    .join("|") || "no-valid-target";
+}
+
+function consumeTrueMartialGuForbiddenTrigger(state, card, cardInstance, effects, targetUid) {
+  const run = state.run;
+  const combat = run?.combat;
+  if (!run?.trueMartial || !combat || !TRUE_MARTIAL_GU_FORBIDDEN_REPEAT_GUARD_IDS.has(card?.id)) return true;
+  const targetGroupKey = trueMartialGuForbiddenTargetGroupKey(run, effects, targetUid);
+  const key = [
+    run.floor ?? 0,
+    combat.turn ?? 0,
+    cardInstance.uid,
+    card.id,
+    "guForbidden",
+    targetGroupKey,
+  ].join(":");
+  const used = run.trueMartialGuForbiddenTriggers ?? {};
+  run.trueMartialGuForbiddenTriggers = used;
+  const sourceTurnKey = [
+    run.floor ?? 0,
+    combat.turn ?? 0,
+    cardInstance.uid,
+    card.id,
+    "guForbidden",
+  ].join(":");
+  if (used[key] || used[sourceTurnKey]) return false;
+  used[key] = true;
+  used[sourceTurnKey] = true;
+  return true;
+}
+
+function amplifyDebuffs(target, statuses, value, run) {
+  const debuffs = statuses ?? ["burn", "bleed", "poison", "curse", "chaos", "bind", "stun", "stasis", "thunderMark", "brittle"];
   let added = 0;
 
   for (const statusId of debuffs) {
     const stacks = statusStacks(target, statusId);
     if (stacks > 0) {
-      addStatus(target, statusId, value);
-      added += value;
+      let finalValue = value;
+      // V3.13N-C1B: regular-only playerPoisonApplyMult for amplifyDebuffs
+      if (statusId === "poison" && target.uid !== "player" && run?.difficulty === "regular") {
+        finalValue = Math.max(1, Math.round(value * difficultyTuning.regular.playerPoisonApplyMult));
+      }
+      addStatus(target, statusId, finalValue);
+      added += finalValue;
     }
   }
 
   return added;
+}
+
+function applyThunderMark(state, target, effect) {
+  const run = state.run;
+  const combat = run?.combat;
+  if (!run || !combat || target.hp <= 0) return;
+
+  const stacks = (effect.stacks ?? effect.value ?? 0) + (effect.cardMythStatusBonus ?? 0);
+  if (stacks <= 0) return;
+
+  addStatus(target, "thunderMark", stacks);
+  combatLog(state, `${target.name} 雷痕 +${stacks}。`);
+  if (effect.cardStyle !== "spell") triggerThunderTribulations(state, target, effect);
+}
+
+function triggerThunderTribulations(state, target, effect = {}) {
+  const run = state.run;
+  const combat = run?.combat;
+  if (!run || !combat || target.hp <= 0) return;
+
+  const threshold = effect.threshold ?? THUNDER_TRIBULATION_THRESHOLD;
+  const baseDamage = effect.damage ?? THUNDER_TRIBULATION_DAMAGE;
+  const nineSky = hasTrueMartialRelic(run, "nineSkyTribulation");
+  const damage = nineSky ? baseDamage + 60 : baseDamage;
+  if (nineSky) combatLog(state, "九天雷劫爆发，雷伤 +60。");
+
+  while (target.hp > 0 && statusStacks(target, "thunderMark") >= threshold) {
+    reduceStatus(target, "thunderMark", threshold);
+    // v0.7.7: thunderFireMark bonus damage
+    const fireMark = statusStacks(target, "thunderFireMark");
+    const fireBonus = fireMark > 0 ? fireMark * 40 : 0;
+    if (fireMark > 0) {
+      reduceStatus(target, "thunderFireMark", fireMark);
+      combatLog(state, `雷火烙印爆发，天劫追加 ${fireBonus} 点雷火伤害。`);
+    }
+    const finalDamage = damage + fireBonus + statusStacks(target, "curse");
+    target.hp = Math.max(0, target.hp - finalDamage);
+    // v0.7.6: tribulation is pure burst damage, no stun
+    combatLog(state, `天劫降下，${target.name} 无视格挡受到 ${finalDamage} 点雷伤。`);
+    if (target.hp <= 0) {
+      onEnemyKilled(state, target);
+    }
+  }
+}
+
+function applyBleedSiphon(state, targets, effect) {
+  const run = state.run;
+  const combat = run?.combat;
+  if (!run || !combat || targets.length === 0) return;
+
+  const totalBleed = targets.reduce((sum, target) => sum + statusStacks(target, "bleed"), 0);
+  if (totalBleed <= 0) {
+    combatLog(state, "没有可汲取的流血。");
+    return;
+  }
+
+  const ratio = Math.max(1, effect.ratio ?? 3);
+  let heal = Math.floor(totalBleed / ratio) + (effect.value ?? 0) + (effect.cardMythBonus ?? 0);
+  if (hasTrueMartialRelic(run, "asuraHeart")) { heal *= 2; combatLog(state, "修罗心翻涌，血魔汲血翻倍。"); }
+  if (heal <= 0) {
+    combatLog(state, `流血不足 ${ratio} 层，未能回血。`);
+    return;
+  }
+
+  const before = run.hp;
+  run.hp = Math.min(run.maxHp, run.hp + heal);
+  const actual = run.hp - before;
+  const source = targets.length > 1 ? `敌方流血合计 ${totalBleed} 层` : `${targets[0].name} 流血 ${totalBleed} 层`;
+  combatLog(state, `血魔汲血：${source}，回复 ${actual} 点生命。`);
+}
+
+function applyShellReflect(state, targets, effect) {
+  const run = state.run;
+  const combat = run?.combat;
+  if (!run || !combat || targets.length === 0) return;
+
+  const block = combat.block ?? 0;
+  if (block <= 0) {
+    combatLog(state, "没有格挡可用于反震。");
+    return;
+  }
+
+  const ratio = Math.max(0, effect.ratio ?? 0.5);
+  const turtleMult = hasTrueMartialRelic(run, "turtleShell") ? 1.25 : 1;
+  const rawDamage = Math.max(1, Math.floor((Math.floor(block * ratio) + (effect.value ?? 0) + (effect.cardMythBonus ?? 0)) * turtleMult));
+  // consumeRatio: 0 means this reflect does not deduct block. It does NOT grant blockShield.
+  if (rawDamage <= 0) {
+    combatLog(state, "反震力道不足。");
+    return;
+  }
+
+  for (const target of targets) {
+    if (target.hp <= 0) continue;
+    const finalRawDamage = applyBrittleDamage(state, target, rawDamage);
+    const damage = applyBlock(target, finalRawDamage);
+    target.hp = Math.max(0, target.hp - damage);
+    combatLog(state, `以 ${block} 点格挡反震 ${target.name}，造成 ${damage} 点伤害。`);
+    if (target.hp <= 0) {
+      onEnemyKilled(state, target);
+    }
+  }
+
+  const consumeRatio = Math.max(0, effect.consumeRatio ?? 0);
+  const consumed = Math.min(combat.block, Math.ceil(block * consumeRatio));
+  if (consumed > 0) {
+    combat.block -= consumed;
+    combatLog(state, `反震消耗 ${consumed} 点格挡。`);
+  }
+  
 }
 
 function applyBlock(fighter, rawDamage) {
@@ -366,56 +835,204 @@ function applyBlock(fighter, rawDamage) {
   return rawDamage - blocked;
 }
 
-function onEnemyKilled(state, enemy) {
+function boostedValue(effect) {
+  return (effect.value ?? 0) + (effect.cardMythBonus ?? 0);
+}
+
+function applyPoisonBurst(state, targets, effect) {
   const run = state.run;
   const combat = run?.combat;
-  if (!run || !combat || combat.flags[`killed_${enemy.uid}`]) return;
+  if (!run || !combat) return;
 
-  combat.flags[`killed_${enemy.uid}`] = true;
-  combatLog(state, `${enemy.name} 被击败。`);
+  for (const target of targets) {
+    if (!target || target.uid === "player" || target.hp <= 0) continue;
 
-  if (run.relics.includes("bloodGourd") && !combat.flags.bloodGourdUsed) {
-    run.hp = Math.min(run.maxHp, run.hp + 5);
-    combat.flags.bloodGourdUsed = true;
-    combatLog(state, "血葫芦回涌，回复 5 点生命。");
-  }
-
-  if (run.relics.includes("ghostLantern")) {
-    for (const other of combat.enemies) {
-      if (other.hp > 0) {
-        addStatus(other, "curse", 2);
-      }
+    const poison = statusStacks(target, "poison");
+    if (poison <= 0) {
+      combatLog(state, `${target.name} 毒瘴不足，毒爆无效。`);
+      continue;
     }
-    combatLog(state, "引魂灯摇动，余敌皆染诅咒 2。");
+
+    const venomMult = hasTrueMartialRelic(run, "venomScripture") ? 2 : 1;
+    if (venomMult > 1) combatLog(state, "万毒真经生效，毒爆伤害翻倍。");
+
+    const rawDamage = applyBrittleDamage(state, target, poison * venomMult + mythStatusDamageBonus(run, target, "poison"));
+    const damage = applyBlock(target, rawDamage);
+    target.hp = Math.max(0, target.hp - damage);
+    combatLog(state, `${target.name} 毒瘴爆发，受到 ${damage} 点伤害。`);
+
+    if (target.hp <= 0) onEnemyKilled(state, target);
   }
 }
 
-function finishDefeat(state, message) {
+function consumeTrueMartialPoisonBurstResolve(state, effect, targets = []) {
+  const run = state.run;
+  const combat = run?.combat;
+  if (!run?.trueMartial || !combat || !effect?.sourceUid) return true;
+  const targetGroupKey = targets
+    .filter((target) => target && target.uid !== "player")
+    .map((target) => target.uid)
+    .sort()
+    .join("|") || "no-valid-target";
+  const sourceCardId = effect.sourceCardId ?? effect.cardId ?? "unknown-card";
+  const effectIndex = effect.sourceEffectIndex ?? 0;
+  const key = [
+    combat.turn ?? 0,
+    effect.sourceUid,
+    sourceCardId,
+    "poisonBurst",
+    effectIndex,
+    targetGroupKey,
+  ].join(":");
+  const used = combat.flags.trueMartialPoisonBurstResolves ?? {};
+  combat.flags.trueMartialPoisonBurstResolves = used;
+  if (used[key]) return false;
+  used[key] = true;
+  return true;
+}
+
+function boostedStacks(effect) {
+  return (effect.stacks ?? 0) + (effect.cardMythStatusBonus ?? 0);
+}
+
+function applyBrittleDamage(state, target, rawDamage) {
+  if (rawDamage <= 0 || target.uid === "player" || statusStacks(target, "brittle") <= 0) {
+    return rawDamage;
+  }
+
+  const amplified = Math.ceil(rawDamage * BRITTLE_MULTIPLIER);
+  combatLog(state, `${target.name} 脆化承伤，伤害 ${rawDamage} -> ${amplified}。`);
+  return amplified;
+}
+
+function controlStacks(target) {
+  return {
+    chaos: statusStacks(target, "chaos"),
+    bind: statusStacks(target, "bind"),
+    stun: statusStacks(target, "stun"),
+  };
+}
+
+function controlTypeCount(stacks) {
+  return Object.values(stacks).filter(v => v > 0).length;
+}
+
+function shouldTriggerControlBreak(target) {
+  const stacks = controlStacks(target);
+  const total = stacks.chaos + stacks.bind + stacks.stun;
+  const typeCount = controlTypeCount(stacks);
+  const maxSingle = Math.max(stacks.chaos, stacks.bind, stacks.stun);
+  return (
+    (typeCount >= CONTROL_BREAK_MIN_TYPES && total >= CONTROL_BREAK_THRESHOLD) ||
+    (typeCount === 1 && maxSingle >= CONTROL_BREAK_SINGLE_TYPE_THRESHOLD)
+  );
+}
+
+function isControlBreakLocked(state, target) {
+  return Boolean(state.run?.trueMartial && target?.controlBreak?.active);
+}
+
+function noteControlBreakBlocked(target, statusId, stacks, turn) {
+  const lock = target.controlBreak ?? {};
+  target.controlBreak = {
+    ...lock,
+    active: true,
+    blockedStatuses: lock.blockedStatuses ?? [...CONTROL_BREAK_BLOCKED_STATUSES],
+    blockedApplications: (lock.blockedApplications ?? 0) + 1,
+    blockedStacks: (lock.blockedStacks ?? 0) + Math.max(0, stacks ?? 0),
+    lastBlockedStatus: statusId,
+    lastBlockedTurn: turn,
+  };
+}
+
+function activateControlBreakLock(state, target, reason = "control-pressure") {
+  if (!state.run?.trueMartial) return;
+  const combat = state.run?.combat;
+  const lock = target.controlBreak ?? {};
+  target.controlBreak = {
+    ...lock,
+    active: true,
+    triggeredCount: (lock.triggeredCount ?? 0) + 1,
+    triggeredTurn: combat?.turn ?? 0,
+    reason,
+    blockedStatuses: [...CONTROL_BREAK_BLOCKED_STATUSES],
+  };
+}
+
+function clearControlBreakActionLocks(target) {
+  let cleared = 0;
+  for (const statusId of CONTROL_BREAK_BLOCKED_STATUSES) {
+    cleared += statusStacks(target, statusId);
+    clearStatus(target, statusId);
+  }
+  return cleared;
+}
+
+export function forceControlBreak(state, target, reason = "control-skip-loop") {
+  if (!state.run?.trueMartial || !target || target.uid === "player" || target.hp <= 0) return false;
+  if (target.controlBreak?.active) return false;
+  const clearedControl = clearControlBreakActionLocks(target);
+  activateControlBreakLock(state, target, reason);
+  combatLog(state, `${target.name} control break activates (${reason}), clearing ${clearedControl} action-control stacks.`);
+  return true;
+}
+
+function controlBreakConsumeAmount(target) {
+  const stacks = controlStacks(target);
+  return controlTypeCount(stacks) >= CONTROL_BREAK_MIN_TYPES
+    ? CONTROL_BREAK_THRESHOLD
+    : CONTROL_BREAK_SINGLE_TYPE_THRESHOLD;
+}
+
+function triggerControlBreak(state, target) {
+  const combat = state.run?.combat;
+  if (!combat || target.uid === "player" || target.hp <= 0) return;
+
+  while (shouldTriggerControlBreak(target)) {
+    const amount = controlBreakConsumeAmount(target);
+    consumeControlPressure(target, amount);
+    if (state.run?.trueMartial) {
+      const clearedControl = clearControlBreakActionLocks(target);
+      activateControlBreakLock(state, target);
+      if (clearedControl > 0) {
+        combatLog(state, `${target.name} control break clears ${clearedControl} action-control stacks.`);
+      }
+    }
+    const clearedBlock = target.block ?? 0;
+    target.block = 0;
+    addStatus(target, "brittle", BRITTLE_STACKS);
+    combatLog(state, `${target.name} 心防崩裂，清空 ${clearedBlock} 点格挡，获得脆化 ${BRITTLE_STACKS}。`);
+  }
+}
+
+function consumeControlPressure(target, amount) {
+  let remaining = amount;
+  for (const statusId of ["chaos", "bind", "stun"]) {
+    if (remaining <= 0) return;
+    const stacks = statusStacks(target, statusId);
+    const spent = Math.min(stacks, remaining);
+    if (spent > 0) {
+      reduceStatus(target, statusId, spent);
+      remaining -= spent;
+    }
+  }
+}
+
+
+
+export function finishDefeat(state, message) {
   const run = state.run;
   if (!run || run.finished) return;
 
+  const mythAward = awardMythMasteryForRunEnd(state, "defeat");
+  // CQA-P3-001: clean up transient state on defeat
+  run.combat = null;
+  run.rewards = [];
+  run.pendingPurge = null;
+  run.pendingChoice = null;
   run.finished = true;
   state.phase = "gameOver";
-  state.message = message;
+  state.message = mythAward ? `${message} ${mythAwardText(mythAward)}` : message;
   state.meta.soul += Math.max(3, run.floor * 2);
   state.meta.lossStreak = (state.meta.lossStreak ?? 0) + 1;
-}
-
-function getFactionDamageBonus(state, cardStyle) {
-  const mastery = state.meta?.factionMastery ?? {};
-  // 幽冥: bonus for bleed/poison cards
-  if (cardStyle === "bleed" || cardStyle === "poison") {
-    return mastery["幽冥"] ?? 0;
-  }
-  return 0;
-}
-
-function getFactionBlockBonus(state) {
-  const mastery = state.meta?.factionMastery ?? {};
-  return mastery["山海"] ?? 0;
-}
-
-function getFactionFirstHitBonus(state) {
-  const mastery = state.meta?.factionMastery ?? {};
-  return (mastery["妖"] ?? 0) * 3;
 }

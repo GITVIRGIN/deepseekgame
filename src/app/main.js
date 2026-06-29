@@ -1,13 +1,18 @@
 import { cards, gradeInfo, rarityInfo, relics, shopItems, statusInfo, styleInfo } from "../core/data.js";
 import { archetypeRanking, dominantArchetype, styleLabel } from "../core/archetypes.js";
-import { previewEnemyIntent } from "../core/combat.js";
+import { previewEnemyIntent, effectiveMaxEnergy, trueMartialFormationInfo } from "../core/combat.js";
 import { reduceGame } from "../core/reducer.js";
-import { clearSave, loadGame, saveGame } from "../core/save.js";
-import { MAX_FLOOR } from "../core/types.js";
+import { canShowTrueMartialEntry, isTrueMartialUnlocked } from "../core/state.js";
+import { clearSave, loadGame, migrateGameState, saveGame } from "../core/save.js";
+import { MAX_FLOOR, TRUE_MARTIAL_MAX_FLOOR, DIFFICULTY_LABELS, DIFFICULTY_BEGINNER, MIN_DECK_SIZE } from "../core/types.js";
 import { gameVersion } from "../core/version.js";
 import { createRunGoal, goalProgress } from "../core/goals.js";
 import { talentCost, talentDefinitions, talentLevel } from "../core/progression.js";
+import { MYTH_FACTIONS, MYTH_MASTERY_MAX, MYTH_MASTERY_PERKS, cardMythBoost, effectiveCardCost, hasMythMasteryPerk } from "../core/myth.js";
 import { clearCloudConfig, connectCloud, downloadCloudSave, loadCloudConfig, saveCloudConfig, uploadCloudSave } from "../core/cloud.js";
+import { assetUrl } from "../ui/assetPath.js";
+import { R3_BACKGROUNDS, R3_PANELS, r3CardArtUrl, r3FallbackCardArtUrl, cardVisualCategory, r3EffectIconUrl } from "../ui/uiR3Assets.js";
+import { R5_ICONS, mapStageBackgroundForFloor, r5CardArtUrl, r5FallbackCardArtUrl, r5EnemyBattleUrl, r5FallbackEnemyBattleUrl, r5EffectIconUrl } from "../ui/uiR5Assets.js";
 
 const app = document.querySelector("#app");
 let state = loadGame();
@@ -19,9 +24,102 @@ let cloudOpen = false;
 let cloudBusy = false;
 let cloudMessage = "";
 let cloudTimer = null;
+let suppressCardClickUntil = 0;
+let replayRecording = null;
+let combatEventFeedback = null;
+let combatEventFeedbackTimer = null;
+
+const COMBAT_EVENT_FEEDBACK_ASSETS = {
+  attack: assetUrl("/assets/ui-r5/effects/effect_attack_impact_mural_crack_r5_256.png"),
+  block: assetUrl("/assets/ui-r5/effects/effect_block_guardian_shield_r5_256.png"),
+  thunder: assetUrl("/assets/ui-r5/effects/effect_thunder_lightning_strike_r5_256.png"),
+  burn: assetUrl("/assets/ui-r5/effects/effect_burn_flame_eruption_r5_256.png"),
+  poison: assetUrl("/assets/ui-r5/effects/effect_poison_toxic_cloud_r5_256.png"),
+  bind: assetUrl("/assets/ui-r5/effects/effect_bind_talisman_lock_r5_256.png"),
+};
+
+const UI_IMAGE_R1_BASE = assetUrl("/assets/ui-image-r1/");
+const R5_UI_ICON_OVERRIDES = {
+  "ui-gold.svg": R5_ICONS.gold,
+  "ui-relic.svg": R5_ICONS.relic,
+  "ui-reward.svg": R5_ICONS.scroll,
+  "ui-scroll-hint.svg": R5_ICONS.scroll,
+  "intent-attack.svg": assetUrl("/assets/ui-r5/effects/effect_battleIntent_icon.png"),
+  "intent-block.svg": assetUrl("/assets/ui-r5/effects/effect_blockShield_icon.png"),
+};
+const statusIconFiles = {
+  burn: "status-burn.svg",
+  spikes: "status-thorn.svg",
+  bleed: "status-bleed.svg",
+  poison: "status-poison.svg",
+  blockShield: "status-shield.svg",
+  ward: "status-shield.svg",
+  bind: "status-bind.svg",
+  thunderMark: "status-thunder.svg",
+  thunderFireMark: "status-thunder.svg",
+  weak: "status-weak.svg",
+  vulnerable: "status-weak.svg",
+};
+
+function uiImagePath(fileName) {
+  if (R5_UI_ICON_OVERRIDES[fileName]) return R5_UI_ICON_OVERRIDES[fileName];
+  return `${UI_IMAGE_R1_BASE}${fileName}`;
+}
+
+function uiIcon(fileName, alt, className = "uiimg-icon") {
+  const node = image(uiImagePath(fileName), alt);
+  node.className = className;
+  node.loading = "eager";
+  node.decoding = "async";
+  return node;
+}
+
+function statusIcon(statusId, className = "uiimg-status-icon") {
+  const r5Url = r5EffectIconUrl(statusId);
+  if (r5Url) {
+    const node = image(r5Url, getStatusDisplayName(statusId));
+    node.className = `${className} r5-status-icon`;
+    node.loading = "eager";
+    node.decoding = "async";
+    return node;
+  }
+  const r3Url = r3EffectIconUrl(statusId);
+  if (r3Url) {
+    const node = image(r3Url, getStatusDisplayName(statusId));
+    node.className = className;
+    node.loading = "eager";
+    node.decoding = "async";
+    return node;
+  }
+  const fileName = statusIconFiles[statusId];
+  return fileName ? uiIcon(fileName, getStatusDisplayName(statusId), className) : null;
+}
+
+function cardFrameRarity(rarity) {
+  if (rarity === "legendary") return "legendary";
+  if (rarity === "epic") return "rare";
+  if (rarity === "rare") return "uncommon";
+  return "common";
+}
 
 function dispatch(action) {
+  if (replayRecording && state.phase !== "gameOver") {
+    replayRecording.actions.push({ phase: state.phase, action });
+  }
+  const pendingCombatFeedback = combatFeedbackForAction(action);
+  // V2.5: reset UI state on new game start
+  const newGameActions = new Set(["startRun", "startRegular", "startTrueMartial"]);
+  if (newGameActions.has(action.type)) {
+    replayRecording = null;
+    selectedTargetUid = null;
+    detailInfo = null;
+    pileInfo = null;
+    progressionOpen = false;
+  }
   state = reduceGame(state, action);
+  if (state.run && !replayRecording) {
+    replayRecording = { seed: state.run.seed, style: state.run.trueMartialStyle || null, actions: [] };
+  }
   pileInfo = null;
 
   const alive = state.run?.combat?.enemies.filter((enemy) => enemy.hp > 0) ?? [];
@@ -31,12 +129,50 @@ function dispatch(action) {
 
   saveGame(state);
   scheduleCloudSync();
+  if (pendingCombatFeedback && state.phase === "combat") {
+    showCombatEventFeedback(pendingCombatFeedback);
+  }
   render();
+}
+
+function combatFeedbackForAction(action) {
+  if (action.type !== "playCard") return null;
+  const cardInstance = state.run?.combat?.hand?.find((item) => item.uid === action.cardUid);
+  const definition = cardInstance ? cards[cardInstance.cardId] : null;
+  const effects = definition ? effectiveCardData(definition).effects ?? [] : [];
+  // Determine target enemy index from targetUid
+  const enemies = state.run?.combat?.enemies ?? [];
+  const targetEnemyUid = action.targetUid ?? selectedTargetUid ?? null;
+  const targetIndex = targetEnemyUid ? enemies.findIndex((e) => e.uid === targetEnemyUid) : -1;
+  const base = { targetActorType: "enemy", targetEnemyUid, targetIndex };
+  if (effects.some((effect) => effect.type === "thunderMark")) return { ...base, kind: "thunder" };
+  if (effects.some((effect) => effect.type === "status" && effect.status === "burn")) return { ...base, kind: "burn" };
+  if (effects.some((effect) => effect.type === "status" && effect.status === "poison")) return { ...base, kind: "poison" };
+  if (effects.some((effect) => effect.type === "status" && effect.status === "bind")) return { ...base, kind: "bind" };
+  if (effects.some((effect) => ["damage", "execute", "bleedBurst"].includes(effect.type))) return { ...base, kind: "attack" };
+  const blockEffect = effects.find((effect) => effect.type === "block" || effect.status === "blockShield" || effect.status === "ward");
+  if (blockEffect) {
+    if (blockEffect.target === "enemy") return { ...base, kind: "block" };
+    return { kind: "block", targetActorType: "player", targetEnemyUid: null, targetIndex: -1 };
+  }
+  return null;
+}
+
+function showCombatEventFeedback(feedback) {
+  window.clearTimeout(combatEventFeedbackTimer);
+  combatEventFeedback = { ...feedback, id: Date.now() };
+  const feedbackId = combatEventFeedback.id;
+  combatEventFeedbackTimer = window.setTimeout(() => {
+    if (combatEventFeedback?.id !== feedbackId) return;
+    combatEventFeedback = null;
+    if (state.phase === "combat") render();
+  }, 780);
 }
 
 function render() {
   app.innerHTML = "";
   app.append(renderShell());
+  positionCombatEventFeedback();
 }
 
 function renderShell() {
@@ -44,6 +180,7 @@ function renderShell() {
   shell.append(renderHeader());
 
   if (state.phase === "home") {
+    replayRecording = null;
     shell.append(renderHome());
   }
 
@@ -63,8 +200,16 @@ function renderShell() {
     shell.append(renderShop());
   }
 
+  if (state.phase === "martialSelect") {
+    shell.append(renderMartialSelect());
+  }
+
   if (state.phase === "gameOver") {
     shell.append(renderGameOver());
+    if (replayRecording) {
+      replayRecording.result = { floor: state.run?.floor, won: !!state.run?.goal?.completedBy };
+      shell.append(downloadReplayButton());
+    };
   }
 
   if (detailInfo) {
@@ -83,19 +228,25 @@ function renderShell() {
     shell.append(renderCloudOverlay());
   }
 
-  if (state.run?.pendingChoice?.type === "discardPick") {
+  if (state.phase === "combat" && state.run?.pendingChoice?.type === "discardPick") {
     shell.append(renderDiscardPickPanel(state.run));
+  }
+
+  // V2.5: don't show purge overlay on gameOver
+  if (state.phase !== "gameOver" && state.run?.pendingPurge) {
+    shell.append(renderPurgeOverlay(state.run));
   }
 
   return shell;
 }
 
 function renderHeader() {
+  const inGame = state.phase !== "home" && state.phase !== "gameOver";
   const header = el("header", "topbar");
   header.append(
     el("div", "brand", [
       image("./assets/seal.svg", "玄箓印"),
-      el("div", "", [el("h1", "", "玄箓行"), el("p", "", `神话杂糅文字肉鸽 · v${gameVersion.app}`)]),
+      el("div", "", [el("h1", "", "玄箓行"), el("p", "", "最终正式版")]),
     ]),
     el("div", "topbar-actions", [
       el("div", "meta", [
@@ -103,7 +254,7 @@ function renderHeader() {
         stat("行旅", state.meta.totalRuns),
         stat("通关", state.meta.wins),
       ]),
-      button("云存档", "ghost small cloud-shortcut", () => {
+      inGame ? "" : button("云存档", "ghost small cloud-shortcut", () => {
         cloudOpen = true;
         render();
       }),
@@ -119,7 +270,14 @@ function renderHome() {
       el("div", "intro", [
         el("h2", "", "携残箓入山"),
         el("p", "", "先做能爽起来的第一版：抽牌、叠状态、拿遗物、一路打到黑山。"),
-        button("开始一局", "primary", () => dispatch({ type: "startRun" })),
+        el("div", "difficulty-choices", [
+          button("入门难度", "primary", () => dispatch({ type: "startRun" })),
+          button("常规难度", "ghost", () => dispatch({ type: "startRegular" })),
+          canShowTrueMartialEntry(state) ? button("真武模式", "danger", () => dispatch({ type: "martialSelect" })) : "",
+        ].filter(Boolean)),
+        el("div", "release-link", [
+          (() => { const a = document.createElement("a"); a.href = "RELEASE_NOTES.md"; a.target = "_self"; a.textContent = "发布说明与新手指南"; return a; })(),
+        ]),
       ]),
       renderCloudPanel(),
       renderProgression(),
@@ -129,10 +287,57 @@ function renderHome() {
   return view;
 }
 
+
+
+function renderMartialSelect() {
+  const styles = [
+    { id: "physical", name: "物理", desc: "杀意叠伤·斩杀", relic: "破军令" },
+    { id: "spell", name: "法术", desc: "雷印天劫·爆发", relic: "九天雷劫" },
+    { id: "bleed", name: "流血", desc: "血魔自残·吸血", relic: "修罗心" },
+    { id: "poison", name: "中毒", desc: "毒瘴虚弱·消耗", relic: "万毒真经" },
+    { id: "control", name: "控制", desc: "离间禁锢·脆化", relic: "混沌灵宝" },
+    { id: "shell", name: "龟壳", desc: "叠甲反震·铁壁", relic: "玄龟甲" },
+  ];
+  const view = el("section", "martial-select");
+  view.append(
+    el("h2", "", "真武模式 — 选择流派"),
+    el("p", "muted", "敌人大幅强化，开局获全套卡牌+专属遗物"),
+    el("div", "martial-grid", styles.map(s => {
+      const btn = el("button", "martial-card", [
+        el("strong", "", s.name),
+        el("span", "", s.desc),
+        el("em", "", s.relic),
+      ]);
+      btn.addEventListener("click", () => dispatch({ type: "startTrueMartial", style: s.id }));
+      return btn;
+    })),
+    button("返回", "ghost", () => dispatch({ type: "cancelMartial" })),
+  );
+  return view;
+}
+
+// V3.0: True Martial formation panel
+function renderTrueMartialFormationPanel(run) {
+  const info = trueMartialFormationInfo(run);
+  if (!info) return el("div");
+  const panel = el("div", "tm-formation-panel");
+  const chip = el("span", "tm-formation-chip", info.name);
+  panel.append(
+    el("div", "tm-formation-title", [chip, ` 阵势 ${info.pressure} | ${info.stageLabel}`]),
+    el("span", "tm-formation-summary", info.summary),
+    button("详情", "ghost-tiny", () => {
+      detailInfo = { type: "tmFormation", formation: info };
+      render();
+    }),
+  );
+  return panel;
+}
+
 function renderCombat() {
   const run = state.run;
   const combat = run.combat;
   const view = el("section", "combat-layout");
+  const stageBackground = mapStageBackgroundForFloor(run.floor);
 
   if (!selectedTargetUid) {
     selectedTargetUid = combat.enemies.find((enemy) => enemy.hp > 0)?.uid ?? null;
@@ -140,13 +345,25 @@ function renderCombat() {
 
   view.append(
     renderRunPanel(run),
-    el("section", "battlefield", [
+    renderMobileRunSummary(run),  // HF5: mobile-only horizontal player summary
+    renderTrueMartialFormationPanel(run),
+    el("section", "battlefield r3-combat-bg", [
       renderActionBanner(combat.log),
       el("div", "enemy-row", combat.enemies.map(renderEnemy)),
+      renderCombatEventFeedbackLayer(),
       renderHand(run, combat),
+      el("div", "hand-swipe-hint", [uiIcon("ui-scroll-hint.svg", "scroll", "uiimg-scroll-hint-icon"), el("span", "", "左右滑动查看更多手牌")]),  // HF10: scroll hint
     ]),
     renderLog(combat.log),
   );
+
+  const battlefield = view.querySelector(".battlefield");
+  if (battlefield) {
+    battlefield.dataset.mapStageKey = stageBackground.key;
+    battlefield.dataset.mapStageLabel = stageBackground.label;
+    battlefield.dataset.mapStageBackground = stageBackground.url;
+    battlefield.style.setProperty("--r5-map-stage-bg", `url("${stageBackground.url}")`);
+  }
 
   return view;
 }
@@ -220,11 +437,12 @@ function renderShopItem(stockItem) {
 
 function renderReward() {
   const run = state.run;
-  const view = el("section", "reward-view");
+  const view = el("section", "reward-view r3-reward-bg");
+  const rollRemaining = (run.rollsMax ?? 3) - (run.rollsUsed ?? 0);
   view.append(
-    el("h2", "", state.message),
+    el("h2", "reward-title", [uiIcon("ui-reward.svg", "reward", "uiimg-title-icon"), el("span", "", state.message)]),
     el("p", "", `第 ${run.floor} 层已清净，选择一份机缘继续前行。`),
-    el("strong", "gold-drop", `本关掉落 ${run.lastGoldDrop ?? 0} 金`),
+    el("strong", "gold-drop", [uiIcon("ui-gold.svg", "gold", "uiimg-inline-icon"), el("span", "", `本关掉落 ${run.lastGoldDrop ?? 0} 金`)]),
   );
 
   const rewards = el("div", "reward-grid");
@@ -233,7 +451,26 @@ function renderReward() {
   }
 
   view.append(rewards);
+  view.append(el("div", "reward-actions", [
+    button("跳过拿牌", "ghost", () => dispatch({ type: "skipReward" })),
+    rollRemaining > 0
+      ? button(`刷新机缘 (${rollRemaining} 次)`, "ghost", () => dispatch({ type: "rollRewards" }))
+      : button("刷新已用完", "ghost disabled", null),
+  ].filter(Boolean)));
   return view;
+}
+
+
+function downloadReplayButton() {
+  const btn = el("button", "", "下载回放");
+  btn.style.cssText = "display:block;margin:8px auto;padding:8px 16px;background:#e8c97a;color:#1a1a2e;border:none;border-radius:4px;cursor:pointer;font-size:14px;";
+  btn.addEventListener("click", () => {
+    const blob = new Blob([JSON.stringify(replayRecording, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a"); a.href = url; a.download = "replay_" + Date.now() + ".json"; a.click();
+    URL.revokeObjectURL(url);
+  });
+  return btn;
 }
 
 function renderGameOver() {
@@ -242,13 +479,15 @@ function renderGameOver() {
     el("h2", "", state.message),
     state.run ? renderRunSummary(state.run) : el("p", "", "旧梦已散。"),
     el("div", "actions", [
-      button("再开一局", "primary", () => dispatch({ type: "startRun" })),
+      button("入门难度", "primary", () => dispatch({ type: "startRun" })),
+      button("常规难度", "ghost", () => dispatch({ type: "startRegular" })),
+      canShowTrueMartialEntry(state) ? button("真武模式", "danger", () => dispatch({ type: "martialSelect" })) : "",
       button("清除存档", "ghost", () => {
         clearSave();
         state = reduceGame(state, { type: "reset" });
         render();
       }),
-    ]),
+    ].filter(Boolean)),
   ]));
   view.append(renderProgression());
   view.append(renderCloudPanel());
@@ -289,6 +528,7 @@ function renderProgression({ readonly = false } = {}) {
       stat("残魂", state.meta.soul),
     ]),
     el("div", "talent-grid", talents.map((definition) => renderTalent(definition, readonly))),
+    renderMythMastery(),
   ]);
 }
 
@@ -313,6 +553,33 @@ function renderTalent(definition, readonly = false) {
   node.append(...children);
 
   return node;
+}
+
+function renderMythMastery() {
+  return el("section", "myth-mastery-panel", [
+    el("div", "progression-head slim-head", [
+      el("div", "", [
+        el("h2", "", "派系箓印"),
+        el("p", "muted", "深入失败可获得 1 点箓印，通关获得 2 点；优先本局主修派系，溢出会补最低派系。"),
+      ]),
+    ]),
+    el(
+      "div",
+      "talent-grid myth-grid",
+      MYTH_FACTIONS.map((tag) => renderMythMasteryItem(tag)),
+    ),
+  ]);
+}
+
+function renderMythMasteryItem(tag) {
+  const level = state.meta.mythMastery?.[tag] ?? 0;
+  const statusBonus = Math.floor(level / 2);
+  const perk = MYTH_MASTERY_PERKS[tag]?.text ?? "";
+  return el("article", `talent myth-talent ${level >= MYTH_MASTERY_MAX ? "maxed" : ""}`, [
+    el("div", "talent-title", [el("strong", "", `${tag}箓印`), el("span", "", `${level}/${MYTH_MASTERY_MAX}`)]),
+    el("p", "", level > 0 ? `同派系牌：伤害、格挡、治疗 +${level}；状态叠层 +${statusBonus}。${perk}` : `尚未刻入。${perk}`),
+    el("span", "talent-cost", level >= MYTH_MASTERY_MAX ? "满级质变已生效" : level > 0 ? "自动生效" : "通关解锁"),
+  ]);
 }
 
 function renderCloudPanel() {
@@ -357,34 +624,182 @@ function renderCloudOverlay() {
 
 function renderRunPanel(run) {
   const panel = el("aside", "run-panel");
-  panel.append(
-    el("h2", "", `第 ${run.floor}/${MAX_FLOOR} 层`),
-    renderPlayerVitals(run),
-    renderGoalPanel(run),
-    renderArchetypePanel(run),
-    el("div", "stat-grid", [
-      stat("生命", `${run.hp}/${run.maxHp}`),
-      stat("格挡", run.combat?.block ?? 0),
-      stat("受伤加成", `+${statusValue(run, "curse")}`),
-      stat("能量", `${run.energy}/${run.maxEnergy}`),
-      stat("牌组上限", `${run.deck.length}/${run.deckLimit ?? 30}`),
-      stat("手牌", `${currentHandCount(run)}/${run.handLimit ?? 5}`),
-      stat("抽牌堆", run.combat?.drawPile.length ?? 0, run.combat ? () => showPile("抽牌堆", run.combat.drawPile) : null),
-      stat("弃牌/回收", run.combat?.discardPile.length ?? 0),
-      stat("金", run.gold),
+  const pChips = formatPlayerStatusChips(run);
+
+  // Difficulty badge
+  const diffLabel = DIFFICULTY_LABELS[run.difficulty] || "未知";
+  const diffBadge = el("span", "difficulty-badge", diffLabel);
+
+  // 行旅符 virtual relic for beginner mode
+  const travelBadge = run.difficulty === DIFFICULTY_BEGINNER
+    ? el("span", "relic-badge travel-talisman", "行旅符")
+    : null;
+  if (travelBadge) travelBadge.title = "入门难度专属。每场战斗开始时触发行旅护持，并根据牌组倾向提供小幅扶助。";
+
+  const maxFloor = run.trueMartial ? TRUE_MARTIAL_MAX_FLOOR : MAX_FLOOR;
+  const actionColumn = renderPlayerActionColumn(run);
+
+  // HF6: filter nulls before native DOM append — prevents "null" text
+  panel.append(...[
+    el("div", "floor-head", [
+      el("h2", "", `第 ${run.floor}/${maxFloor} 层`),
+      actionColumn,
     ]),
-    renderStatusLine("自身状态", run.statuses),
-    el("h3", "", "遗物"),
-    renderRelics(run.relics),
-    el("div", "run-actions", [
-      button("查看修行", "ghost small", () => {
-        progressionOpen = true;
-        render();
-      }),
-      button("放弃并重开", "danger small", () => dispatch({ type: "abandonRun" })),
+    el("div", "run-mode-row", [diffBadge, travelBadge].filter(Boolean)),
+    el("div", "player-live-row", [
+      renderPlayerResourceBars(run),
+      el("div", "player-status-chip-row player-vitals-status", pChips.length > 0 ? pChips : [el("span", "status-chip-inline status-empty", "状态 0")]),
     ]),
-  );
+  ].filter(Boolean));
   return panel;
+}
+
+// HF5: mobile-only compact horizontal player summary
+function renderMobileRunSummary(run) {
+  const maxFloor = run.trueMartial ? TRUE_MARTIAL_MAX_FLOOR : MAX_FLOOR;
+  const diffLabel = DIFFICULTY_LABELS[run.difficulty] || "未知";
+  const pChips = formatPlayerStatusChips(run);
+  return el("div", "mobile-run-summary", [
+    el("div", "ms-top", [
+      el("span", "ms-floor", `第${run.floor}/${maxFloor}层`),
+      el("span", "difficulty-badge", diffLabel),
+    ]),
+    el("div", "ms-vitals player-live-row", [
+      renderPlayerResourceBars(run),
+      el("div", "player-status-chip-row player-vitals-status", pChips.length > 0 ? pChips : [el("span", "status-chip-inline status-empty", "状态 0")]),
+    ]),
+    renderPlayerActionColumn(run, "ms-actions"),
+  ].filter(Boolean));
+}
+
+function renderPlayerActionColumn(run, extraClass = "") {
+  return el("div", `player-action-column ${extraClass}`.trim(), [
+    renderGoldStrip(run),
+    renderPlayerRollStrip(run),
+    el("div", "floor-actions", [
+      button("修行", "ghost micro", () => { progressionOpen = true; render(); }),
+      button("放弃", "danger micro", () => dispatch({ type: "abandonRun" })),
+    ]),
+  ]);
+}
+
+function renderGoldStrip(run) {
+  return el("div", "player-gold-strip player-gold-slot", [
+    uiIcon("ui-gold.svg", "金", "uiimg-stat-icon"),
+    el("strong", "", String(run.gold ?? 0)),
+  ]);
+}
+
+function renderPlayerRollStrip(run) {
+  return el("div", "player-roll-strip", `刷新 ${run.rollsUsed ?? 0}/${run.rollsMax ?? 3}`);
+}
+
+function renderPlayerResourceBars(run) {
+  const hpPercent = Math.max(0, Math.round((run.hp / run.maxHp) * 100));
+  const block = Math.max(0, run.combat?.block ?? 0);
+  const blockPercent = Math.min(100, Math.round((block / 24) * 100));
+  return el("div", "player-resource-bars", [
+    meter(hpPercent, `${run.hp}/${run.maxHp}`, "player-resource-meter player-hp-meter"),
+    meter(blockPercent, `格挡 ${block}`, block > 0 ? "player-resource-meter player-block-meter active" : "player-resource-meter player-block-meter"),
+  ]);
+}
+
+// UI1: status helper functions
+function getStatusPriority(id) {
+  const order = ["spikes","blockShield","curse","spirit",
+    "burn","poison","bleed","thunderMark","weak","vulnerable","brittle","bind","chaos","stun",
+    "ward","battleIntent","stasis","thunderFireMark","clearMind","controlResist"];
+  const idx = order.indexOf(id);
+  return idx >= 0 ? idx : 99;
+}
+function getStatusDisplayName(id) { return statusInfo[id]?.label ?? id; }
+function getStatusDescription(id) {
+  const s = statusInfo[id];
+  if (s?.text) return s.text;
+  // seal statuses and others with no text
+  if (id === "spikes") return "受到攻击时反伤敌人。层数越高，反伤越强。";
+  if (id === "blockShield") return "格挡值不会被攻击消耗，通常在回合结束时移除。";
+  if (id === "curse") return "受到的卡牌伤害增加。";
+  if (id === "spirit") return "提高卡牌伤害，战斗结束后清空。";
+  if (id === "burn") return "回合间受到持续伤害。";
+  if (id === "poison") return "回合间受到持续伤害，并可能削弱敌人攻击。";
+  if (id === "bleed") return "回合间和受到攻击时产生额外伤害，可与汲血联动。";
+  if (id === "thunderMark") return "雷法印记，达到阈值后触发天劫。";
+  if (id === "weak") return "降低造成的伤害。";
+  if (id === "vulnerable") return "受到更多伤害。";
+  if (id === "brittle") return "受到更多伤害。";
+  if (id === "bind") return "限制攻击或施法行动。";
+  if (id === "chaos") return "攻击可能转向同伴或空过。";
+  if (id === "stun") return "跳过行动。";
+  if (id === "ward") return "抵消即将受到的伤害。";
+  if (id === "battleIntent") return "提高物理牌伤害。";
+  if (id === "stasis") return "保留部分状态层数，延缓衰减。";
+  return "状态效果已生效，暂无说明。";
+}
+function getPlayerStatusEntries(run) {
+  return (run?.statuses || []).filter(s => s.stacks > 0)
+    .sort((a, b) => getStatusPriority(a.id) - getStatusPriority(b.id));
+}
+
+// Determine visible chip limit based on viewport
+function statusChipLimit() {
+  if (window.innerWidth <= 480) return 3;
+  if (window.innerWidth <= 1440) return 2;
+  return 3;
+}
+
+export function formatPlayerStatusChips(run) {
+  const entries = getPlayerStatusEntries(run);
+  if (entries.length === 0) return [];
+  const limit = statusChipLimit();
+  const shown = entries.slice(0, limit);
+  const allNames = entries.map(s => `${getStatusDisplayName(s.id)} ${s.stacks}`).join(", ");
+  const chips = shown.map(s => {
+    const label = `${getStatusDisplayName(s.id)} ${s.stacks}`;
+    const node = el("span", `status-chip-inline status-${s.id}`, [
+      statusIcon(s.id),
+      el("span", "status-chip-text", label),
+    ].filter(Boolean));
+    node.dataset.status = s.id;
+    node.title = allNames;
+    node.style.cursor = "pointer";
+    // Click toggles popover
+    node.addEventListener("click", (e) => { e.stopPropagation(); showPlayerStatusDetail(run); });
+    // Desktop hover opens, mouseleave closes if not fixed
+    node.addEventListener("mouseenter", () => { if (!detailInfo) openPlayerStatusDetail(run); });
+    node.addEventListener("mouseleave", () => {
+      if (detailInfo?.type === "playerStatuses" && !detailInfo._fixed) { detailInfo = null; render(); }
+    });
+    // Mobile long-press
+    let longTimer;
+    node.addEventListener("touchstart", () => { longTimer = setTimeout(() => { longTimer = null; showPlayerStatusDetail(run); }, 500); });
+    node.addEventListener("touchend", () => { if (longTimer) clearTimeout(longTimer); });
+    node.addEventListener("touchmove", () => { if (longTimer) clearTimeout(longTimer); });
+    return node;
+  });
+  if (entries.length > limit) {
+    const overflow = el("span", "status-chip-inline status-overflow", `+${entries.length - limit}`);
+    overflow.title = allNames;
+    overflow.style.cursor = "pointer";
+    overflow.addEventListener("click", (e) => { e.stopPropagation(); showPlayerStatusDetail(run); });
+    overflow.addEventListener("mouseenter", () => { if (!detailInfo) openPlayerStatusDetail(run); });
+    overflow.addEventListener("mouseleave", () => {
+      if (detailInfo?.type === "playerStatuses" && !detailInfo._fixed) { detailInfo = null; render(); }
+    });
+    chips.push(overflow);
+  }
+  return chips;
+}
+
+function showPlayerStatusDetail(run) {
+  if (detailInfo?.type === "playerStatuses") { detailInfo = null; render(); return; }
+  detailInfo = { type: "playerStatuses", run, _fixed: true };
+  render();
+}
+function openPlayerStatusDetail(run) {
+  if (detailInfo?.type === "playerStatuses") return;
+  detailInfo = { type: "playerStatuses", run, _fixed: false };
+  render();
 }
 
 function renderArchetypePanel(run) {
@@ -406,25 +821,77 @@ function currentHandCount(run) {
   return run.combat?.hand.length ?? run.retainedHand?.length ?? 0;
 }
 
+function sortCardInstancesByFunction(cardInstances) {
+  return [...cardInstances].sort((left, right) => compareCardDefinitions(cards[left.cardId], cards[right.cardId]));
+}
+
+function compareCardDefinitions(left, right) {
+  return cardFunctionRank(left) - cardFunctionRank(right) || left.cost - right.cost || left.name.localeCompare(right.name, "zh-Hans");
+}
+
+function cardFunctionRank(definition) {
+  const effects = definition.effects ?? [];
+  if (effects.some((effect) => effect.type === "block" || effect.type === "shellReflect" || effect.status === "ward")) return 0;
+  if (effects.some((effect) => effect.type === "damage" || effect.type === "execute")) return 1;
+  if (effects.some((effect) => ["status", "amplifyDebuffs", "thunderMark", "bleedSiphon"].includes(effect.type))) return 2;
+  if (effects.some((effect) => ["draw", "gainEnergy", "recoverDiscard"].includes(effect.type))) return 3;
+  if (effects.some((effect) => ["heal", "cleanse"].includes(effect.type))) return 4;
+  return 5;
+}
+
 function renderEnemy(enemy) {
   const isSelected = enemy.uid === selectedTargetUid;
   const card = el("article", `enemy ${isSelected ? "selected" : ""}`);
+  const stageBackground = mapStageBackgroundForFloor(state.run?.floor);
+  card.dataset.enemyUid = enemy.uid;
+  card.dataset.mapStageKey = stageBackground.key;
+  card.dataset.mapStageBackground = stageBackground.url;
+  card.style.setProperty("--r5-map-stage-bg", `url("${stageBackground.url}")`);
+  const selectEnemy = () => {
+    if (enemy.hp <= 0) return;
+    selectedTargetUid = enemy.uid;
+    render();
+  };
   const hpPercent = Math.max(0, Math.round((enemy.hp / enemy.maxHp) * 100));
+  const battleUrl = r5EnemyBattleUrl(enemy.enemyId);
 
-  card.append(
-    el("div", "enemy-title", [el("h3", "", enemy.name), renderIntentButton(enemy)]),
+  const isAnchor = state.run?.combat?.flags?.trueMartialFormation?.anchorUid === enemy.uid && enemy.hp > 0;
+  const battleImg = image(battleUrl, enemy.name);
+  battleImg.className = "r5-enemy-battle";
+  battleImg.loading = "eager";
+  battleImg.dataset.enemyId = enemy.enemyId ?? "";
+  battleImg.dataset.r5Battle = battleUrl ?? "";
+  battleImg.onerror = () => {
+    if (battleImg.dataset.fallbackApplied) return;
+    battleImg.dataset.fallbackApplied = "true";
+    battleImg.src = r5FallbackEnemyBattleUrl();
+  };
+  // HF6: filter nulls
+  card.append(...[
+    battleImg,
+    el("div", "enemy-title", [el("h3", "", enemy.name), isAnchor ? el("span", "tm-anchor-badge", "阵眼") : null, renderIntentButton(enemy)].filter(Boolean)),
     meter(hpPercent, `${enemy.hp}/${enemy.maxHp}`, "hp-meter"),
     blockMeter(enemy.block),
     renderBarImpacts(enemy.statuses, "enemy"),
     renderStatusLine("状态", enemy.statuses),
-    button(isSelected ? "目标" : "选中", isSelected ? "primary small" : "ghost small", () => {
-      selectedTargetUid = enemy.uid;
-      render();
-    }),
-  );
+  ].filter(Boolean));
 
   if (enemy.hp <= 0) {
     card.classList.add("defeated");
+  } else {
+    card.tabIndex = 0;
+    card.setAttribute("role", "button");
+    card.setAttribute("aria-pressed", isSelected ? "true" : "false");
+    card.title = isSelected ? "当前选中" : "点击选中";
+    card.addEventListener("click", (event) => {
+      if (event.target.closest("button")) return;
+      selectEnemy();
+    });
+    card.addEventListener("keydown", (event) => {
+      if (event.key !== "Enter" && event.key !== " ") return;
+      event.preventDefault();
+      selectEnemy();
+    });
   }
 
   return card;
@@ -434,11 +901,12 @@ function renderHand(run, combat) {
   const area = el("section", "hand-area");
   const cardsNode = el("div", "hand");
 
-  for (const cardInstance of combat.hand) {
+  for (const cardInstance of sortCardInstancesByFunction(combat.hand)) {
     const definition = cards[cardInstance.cardId];
+    const costInfo = effectiveCardCost(run, definition);
     const canPlay = canPlayCard(definition, run);
     const canDiscard = !combat.flags.discardedThisTurn && !run.pendingChoice;
-    const node = renderCard(definition, () => {
+    const play = () => {
       if (canPlay) {
         dispatch({
           type: "playCard",
@@ -446,7 +914,9 @@ function renderHand(run, combat) {
           targetUid: selectedTargetUid,
         });
       }
-    });
+    };
+    const node = renderCard(definition, play, { costInfo });
+    attachLongPressDetail(node, definition);
 
     if (!canPlay) {
       node.classList.add("disabled");
@@ -454,7 +924,7 @@ function renderHand(run, combat) {
 
     const slot = el("div", "hand-card-slot", [
       node,
-      button(canDiscard ? "弃置并抽 1" : "本回合已弃", canDiscard ? "ghost small discard-action" : "ghost small discard-action disabled", () => {
+      button(canDiscard ? "弃置+抽" : "已弃", canDiscard ? "ghost small discard-action" : "ghost small discard-action disabled", () => {
         if (canDiscard) dispatch({ type: "discardHandCard", cardUid: cardInstance.uid });
       }),
     ]);
@@ -463,7 +933,7 @@ function renderHand(run, combat) {
 
   area.append(
     el("div", "hand-head", [
-      el("div", "", [el("h2", "", `手牌 ${combat.hand.length}/${run.handLimit ?? 5}`), renderPileStrip(run, combat)]),
+      el("div", "", [el("h2", "", `⚡${run.energy}/${effectiveMaxEnergy(run)} 手牌 ${combat.hand.length}/${run.handLimit ?? 5}`), renderPileStrip(run, combat), renderMobilePlayerStrip(run)]),
       button("结束回合", "danger", () => dispatch({ type: "endTurn" })),
     ]),
     cardsNode,
@@ -472,20 +942,153 @@ function renderHand(run, combat) {
   return area;
 }
 
-function renderCard(definition, onClick) {
-  const node = el("button", `game-card rarity-${definition.rarity}`);
+function attachLongPressDetail(node, definition) {
+  let timer = null;
+  let longPressed = false;
+  const clearTimer = () => {
+    if (timer) {
+      window.clearTimeout(timer);
+      timer = null;
+    }
+  };
+
+  node.addEventListener("pointerdown", () => {
+    longPressed = false;
+    clearTimer();
+    timer = window.setTimeout(() => {
+      longPressed = true;
+      suppressCardClickUntil = Date.now() + 800;
+      openDetail(detailForCard(definition));
+    }, 520);
+  });
+  node.addEventListener("pointerup", clearTimer);
+  node.addEventListener("pointerleave", clearTimer);
+  node.addEventListener("pointercancel", clearTimer);
+  node.addEventListener(
+    "click",
+    (event) => {
+      if (!longPressed && Date.now() >= suppressCardClickUntil) return;
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      longPressed = false;
+    },
+    true,
+  );
+  node.addEventListener("contextmenu", (event) => {
+    event.preventDefault();
+    openDetail(detailForCard(definition));
+  });
+}
+
+function renderMobilePlayerStrip(run) {
+  return el("div", "mobile-player-strip", [
+    el("div", "mobile-vitals", [
+      el("span", "", `命 ${run.hp}/${run.maxHp}`),
+      el("span", "", `挡 ${run.combat?.block ?? 0}`),
+      el("span", "", `气 ${run.energy}/${effectiveMaxEnergy(run)}`),
+    ]),
+    el("div", "player-status-chip-row", formatPlayerStatusChips(run)),
+  ]);
+}
+
+// UI2: get effective card data for current game mode
+function effectiveCardData(definition) {
+  if (state.run?.trueMartial && definition.trueMartial) {
+    return {
+      text: definition.trueMartial.text || definition.text,
+      cost: definition.trueMartial.cost ?? definition.cost,
+      effects: definition.trueMartial.effects || definition.effects,
+    };
+  }
+  return { text: definition.text, cost: definition.cost, effects: definition.effects };
+}
+
+function renderCard(definition, onClick, options = {}) {
+  const node = el("button", `game-card rarity-${definition.rarity} uiimg-card-shell card-shell-xxt`);
   node.type = "button";
-  node.addEventListener("click", onClick);
+  node.dataset.rarity = cardFrameRarity(definition.rarity);
+  node.dataset.tone = cardVisualTone(definition);
+  node.addEventListener("click", (event) => {
+    if (Date.now() < suppressCardClickUntil) {
+      event.preventDefault();
+      return;
+    }
+    onClick(event);
+  });
+  const displayCost = options.costInfo?.cost ?? definition.cost;
+  const costText = options.costInfo?.firstFree ? `免/${definition.cost}` : displayCost === definition.cost ? `${definition.cost}` : `${displayCost}/${definition.cost}`;
+  const cardText = effectiveCardData(definition).text;
+  const vcat = cardVisualCategory(definition);
+  const r5ArtUrl = r5CardArtUrl(definition.id);
+  const cardArtImg = image(r5ArtUrl || r3CardArtUrl(vcat), definition.name);
+  cardArtImg.className = "r3-card-art r5-card-art";
+  cardArtImg.loading = "lazy";
+  cardArtImg.decoding = "async";
+  cardArtImg.dataset.cardId = definition.id;
+  cardArtImg.dataset.r5Art = r5ArtUrl || "";
+  cardArtImg.onerror = () => {
+    if (cardArtImg.dataset.fallbackApplied) return;
+    cardArtImg.dataset.fallbackApplied = "true";
+    cardArtImg.src = r5FallbackCardArtUrl() || r3FallbackCardArtUrl();
+  };
   node.append(
+    cardArtImg,
     el("span", "card-rarity", rarityInfo[definition.rarity].label),
     el("strong", "", definition.name),
-    el("span", "card-cost", `${definition.cost}`),
-    el("p", "", definition.text),
-    renderCardStyle(definition),
-    renderEffectBadges(definition),
-    el("span", "myth-tags", definition.mythTags.join(" / ")),
+    el("span", "card-cost", costText),
+    el("p", "card-body", cardText),
+    renderCardFooter(definition),
   );
   return node;
+}
+
+function cardVisualTone(definition) {
+  const effects = effectiveCardData(definition).effects ?? [];
+  if (effects.some((effect) => effect.status === "poison")) return "poison";
+  if (effects.some((effect) => effect.status === "burn")) return "burn";
+  if (effects.some((effect) => effect.status === "thunderMark" || effect.type === "triggerThunder")) return "thunder";
+  if (effects.some((effect) => effect.status === "spikes")) return "thorn";
+  if (effects.some((effect) => effect.type === "block" || effect.status === "blockShield" || effect.status === "ward")) return "guard";
+  if (effects.some((effect) => ["damage", "execute", "bleedBurst"].includes(effect.type))) return "attack";
+  if (effects.some((effect) => ["draw", "gainEnergy", "recoverDiscard"].includes(effect.type))) return "ritual";
+  return "mural";
+}
+
+function detailForCard(definition) {
+  const style = definition.style ? styleInfo[definition.style]?.label ?? definition.style : "通用";
+  const grade = definition.grade ? gradeInfo[definition.grade] ?? `${definition.grade} 阶` : "无阶";
+  const mythBoost = cardMythBoost(state.run, definition, state.meta);
+  const costInfo = effectiveCardCost(state.run, definition);
+  const effectiveCostLine = costInfo.firstFree
+    ? `当前费用：首张洪荒牌免费（原 ${definition.cost}）`
+    : costInfo.cost !== definition.cost
+      ? `当前费用：${costInfo.cost}/${definition.cost}`
+      : `费用：${definition.cost}`;
+  const perkLines = (definition.mythTags ?? [])
+    .filter((tag) => hasMythMasteryPerk(state.run ?? state.meta, tag, state.meta))
+    .map((tag) => MYTH_MASTERY_PERKS[tag]?.text)
+    .filter(Boolean);
+  const mythLine = mythBoost.active
+    ? `箓印：${mythBoost.tag} ${mythBoost.level}/${MYTH_MASTERY_MAX}，数值 +${mythBoost.numericBonus}，状态 +${mythBoost.statusBonus}`
+    : mythBoost.level > 0
+      ? `箓印：${mythBoost.tag} ${mythBoost.level}/${MYTH_MASTERY_MAX}，此牌没有可加成的战斗数值`
+    : "箓印：当前未生效";
+  return {
+    key: `card:${definition.id}`,
+    type: "卡牌详情",
+    title: definition.name,
+    main: effectiveCardData(definition).text,
+    lines: [
+      effectiveCostLine,
+      `品级：${rarityInfo[definition.rarity].label}`,
+      `流派：${style} / ${grade}`,
+      `功能：${cardFunctionLabel(definition)}`,
+      `效果：${cardEffectLabels(definition).join("，") || "无"}`,
+      mythLine,
+      ...perkLines,
+      `神话标签：${definition.mythTags.join(" / ")}`,
+    ],
+  };
 }
 
 function renderCardStyle(definition) {
@@ -499,9 +1102,47 @@ function renderCardStyle(definition) {
   ].filter(Boolean));
 }
 
+function renderCardFooter(definition) {
+  const styleLabels = [
+    definition.style ? styleInfo[definition.style]?.label ?? definition.style : null,
+    definition.grade ? gradeInfo[definition.grade] ?? `${definition.grade} 阶` : null,
+  ].filter(Boolean);
+  const effectLabels = cardEffectLabels(definition);
+  const tagItems = [
+    ...styleLabels.map((label) => ({ label, type: "style" })),
+    ...effectLabels.map((label) => ({ label, type: "effect" })),
+  ];
+  const visibleTags = tagItems.slice(0, 2);
+  const hiddenTags = tagItems.slice(2);
+  const fullDetail = [
+    ...tagItems.map((item) => item.label),
+    ...(definition.mythTags ?? []),
+  ].filter(Boolean).join(" / ");
+
+  const tagRow = el("div", "card-tag-row", visibleTags.map((item) => el("span", `card-tag-chip card-tag-${item.type}`, item.label)));
+  if (hiddenTags.length > 0) {
+    const overflow = el("span", "card-tag-chip card-tag-overflow", `+${hiddenTags.length}`);
+    overflow.title = fullDetail;
+    overflow.setAttribute("aria-label", `完整标签：${fullDetail}`);
+    overflow.addEventListener("pointerdown", (event) => event.stopPropagation());
+    overflow.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      suppressCardClickUntil = Date.now() + 250;
+      showDetail(detailForCard(definition));
+    });
+    tagRow.append(overflow);
+  }
+
+  const source = el("span", "myth-tags card-source-xxt", (definition.mythTags ?? []).join(" / "));
+  source.title = fullDetail;
+  return el("div", "card-footer-xxt", [tagRow, source]);
+}
+
 function canPlayCard(definition, run) {
-  if (run.energy < definition.cost) return false;
-  if (definition.id === "meditate" && run.energy >= run.maxEnergy) return false;
+  const costInfo = effectiveCardCost(run, definition);
+  if (run.energy < costInfo.cost) return false;
+  if (definition.id === "meditate" && run.energy >= effectiveMaxEnergy(run)) return false;
   return true;
 }
 
@@ -516,12 +1157,36 @@ function renderRewardChoice(reward) {
     const node = el("button", `relic-choice rarity-${relic.rarity}`);
     node.type = "button";
     node.addEventListener("click", () => dispatch({ type: "chooseReward", rewardId: reward.id }));
-    node.append(el("span", "card-rarity", rarityInfo[relic.rarity].label), el("strong", "", relic.name), el("p", "", relic.text));
+    // V3.1: show blood sacrifice label/text if present
+    node.append(
+      el("span", "card-rarity", reward.bloodSacrifice ? "血祭" : rarityInfo[relic.rarity].label),
+      el("strong", "relic-title", [uiIcon("ui-relic.svg", "relic", "uiimg-inline-icon"), el("span", "", reward.label || relic.name)]),
+      el("p", "", reward.text || relic.text)
+    );
+    return node;
+  }
+
+  if (reward.type === "specialFragment") {
+    const node = el("button", "relic-choice rarity-legendary");
+    node.type = "button";
+    node.addEventListener("click", () => dispatch({ type: "chooseReward", rewardId: reward.id }));
+    node.append(el("span", "card-rarity", "异兆"), el("strong", "relic-title", [uiIcon("ui-reward.svg", "reward", "uiimg-inline-icon"), el("span", "", "玄箓残片")]), el("p", "", "特殊通关目标进度 +1。普通遗物不会触发特殊通关。"));
     return node;
   }
 
   if (reward.type === "gold") {
-    return button(`获得 ${reward.value} 金`, "primary", () => dispatch({ type: "chooseReward", rewardId: reward.id }));
+    const node = el("button", "primary reward-gold-choice", [uiIcon("ui-gold.svg", "gold", "uiimg-inline-icon"), el("span", "", `获得 ${reward.value} 金`)]);
+    node.type = "button";
+    node.addEventListener("click", () => dispatch({ type: "chooseReward", rewardId: reward.id }));
+    return node;
+  }
+
+  if (reward.type === "purge") {
+    const node = el("button", "relic-choice rarity-rare");
+    node.type = "button";
+    node.addEventListener("click", () => dispatch({ type: "chooseReward", rewardId: reward.id }));
+    node.append(el("span", "card-rarity", "剔牌"), el("strong", "relic-title", [uiIcon("ui-reward.svg", "reward", "uiimg-inline-icon"), el("span", "", reward.label || "斩念机缘")]), el("p", "", reward.text || "剔除一张可删除牌。"));
+    return node;
   }
 
   return button(`回复 ${reward.value} 点生命`, "primary", () => dispatch({ type: "chooseReward", rewardId: reward.id }));
@@ -537,7 +1202,7 @@ function renderRelics(ids) {
     "relic-list",
     ids.map((id) => {
       const relic = relics[id];
-      return el("div", `relic rarity-${relic.rarity}`, [el("strong", "", relic.name), el("span", "", relic.text)]);
+      return el("div", `relic rarity-${relic.rarity}`, [el("strong", "relic-title", [uiIcon("ui-relic.svg", "relic", "uiimg-inline-icon"), el("span", "", relic.name)]), el("span", "", relic.text)]);
     }),
   );
 }
@@ -551,8 +1216,93 @@ function renderLog(log) {
   return el("aside", "log", [el("h2", "", "战斗记录"), ...visible.map((line) => el("p", "", line))]);
 }
 
+function renderCombatEventFeedbackLayer() {
+  if (!combatEventFeedback) return null;
+  const src = COMBAT_EVENT_FEEDBACK_ASSETS[combatEventFeedback.kind];
+  if (!src) return null;
+  const img = image(src, `${combatEventFeedback.kind} feedback`);
+  img.className = "combat-event-feedback";
+  img.loading = "eager";
+  img.decoding = "async";
+  img.dataset.feedbackKind = combatEventFeedback.kind;
+  const layer = el("div", `combat-event-feedback-layer feedback-${combatEventFeedback.kind}`, [img]);
+  // Target anchoring: position burst over the target enemy card
+  const { targetActorType, targetEnemyUid, targetIndex, kind } = combatEventFeedback;
+  layer.dataset.targetActorType = targetActorType ?? "unknown";
+  if (targetEnemyUid != null && targetIndex >= 0) {
+    layer.dataset.anchorTarget = targetEnemyUid;
+    layer.dataset.anchorIndex = String(targetIndex);
+  }
+  if (kind === "block" && targetActorType === "unknown") {
+    // Block feedback stays on player side — use CSS default (shifted left)
+    return layer;
+  }
+  if (targetEnemyUid != null && targetIndex >= 0) {
+    const combatEl = document.querySelector(".combat-layout");
+    const enemyEl = combatEl?.querySelector(`.enemy[data-enemy-uid="${targetEnemyUid}"]`);
+    if (enemyEl) {
+      const enemyRect = enemyEl.getBoundingClientRect();
+      const combatRect = combatEl.getBoundingClientRect();
+      // Center burst on enemy card, slightly above center for visual impact
+      const left = enemyRect.left - combatRect.left + enemyRect.width / 2;
+      const top = enemyRect.top - combatRect.top + enemyRect.height * 0.35;
+      layer.style.left = left + "px";
+      layer.style.top = top + "px";
+      layer.style.transform = "translate(-50%, -50%)";
+      layer.dataset.anchored = "true";
+      layer.dataset.anchorTarget = targetEnemyUid;
+    } else {
+      layer.dataset.anchored = "false";
+      layer.dataset.anchorFallback = "enemy-dom-not-found";
+    }
+  } else if (targetActorType !== "player") {
+    layer.dataset.anchored = "false";
+    layer.dataset.anchorFallback = "no-target-uid";
+  }
+  return layer;
+}
+
+function positionCombatEventFeedback() {
+  const layer = document.querySelector(".combat-event-feedback-layer");
+  if (!layer) return;
+  const battlefield = layer.closest(".battlefield");
+  if (!battlefield) return;
+  if (layer.dataset.targetActorType === "player") {
+    const playerFeedbackArea = battlefield.querySelector(".hand-head");
+    if (!playerFeedbackArea) {
+      layer.dataset.anchored = "false";
+      layer.dataset.anchorFallback = "player-feedback-dom-not-found-after-render";
+      return;
+    }
+    const playerRect = playerFeedbackArea.getBoundingClientRect();
+    const battlefieldRect = battlefield.getBoundingClientRect();
+    layer.style.left = `${playerRect.left - battlefieldRect.left + playerRect.width / 2}px`;
+    layer.style.top = `${playerRect.top - battlefieldRect.top + playerRect.height / 2}px`;
+    layer.style.transform = "translate(-50%, -50%)";
+    layer.dataset.anchored = "true";
+    layer.dataset.anchorActor = "player";
+    delete layer.dataset.anchorFallback;
+    return;
+  }
+  const targetEnemyUid = layer.dataset.anchorTarget;
+  if (!targetEnemyUid) return;
+  const enemyEl = battlefield?.querySelector(`.enemy[data-enemy-uid="${targetEnemyUid}"]`);
+  if (!battlefield || !enemyEl) {
+    layer.dataset.anchored = "false";
+    layer.dataset.anchorFallback = "enemy-dom-not-found-after-render";
+    return;
+  }
+  const enemyRect = enemyEl.getBoundingClientRect();
+  const battlefieldRect = battlefield.getBoundingClientRect();
+  layer.style.left = `${enemyRect.left - battlefieldRect.left + enemyRect.width / 2}px`;
+  layer.style.top = `${enemyRect.top - battlefieldRect.top + enemyRect.height * 0.42}px`;
+  layer.style.transform = "translate(-50%, -50%)";
+  layer.dataset.anchored = "true";
+  delete layer.dataset.anchorFallback;
+}
+
 function renderActionBanner(log) {
-  const lines = log.slice(-3).reverse();
+  const lines = log.slice(-10).reverse();
   return el("section", "action-banner", [el("span", "muted", "刚刚"), ...lines.map((line, index) => el("strong", index === 0 ? "latest-action" : "", line))]);
 }
 
@@ -562,7 +1312,6 @@ function renderPlayerVitals(run) {
     el("div", "vital-head", [el("strong", "", "自身"), el("span", "", `${run.hp}/${run.maxHp}`)]),
     meter(hpPercent, `${run.hp}/${run.maxHp}`, "hp-meter"),
     blockMeter(run.combat?.block ?? 0),
-    renderBarImpacts(run.statuses, "player"),
   ]);
 }
 
@@ -570,7 +1319,7 @@ function renderGoalPanel(run) {
   const progress = goalProgress(run);
   const goal = run.goal ?? createRunGoal(run.seed);
   const specialText = progress.specialActive
-    ? `特殊：${goal.special.title}（遗物 ${progress.special}）`
+    ? `特殊：${goal.special.title}（残片 ${progress.special}）`
     : `特殊：${goal.special.title}（本局未显，约十局一现）`;
   return el("section", "goal-panel", [
     el("div", "goal-title", [el("strong", "", "本局目标"), el("span", "", `${progress.targetMinutes} 分钟`)]),
@@ -627,18 +1376,19 @@ function groupCardIds(cardIds) {
 
   return [...counts.entries()]
     .map(([cardId, count]) => ({ cardId, count }))
-    .sort((left, right) => cards[left.cardId].name.localeCompare(cards[right.cardId].name, "zh-Hans"));
+    .sort((left, right) => compareCardDefinitions(cards[left.cardId], cards[right.cardId]));
 }
 
 function renderDiscardPickPanel(run) {
   const choice = run.pendingChoice;
   const combat = run.combat;
-  const options = combat.discardPile.filter((card) => card.uid !== choice.sourceUid);
+  const options = sortCardInstancesByFunction(combat.discardPile.filter((card) => canRecoverDiscardCard(card, choice)));
   return el("aside", "discard-pick-panel", [
     el("div", "detail-head", [
       el("div", "", [el("span", "muted", "弃牌回收"), el("h2", "", choice.title)]),
       button("跳过", "ghost small", () => dispatch({ type: "cancelDiscardPick" })),
     ]),
+    renderMobilePlayerStrip(run),
     el("p", "detail-main", "弃牌堆不是永久废弃，它会洗回牌库，也可以被归藏类卡牌主动取回。"),
     el(
       "div",
@@ -653,6 +1403,65 @@ function renderDiscardPickPanel(run) {
   ]);
 }
 
+function canRecoverDiscardCard(cardInstance, choice) {
+  if (cardInstance.uid === choice.sourceUid) return false;
+  const excluded = new Set(choice.excludeStyles ?? []);
+  const style = cards[cardInstance.cardId]?.style;
+  return !style || !excluded.has(style);
+}
+
+function renderPurgeOverlay(run) {
+  const purge = run.pendingPurge;
+  // Normalize: could be string (old) or object (new)
+  let filter, remaining, label;
+  if (typeof purge === "object" && purge !== null) {
+    filter = purge.filter || "any";
+    remaining = purge.remaining || 0;
+    label = filter === "twoWithCurse" ? "洗髓令" : filter === "basic" ? "散功符" : "斩念符";
+  } else {
+    filter = typeof purge === "string" ? purge : "any";
+    remaining = filter === "twoWithCurse" ? 2 : 1;
+    label = filter === "twoWithCurse" ? "洗髓令" : filter === "basic" ? "散功符" : "斩念符";
+  }
+
+  const title = remaining > 0
+    ? `还需剔除 ${remaining} 张`
+    : `${label}`;
+  const filterHint = filter === "basic" ? "只能选择基础牌（斩妖式/护身咒/黄符/调息）" : "选择任意可删除的牌";
+
+  const deckCards = sortCardInstancesByFunction([...run.deck]);
+  const canDelete = run.deck.length > MIN_DECK_SIZE;
+  const basicIds = ["strike", "guard", "yellowCharm", "meditate"];
+
+  return el("aside", "purge-overlay", [
+    el("div", "detail-head", [
+      el("div", "", [el("span", "muted", `剔牌 — ${label}`), el("h2", "", title)]),
+    ]),
+    el("p", "detail-main", canDelete
+      ? `${filterHint}（牌组至少保留 ${MIN_DECK_SIZE} 张）。`
+      : `牌组仅剩 ${run.deck.length} 张，无法继续剔除。`),
+    el("div", "purge-grid",
+      deckCards.map((cardInstance) => {
+        const definition = cards[cardInstance.cardId];
+        const isBasic = basicIds.includes(cardInstance.cardId);
+        const allowed = filter === "any" || filter === "twoWithCurse"
+          ? (!definition?.undeletable && !definition?.isCurse)
+          : filter === "basic"
+            ? isBasic
+            : (!definition?.undeletable && !definition?.isCurse);
+        const node = renderCard(definition, () => {
+          if (!canDelete || !allowed) return;
+          dispatch({ type: "confirmPurge", cardUid: cardInstance.uid });
+        });
+        if (!allowed) node.classList.add("disabled");
+        node.classList.add("pick-card");
+        return node;
+      }),
+    ),
+    el("p", "muted", `牌组：${run.deck.length} 张 | 最低保留：${MIN_DECK_SIZE} 张`),
+  ]);
+}
+
 function renderStatusChips(statuses) {
   const active = statuses.filter((status) => status.stacks > 0);
   if (active.length === 0) {
@@ -663,8 +1472,12 @@ function renderStatusChips(statuses) {
     "div",
     "status-chips",
     active.map((status) => {
-      const node = el("button", `status-chip status-${status.id}`, `${statusInfo[status.id]?.label ?? status.id} ${status.stacks}`);
+      const node = el("button", `status-chip status-${status.id}`, [
+        statusIcon(status.id),
+        el("span", "status-chip-text", `${statusInfo[status.id]?.label ?? status.id} ${status.stacks}`),
+      ].filter(Boolean));
       node.type = "button";
+      node.dataset.status = status.id;
       node.addEventListener("click", () => showDetail(detailForStatus(status)));
       return node;
     }),
@@ -679,44 +1492,72 @@ function blockMeter(value) {
 }
 
 function renderEffectBadges(definition) {
+  return el("div", "effect-badges", cardEffectLabels(definition).slice(0, 3).map((label) => el("span", "", label)));
+}
+
+function cardEffectLabels(definition) {
   const labels = [];
-  for (const effect of definition.effects) {
+  const mythBoost = cardMythBoost(state.run, definition, state.meta);
+  if (mythBoost.active) {
+    labels.push(`${mythBoost.tag}箓印 +${mythBoost.level}`);
+  }
+  for (const effect of effectiveCardData(definition).effects) {
     if (effect.type === "damage") labels.push(`伤害 ${effect.value}`);
+    if (effect.type === "execute") labels.push(`斩杀 ${effect.threshold ?? 35}%`);
     if (effect.type === "block") labels.push(`格挡 ${effect.value}`);
     if (effect.type === "heal") labels.push(`回复 ${effect.value}`);
     if (effect.type === "draw") labels.push(`抽牌 ${effect.value}`);
     if (effect.type === "gainEnergy") labels.push(`能量 ${effect.value}`);
     if (effect.type === "status") labels.push(`${statusInfo[effect.status]?.label ?? effect.status} ${effect.stacks}`);
+    if (effect.type === "thunderMark") labels.push(`雷痕 ${effect.stacks ?? effect.value}`);
     if (effect.type === "amplifyDebuffs") labels.push(`状态 +${effect.value}`);
-    if (effect.type === "recoverDiscard") labels.push(`回收 ${effect.value}`);
+    if (effect.type === "bleedSiphon") labels.push(`汲血 /${effect.ratio ?? 3}`);
+    if (effect.type === "shellReflect") labels.push(`反震 ${Math.round((effect.ratio ?? 0.5) * 100)}%`);
+    if (effect.type === "recoverDiscard") labels.push(effect.excludeStyles?.includes("control") ? `回收非控 ${effect.value}` : `回收 ${effect.value}`);
     if (effect.type === "loseHp") labels.push(`失血 ${effect.value}`);
-    if (effect.type === "leechBleed") labels.push(`吸血 ${Math.round(effect.value * 100)}%流血`);
-    if (effect.type === "execute") labels.push(`斩杀 ≤${Math.round((effect.threshold ?? 0.2) * 100)}%`);
-    if (effect.type === "spikeBurst") labels.push("格挡反射");
-    if (effect.type === "doubleBlock") labels.push("格挡翻倍");
   }
 
-  return el("div", "effect-badges", labels.slice(0, 3).map((label) => el("span", "", label)));
+  return labels;
+}
+
+function cardFunctionLabel(definition) {
+  const labels = ["格挡", "攻击", "状态", "运转", "回复", "其他"];
+  return labels[cardFunctionRank(definition)] ?? "其他";
 }
 
 function renderIntentButton(enemy) {
-  const node = el("button", "intent", intentButtonText(enemy));
+  const node = el("button", "intent", [
+    intentIcon(enemy),
+    el("span", "", intentButtonText(enemy)),
+  ].filter(Boolean));
   node.type = "button";
   node.addEventListener("click", () => showDetail(detailForIntent(enemy)));
   return node;
 }
 
-function intentButtonText(enemy) {
-  const chaos = statusValue(enemy, "chaos");
-  const imprison = statusValue(enemy, "imprison");
+function intentIcon(enemy) {
+  const preview = previewEnemyIntent(state.run, enemy);
+  const type = preview?.type ?? enemy.intent?.type;
+  if (type === "attack") return uiIcon("intent-attack.svg", "attack", "uiimg-intent-icon");
+  if (type === "block") return uiIcon("intent-block.svg", "block", "uiimg-intent-icon");
+  return statusIcon(enemy.intent?.status, "uiimg-intent-icon");
+}
 
+function intentButtonText(enemy) {
+  const stun = statusValue(enemy, "stun");
+  if (stun > 0) {
+    return "眩晕空过";
+  }
+
+  const chaos = statusValue(enemy, "chaos");
   if (chaos > 0) {
     const hasAlly = state.run?.combat?.enemies.some((item) => item.uid !== enemy.uid && item.hp > 0);
     return enemy.intent.type === "attack" && hasAlly ? "离间转火" : "离间空过";
   }
 
-  if (imprison > 0) {
-    return enemy.intent.type === "block" ? "禁锢(可格挡)" : "禁锢压制";
+  const bind = statusValue(enemy, "bind");
+  if (bind > 0) {
+    return enemy.intent.type === "block" ? "禁锢格挡" : "禁锢空过";
   }
 
   const preview = previewEnemyIntent(state.run, enemy);
@@ -763,17 +1604,29 @@ function impactLabels(statuses, owner) {
     if (status.id === "spirit") {
       result.push({ status, kind: "impact-buff", label: `出牌伤害 +${status.stacks}` });
     }
+    if (status.id === "battleIntent") {
+      result.push({ status, kind: "impact-buff", label: `物理伤害 +${status.stacks}` });
+    }
     if (status.id === "ward") {
       result.push({ status, kind: "impact-buff", label: `先抵消 ${status.stacks}` });
     }
     if (status.id === "chaos") {
       result.push({ status, kind: "impact-debuff", label: `内斗 ${status.stacks} 次` });
     }
+    if (status.id === "bind") {
+      result.push({ status, kind: "impact-debuff", label: `禁攻禁法 ${status.stacks} 次` });
+    }
+    if (status.id === "stun") {
+      result.push({ status, kind: "impact-debuff", label: `跳过行动 ${status.stacks} 次` });
+    }
+    if (status.id === "brittle") {
+      result.push({ status, kind: "impact-debuff", label: `承伤 x1.5 / ${status.stacks}` });
+    }
+    if (status.id === "thunderMark") {
+      result.push({ status, kind: "impact-debuff", label: `雷痕 ${status.stacks}/8` });
+    }
     if (status.id === "stasis") {
       result.push({ status, kind: "impact-debuff", label: `保留状态 ${status.stacks} 次` });
-    }
-    if (status.id === "imprison") {
-      result.push({ status, kind: "impact-debuff", label: `禁锢 ${status.stacks} 次` });
     }
     if (status.id === "curse") {
       result.push({ status, kind: "impact-debuff", label: `${owner === "enemy" ? "承伤" : "受伤"} +${status.stacks}` });
@@ -782,33 +1635,34 @@ function impactLabels(statuses, owner) {
       result.push({ status, kind: "impact-debuff", label: `回合掉血 ${status.stacks}` });
     }
     if (status.id === "poison") {
-      const atkDown = Math.floor(status.stacks * 0.2);
-      result.push({ status, kind: "impact-debuff", label: `回合掉血${status.stacks} 攻击-${atkDown}` });
+      const weakness = owner === "enemy" ? ` / 攻击 -${Math.min(5, Math.floor(status.stacks / 4))}` : "";
+      result.push({ status, kind: "impact-debuff", label: `回合掉血 ${status.stacks}${weakness}` });
     }
     if (status.id === "bleed") {
       result.push({ status, kind: "impact-debuff", label: `流血压制 ${status.stacks}` });
-    }
-    if (status.id === "fury") {
-      result.push({ status, kind: "impact-buff", label: `物理伤害 +${status.stacks * 3}` });
-    }
-    if (status.id === "spikes") {
-      result.push({ status, kind: "impact-buff", label: `荆棘反射 ${status.stacks}` });
-    }
-    if (status.id === "thunderMark") {
-      result.push({ status, kind: "impact-debuff", label: `雷印 ${status.stacks}/5` });
-    }
-    if (status.id === "stun") {
-      result.push({ status, kind: "impact-debuff", label: "眩晕" });
-    }
-    if (status.id === "fatigue") {
-      const dmg = Math.floor(status.stacks / 3);
-      result.push({ status, kind: "impact-debuff", label: `疲劳${status.stacks} 扣血${dmg}` });
     }
   }
   return result;
 }
 
 function renderDetailPanel(info) {
+  // V3.0: tmFormation detail
+  if (info.type === "tmFormation") {
+    const f = info.formation;
+    const lines = [...(f.detailLines || []), `阶段：${f.stageLabel}`, f.nextTrigger ? `触发：${f.nextTrigger}` : "", f.tip ? `建议：${f.tip}` : ""].filter(Boolean);
+    return el("aside", "detail-panel", [
+      el("div", "detail-head", [
+        el("div", "", [el("span", "muted", "敌方情报"), el("h2", "", f.name)]),
+        button("关闭", "ghost small", () => { detailInfo = null; render(); }),
+      ]),
+      el("p", "detail-main", f.summary),
+      el("ul", "detail-list", lines.map((line) => el("li", "", line))),
+    ]);
+  }
+  // UI1: player status detail popover
+  if (info.type === "playerStatuses") {
+    return renderPlayerStatusPopover(info.run);
+  }
   return el("aside", "detail-panel", [
     el("div", "detail-head", [
       el("div", "", [el("span", "muted", info.type), el("h2", "", info.title)]),
@@ -822,8 +1676,36 @@ function renderDetailPanel(info) {
   ]);
 }
 
+// UI1: player status full popover
+function renderPlayerStatusPopover(run) {
+  const entries = getPlayerStatusEntries(run);
+  const items = entries.map(s => {
+    const label = getStatusDisplayName(s.id);
+    const text = getStatusDescription(s.id);
+    return el("div", `status-popover-item status-${s.id}`, [
+      el("span", "status-popover-name", `${label} ${s.stacks}`),
+      el("span", "status-popover-desc", text),
+    ]);
+  });
+  if (items.length === 0) items.push(el("div", "status-popover-item", [el("span", "", "无状态")]));
+  const panel = el("aside", "detail-panel status-popover", [
+    el("div", "detail-head", [
+      el("h2", "", `玩家状态 (${entries.length})`),
+      button("关闭", "ghost small", () => { detailInfo = null; render(); }),
+    ]),
+    el("div", "status-popover-list", items),
+  ]);
+  panel.addEventListener("click", (e) => e.stopPropagation());
+  return panel;
+}
+
 function showDetail(info) {
   detailInfo = detailInfo?.key && detailInfo.key === info.key ? null : info;
+  render();
+}
+
+function openDetail(info) {
+  detailInfo = info;
   render();
 }
 
@@ -853,7 +1735,7 @@ async function handleCloudAction(action) {
       if (!cloudState) {
         cloudMessage = `云端没有 ${savedConfig.playerId} 的存档`;
       } else if (window.confirm("读取云端存档会覆盖当前本地存档，继续吗？")) {
-        state = cloudState;
+        state = migrateGameState(cloudState);
         saveGame(state);
         cloudMessage = `已读取 ${savedConfig.playerId} 的云端存档`;
       } else {
@@ -896,17 +1778,18 @@ function detailForStatus(status) {
   const stacks = status.stacks;
   const map = {
     spirit: [`当前数值 ${stacks} 表示：你用卡牌造成伤害时，会按卡牌费用获得部分伤害加成。`, "低费牌只能承载部分灵气，高费牌更容易吃满收益；战斗结束后清空。"],
+    battleIntent: [`当前数值 ${stacks} 表示：物理牌造成伤害时额外 +${stacks}。`, "每打出一张物理伤害牌后，战意会继续增加 7 层；它会随回合逐步减少，战斗结束后清空。"],
     ward: [`当前数值 ${stacks} 表示：下次受到伤害前，先抵消 ${stacks} 点。`, "它会优先保护血条，作用类似一层可消耗的小格挡。"],
     chaos: [`当前数值 ${stacks} 表示：敌人接下来 ${stacks} 次行动会被离间干扰。`, "如果本次是攻击且有同伴，会转而攻击同伴；否则会直接空过，不会攻击、格挡或施加状态。"],
-    imprison: [`当前数值 ${stacks} 表示：敌人接下来 ${stacks} 次无法攻击或施法。`, "它比离间弱——敌人仍可格挡或跳过，但绝不会伤害你。", "离间+禁锢 ≥6 层（含眩晕）触发心防崩裂，敌人受到伤害×1.5。"],
-    stasis: [`当前数值 ${stacks} 表示：流血、毒瘴、离间、禁锢将要减少层数时，先消耗凝滞。`, "它会让核心 debuff 不掉层，适合把流血、中毒、控制不断堆高。"],
+    bind: [`当前数值 ${stacks} 表示：敌人接下来 ${stacks} 次行动会受禁锢影响。`, "攻击和施法会被封住并空过；如果本来要格挡，则仍可格挡，但禁锢会减少 1 层。"],
+    stun: [`当前数值 ${stacks} 表示：敌人接下来 ${stacks} 次行动会被眩晕跳过。`, "眩晕会先于离间结算；被眩晕的敌人不会攻击、格挡或施加状态。"],
+    brittle: [`当前数值 ${stacks} 表示：敌人处于脆化窗口，受到伤害变为 1.5 倍。`, "离间、禁锢、眩晕合计达到 6 层会触发心防崩裂：清空敌人格挡，并获得脆化。"],
+    thunderMark: [`当前数值 ${stacks} 表示：敌人身上已积累 ${stacks} 层雷痕。`, `每满 8 层会立刻触发天劫，造成 32 点无视格挡雷伤，并施加 1 次眩晕。当前还差 ${Math.max(0, 8 - (stacks % 8 || 8))} 层。`],
+    stasis: [`当前数值 ${stacks} 表示：流血、毒瘴、离间将要减少层数时，先消耗凝滞。`, "它会让核心 debuff 不掉层，适合把流血、中毒、控制不断堆高。"],
     curse: [`当前数值 ${stacks} 表示：受到卡牌伤害时额外 +${stacks}。`, "如果在敌人身上，它会让敌人血条掉得更快；如果在你身上，敌人攻击会更痛。"],
     burn: [`当前数值 ${stacks} 表示：回合结算时受到 ${stacks} 点伤害。`, "造成伤害后会消退一半，至少减少 1 层，不会一直滚到无解。"],
-    poison: [`当前数值 ${stacks} 表示：回合结算时受到 ${stacks} 点伤害并削弱敌人攻击 ${Math.floor(stacks*0.2)} 点。`, "它会同时压低敌人血条和伤害，拖回合越久敌人越无力。", "虚弱上限为敌人攻击的 60%，不会完全归零。"],
-    bleed: [`当前数值 ${stacks} 表示：回合间会先扣格挡再造成伤害；被攻击时也会额外爆开。`, "它现在既能压格挡，也能在你攻击时打出爆发，但每次结算会减少层数。"],
-    thunderMark: [`当前数值 ${stacks} 表示：累积到 5 层时触发天劫，造成 30 点真实伤害并眩晕敌人一回合。`, "雷符、雷击术、连环闪电、五雷正法、天雷引均可叠加雷印。"],
-    stun: [`眩晕状态：敌人跳过本回合所有行动。`, "由天劫触发，是雷法的核心控制手段。"],
-    fury: [`当前数值 ${stacks} 表示：物理卡牌每次造成伤害时额外 +${stacks * 3}。`, "回合末减少 1 层，战斗结束后清空。战意激荡可一次性获得 4 层杀意。", "物理流派的核心成长状态，搭配多段攻击（连环刃、破军三式）收益最高。"],
+    poison: [`当前数值 ${stacks} 表示：回合结算时受到 ${stacks} 点伤害，然后减少 1 层。`, `如果在敌人身上，它攻击时会被虚弱 ${Math.min(5, Math.floor(stacks / 4))} 点；适合拖回合削弱高伤敌人。`],
+    bleed: [`当前数值 ${stacks} 表示：回合间会先扣格挡再造成伤害；被攻击时也会额外爆开。`, "血魔牌会先付出生命，再按敌人流血层数回血。层数堆高后，流血会从风险变成续航和爆发来源。"],
   };
 
   return {
@@ -920,6 +1803,21 @@ function detailForStatus(status) {
 
 function detailForIntent(enemy) {
   const intent = enemy.intent;
+  const stun = statusValue(enemy, "stun");
+  if (stun > 0) {
+    return {
+      key: `intent:${enemy.uid}:stun:${stun}:${intent.text}`,
+      type: "敌人意图",
+      title: "眩晕空过",
+      main: `${enemy.name} 当前被眩晕压制，本次不会执行原意图。`,
+      lines: [
+        `眩晕层数：${stun}`,
+        "它不会攻击、格挡或施加状态，会直接空过这一回合。",
+        "结算后眩晕减少 1 层。",
+      ],
+    };
+  }
+
   const chaos = statusValue(enemy, "chaos");
   if (chaos > 0) {
     const hasAlly = state.run?.combat?.enemies.some((item) => item.uid !== enemy.uid && item.hp > 0);
@@ -937,6 +1835,22 @@ function detailForIntent(enemy) {
     };
   }
 
+  const bind = statusValue(enemy, "bind");
+  if (bind > 0) {
+    const willBlock = intent.type === "block";
+    return {
+      key: `intent:${enemy.uid}:bind:${bind}:${intent.text}`,
+      type: "敌人意图",
+      title: willBlock ? "禁锢格挡" : "禁锢空过",
+      main: `${enemy.name} 当前受到禁锢影响，本次行动会先检查是否为攻击或施法。`,
+      lines: [
+        `禁锢层数：${bind}`,
+        willBlock ? "它本次原本要格挡，所以仍会获得格挡，但禁锢减少 1 层。" : "它本次原本要攻击或施法，会直接空过，不会伤害你或施加状态。",
+        "离间、禁锢、眩晕合计达到 6 层时，会触发心防崩裂，清空格挡并获得脆化。",
+      ],
+    };
+  }
+
   if (intent.type === "attack") {
     const preview = previewEnemyIntent(state.run, enemy);
     return {
@@ -947,6 +1861,7 @@ function detailForIntent(enemy) {
       lines: [
         `基础伤害：${preview?.base ?? intent.value}`,
         `难度/ Boss 加成：${preview?.bonus ?? 0}`,
+        `毒瘴虚弱：-${preview?.poisonWeakness ?? 0}`,
         `你身上的诅咒加成：${preview?.curse ?? 0}`,
         `预计未被护体和格挡抵消前伤害：${preview?.expectedDamage ?? intent.value}`,
         "伤害会先被你的护体和格挡抵消。",
@@ -988,20 +1903,31 @@ function renderCodex() {
 }
 
 function renderRunSummary(run) {
+  const maxFloor = run.trueMartial ? TRUE_MARTIAL_MAX_FLOOR : MAX_FLOOR;
   return el("div", "summary", [
-    stat("层数", `${Math.min(run.floor, MAX_FLOOR)}/${MAX_FLOOR}`),
+    stat("层数", `${Math.min(run.floor, maxFloor)}/${maxFloor}`),
     stat("生命", `${run.hp}/${run.maxHp}`),
     stat("牌组", run.deck.length),
     stat("遗物", run.relics.length),
   ]);
 }
 
+function statWithIcon(label, value, iconFile, className = "") {
+  const text = (value != null) ? String(value) : "--";
+  return el("div", `stat uiimg-stat ${className}`, [
+    uiIcon(iconFile, label, "uiimg-stat-icon"),
+    el("span", "", label),
+    el("strong", "", text),
+  ]);
+}
+
 function stat(label, value, onClick = null) {
+  const text = (value != null) ? String(value) : "--";
   if (!onClick) {
-    return el("div", "stat", [el("span", "", label), el("strong", "", String(value))]);
+    return el("div", "stat", [el("span", "", label), el("strong", "", text)]);
   }
 
-  const node = el("button", "stat stat-action", [el("span", "", label), el("strong", "", String(value))]);
+  const node = el("button", "stat stat-action", [el("span", "", label), el("strong", "", text)]);
   node.type = "button";
   node.onclick = onClick;
   return node;
@@ -1052,7 +1978,7 @@ function button(text, className, onClick) {
 
 function image(src, alt) {
   const node = document.createElement("img");
-  node.src = src;
+  node.src = assetUrl(src);
   node.alt = alt;
   return node;
 }
@@ -1068,11 +1994,218 @@ function el(tag, className = "", children = []) {
     return node;
   }
 
+  // Normalize: single node / null → array
+  if (children == null) children = [];
+  if (!Array.isArray(children)) children = [children];
+
   for (const child of children) {
-    node.append(child);
+    // V3.13M-R1-HARNESS-UI: prevent literal null/undefined in DOM
+    // node.append(null) renders the string "null" in browsers
+    if (child != null) node.append(child);
   }
 
   return node;
+}
+
+// UI1: close player status popover on ESC or outside click
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && detailInfo?.type === "playerStatuses") { detailInfo = null; render(); }
+});
+document.addEventListener("click", (e) => {
+  if (detailInfo?.type === "playerStatuses" && !e.target.closest(".detail-panel") && !e.target.closest(".status-chip-inline")) {
+    detailInfo = null; render();
+  }
+});
+
+// UI1 harness: deterministic browser API for status panel testing (only active with ?harness=1)
+if (new URLSearchParams(window.location.search).get("harness") === "1") {
+  window.__dsgHarness = {
+    ready() {
+      return { ok: true, harness: true };
+    },
+    getPhase() {
+      return state.phase;
+    },
+    getSnapshot() {
+      return {
+        phase: state.phase,
+        difficulty: state.run?.difficulty ?? null,
+        floor: state.run?.floor ?? null,
+        hasRun: Boolean(state.run),
+        statusCount: (state.run?.statuses || []).filter(s => s.stacks > 0).length,
+        statuses: (state.run?.statuses || []).filter(s => s.stacks > 0).map(s => ({ id: s.id, stacks: s.stacks })),
+        handCount: state.run?.combat?.hand?.length ?? 0,
+        enemyCount: (state.run?.combat?.enemies || []).filter(e => e.hp > 0).length,
+      };
+    },
+    startNormalRun() {
+      dispatch({ type: "startRun" });
+      return { ok: true, phase: state.phase };
+    },
+    enterFirstCombat() {
+      if (state.phase !== "route") return { ok: false, reason: "not-route", phase: state.phase };
+      const nodes = state.run?.nodeChoices || [];
+      if (nodes.length === 0) return { ok: false, reason: "no-nodes" };
+      const node = nodes.find(n => n.type === "main") || nodes[0];
+      dispatch({ type: "chooseNode", nodeId: node.id });
+      if (state.phase !== "combat") return { ok: false, reason: "not-combat-after-choose", phase: state.phase };
+      return { ok: true, phase: "combat" };
+    },
+    setPlayerStatuses(statuses) {
+      if (!state.run) return { ok: false, reason: "no-run" };
+      if (state.phase !== "combat") return { ok: false, reason: "not-combat", phase: state.phase };
+      const entries = Array.isArray(statuses)
+        ? statuses
+        : Object.entries(statuses).map(([id, stacks]) => ({ id, stacks }));
+      state.run.statuses = entries.map(s => ({ id: s.id, stacks: s.stacks }));
+      render();
+      const active = state.run.statuses.filter(s => s.stacks > 0);
+      return { ok: true, phase: "combat", statusCount: active.length, statuses: Object.fromEntries(active.map(s => [s.id, s.stacks])) };
+    },
+    openStatusPopover() {
+      if (!state.run) return { ok: false, reason: "no-run" };
+      detailInfo = { type: "playerStatuses", run: state.run, _fixed: true };
+      render();
+      return { ok: true };
+    },
+    closeStatusPopover() {
+      detailInfo = null;
+      render();
+      return { ok: true };
+    },
+    // UI2: additional harness methods
+    startTrueMartialRun(style = "physical") {
+      // Must enter martialSelect phase first for reducer guard
+      if (state.phase !== "martialSelect") {
+        dispatch({ type: "martialSelect" });
+      }
+      dispatch({ type: "startTrueMartial", style });
+      // If TM not unlocked yet, unlock it in meta for harness testing
+      if (state.phase !== "route") {
+        // Unlock TM for harness testing
+        if (!isTrueMartialUnlocked(state.meta)) {
+          state.meta.collectedRelics = state.meta.collectedRelics || [];
+          // Add all required relics
+          const allRelics = Object.keys(relics).filter(id => {
+            const r = relics[id];
+            return r.implemented !== false && r.trueMartialOnly !== true && !r.text?.includes("真武专属");
+          });
+          for (const id of allRelics) {
+            if (!state.meta.collectedRelics.includes(id)) state.meta.collectedRelics.push(id);
+          }
+          // Set myth mastery
+          state.meta.mythMastery = state.meta.mythMastery || {};
+          const factions = Object.keys(MYTH_FACTIONS); // Array, use MYTH_MASTERY_MAX target
+          for (const f of MYTH_FACTIONS) {
+            state.meta.mythMastery[f] = 3;
+          }
+          dispatch({ type: "martialSelect" });
+          dispatch({ type: "startTrueMartial", style });
+        }
+      }
+      return { ok: true, phase: state.phase };
+    },
+    inspectCardByName(name) {
+      // Search cards by name and return effective data for current mode
+      const entry = Object.entries(cards).find(([, c]) => c.name === name);
+      if (!entry) return null;
+      const [, card] = entry;
+      const effective = effectiveCardData(card);
+      return {
+        id: card.id,
+        name: card.name,
+        cost: effective.cost,
+        text: effective.text,
+        effects: (effective.effects || []).map(e => ({ type: e.type, status: e.status, stacks: e.stacks, value: e.value, target: e.target })),
+        rarity: card.rarity,
+        style: card.style,
+        grade: card.grade,
+        mythTags: card.mythTags,
+      };
+    },
+    // ======== Harness-Only: Test Setup & State Reading APIs ========
+    getCombatState() {
+      const combat = state.run?.combat;
+      if (!combat) return { ok: false, phase: state.phase, reason: 'not-in-combat' };
+      return {
+        ok: true,
+        phase: state.phase,
+        playerHp: state.run.hp,
+        playerMaxHp: state.run.maxHp,
+        playerBlock: combat.block ?? 0,
+        playerEnergy: state.run.energy,
+        playerStatuses: (state.run.statuses || []).filter(s => s.stacks > 0).map(s => ({ id: s.id, stacks: s.stacks })),
+        enemies: combat.enemies.map(e => ({
+          uid: e.uid, name: e.name,
+          hp: e.hp, maxHp: e.maxHp, block: e.block ?? 0,
+          statuses: (e.statuses || []).filter(s => s.stacks > 0).map(s => ({ id: s.id, stacks: s.stacks })),
+        })),
+        hand: (combat.hand || []).map(ci => ({
+          uid: ci.uid,
+          cardId: ci.cardId,
+          name: (cards[ci.cardId] || {}).name || ci.cardId,
+        })),
+        aliveEnemyCount: combat.enemies.filter(e => e.hp > 0).length,
+        totalEnemyCount: combat.enemies.length,
+        totalEnemyHp: combat.enemies.reduce((s, e) => s + Math.max(0, e.hp), 0),
+      };
+    },
+    // Set hand contents for testing (test prep only)
+    setTestHand(cardIds) {
+      if (!state.run?.combat) return { ok: false, reason: 'not-in-combat' };
+      state.run.combat.hand = cardIds.map((cardId, i) => ({ uid: 'harness-hand-' + i, cardId }));
+      render();
+      return { ok: true, count: cardIds.length };
+    },
+    // Set enemy HP for test prep (cannot kill, only reduce to testable level)
+    setEnemyHp(index, hp) {
+      const enemies = state.run?.combat?.enemies;
+      if (!enemies || !enemies[index]) return { ok: false, reason: 'no-such-enemy' };
+      const clamped = Math.max(1, Math.min(hp, enemies[index].maxHp));
+      enemies[index].hp = clamped;
+      render();
+      return { ok: true, index, hp: clamped, maxHp: enemies[index].maxHp };
+    },
+    // Find card UIDs in hand by cardId or name
+    findCardsInHand(filter) {
+      const hand = state.run?.combat?.hand || [];
+      if (typeof filter === 'string') {
+        return hand.filter(ci => ci.cardId === filter || (cards[ci.cardId] || {}).name === filter).map(ci => ci.uid);
+      }
+      return [];
+    },
+    // Play card by UID (real dispatch through reducer)
+    playCardByUid(uid) {
+      const combat = state.run?.combat;
+      if (!combat) return { ok: false, reason: 'not-in-combat' };
+      const ci = combat.hand.find(c => c.uid === uid);
+      if (!ci) return { ok: false, reason: 'card-not-in-hand' };
+      // Target: first alive enemy, or null for non-targeting cards
+      const targetUid = combat.enemies.find(e => e.hp > 0)?.uid ?? null;
+      dispatch({ type: 'playCard', cardUid: uid, targetUid });
+      return { ok: true, phase: state.phase, cardId: ci.cardId };
+    },
+    // Set energy for test prep
+    setEnergy(n) {
+      if (!state.run) return { ok: false, reason: 'no-run' };
+      state.run.energy = Math.max(0, n);
+      render();
+      return { ok: true, energy: state.run.energy };
+    },
+    // Get page body diagnostics (for white-screen check)
+    getBodyDiagnostics() {
+      const body = document.body;
+      const appRoot = document.querySelector('#app');
+      return {
+        bodyExists: !!body,
+        appRootExists: !!appRoot,
+        bodyTextLength: (body?.innerText || '').trim().length,
+        appRootChildCount: appRoot?.childElementCount ?? 0,
+        hasShell: !!document.querySelector('.shell'),
+        hasCombatLayout: !!document.querySelector('.combat-layout'),
+      };
+    },
+  };
 }
 
 render();

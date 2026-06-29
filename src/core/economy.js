@@ -2,7 +2,7 @@ import { tierForFloor } from "./nodes.js";
 
 export function goldDropForNode(run) {
   const node = run.currentNode;
-  const tier = node?.tier ?? tierForFloor(run.floor);
+  const tier = node?.tier ?? tierForFloor(run);
 
   if (node?.type === "side") {
     return 18 + tier * 9;

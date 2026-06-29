@@ -3,7 +3,42 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "ai:gate": "npm run validate:data && npm run check && npm run build:release",
+    "ai:sim": "node scripts/simulate-runs.mjs --runs=50 --json && node scripts/sim-ai.mjs",
+    "ai:review-pack": "node scripts/create-review-pack.mjs",
+    "ai:rc-check": "node scripts/sim-ai.mjs --mode=trueMartial --strategy=styleAware --runs=200 --seeds=2 --seedBase=2026052700 && node scripts/sim-ai.mjs --mode=trueMartial --strategy=styleAware --profile=physical --runs=400 --seeds=3 --seedBase=2026052700 && node scripts/sim-ai.mjs --mode=trueMartial --strategy=styleAware --profile=bleed --runs=400 --seeds=3 --seedBase=2026052700 && node scripts/sim-ai.mjs --mode=trueMartial --strategy=styleAware --profile=shell --runs=400 --seeds=3 --seedBase=2026052700",
+    "ai:sim-consistency": "node scripts/check-sim-consistency.mjs",
+    "ai:v076-normal-balance": "node scripts/sim-ai.mjs --mode=normal --strategy=styleAware --runs=300 --seeds=3 --seedBase=2026052700",
+    "ai:v076-tm-balance": "node scripts/sim-ai.mjs --mode=trueMartial --strategy=styleAware --runs=300 --seeds=3 --seedBase=2026052700",
+    "ai:v076-balance-check": "npm run ai:v076-normal-balance && npm run ai:v076-tm-balance",
+    "balance:check": "node scripts/balance-check.mjs",
+    "player:flow": "node scripts/player-flow-tests.mjs",
     "serve": "node scripts/serve.mjs 5173",
-    "build:release": "node scripts/build-release.mjs"
+    "build": "node scripts/build-release.mjs",
+    "build:release": "node scripts/build-release.mjs",
+    "codex:harness": "node scripts/harness-check.mjs",
+    "check": "npm run validate:data && npm run smoke && npm run player:flow && node --check src/core/data.js && node --check src/core/effects.js && node --check src/core/combat.js && node --check src/core/state.js && node --check src/core/reducer.js && node --check src/app/main.js && node --check src/core/save.js && node --check src/core/goals.js && node --check src/core/rewards.js && node --check src/core/shop.js && echo 'All syntax OK'",
+    "validate:data": "node scripts/validate-data.mjs",
+    "sim:100": "node scripts/simulate-runs.mjs --runs=100",
+    "sim:bleed": "node scripts/simulate-runs.mjs --runs=100 --profile=bleed",
+    "sim:physical": "node scripts/simulate-runs.mjs --runs=100 --profile=physical",
+    "sim:spell": "node scripts/simulate-runs.mjs --runs=100 --profile=spell",
+    "sim:shell": "node scripts/simulate-runs.mjs --runs=100 --profile=shell",
+    "sim:poison": "node scripts/simulate-runs.mjs --runs=100 --profile=poison",
+    "smoke": "node scripts/smoke-tests.mjs",
+    "sim:control": "node scripts/simulate-runs.mjs --runs=100 --profile=control",
+    "rc3:diagnose": "node scripts/diagnose-release-rc-winrate.mjs",
+    "rc3:verify": "node scripts/verify-release-rc3-evidence.mjs",
+    "rc3:harness": "node scripts/harness-release-rc.mjs",
+    "rc3:pack": "node scripts/create-rc3-staging-pack.mjs",
+    "rc3-fix1:diagnose": "node scripts/diagnose-release-rc-winrate.mjs",
+    "rc3-fix1:verify": "node scripts/verify-release-rc3-evidence.mjs",
+    "rc3-fix1:harness": "node scripts/harness-release-rc.mjs",
+    "rc3-fix1:pack": "node scripts/create-rc3-staging-pack.mjs",
+    "ui1:final-gate": "node scripts/ui1-final-gate.mjs",
+    "ui1:review-pack": "node scripts/create-ui1-review-pack.mjs"
+  },
+  "devDependencies": {
+    "playwright": "^1.60.0"
   }
 }
