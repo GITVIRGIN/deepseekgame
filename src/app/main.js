@@ -246,7 +246,7 @@ function renderHeader() {
   header.append(
     el("div", "brand", [
       image("./assets/seal.svg", "玄箓印"),
-      el("div", "", [el("h1", "", "玄箓行"), el("p", "", `v${gameVersion.label} UI-R5 FULL-ASSETS-IMPORT`)]),
+      el("div", "", [el("h1", "", "玄箓行"), el("p", "", "最终正式版")]),
     ]),
     el("div", "topbar-actions", [
       el("div", "meta", [
@@ -276,7 +276,7 @@ function renderHome() {
           canShowTrueMartialEntry(state) ? button("真武模式", "danger", () => dispatch({ type: "martialSelect" })) : "",
         ].filter(Boolean)),
         el("div", "release-link", [
-          (() => { const a = document.createElement("a"); a.href = "release-v3.13n-tm-t2a5f.html"; a.target = "_self"; a.textContent = "📖 V3.13N 真武合流攻略 / 发布说明"; return a; })(),
+          (() => { const a = document.createElement("a"); a.href = "RELEASE_NOTES.md"; a.target = "_self"; a.textContent = "发布说明与新手指南"; return a; })(),
         ]),
       ]),
       renderCloudPanel(),

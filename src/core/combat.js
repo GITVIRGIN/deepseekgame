@@ -1,6 +1,6 @@
 import { cards, enemies, relics, trueMartialEnemies } from "./data.js";
 import { dominantArchetype } from "./archetypes.js";
-import { applyCardEffects, applyIncomingDamage, finishDefeat, gainControlResist, tickDamageStatus } from "./effects.js";
+import { applyCardEffects, applyIncomingDamage, finishDefeat, forceControlBreak, gainControlResist, tickDamageStatus } from "./effects.js";
 import { onEnemyKilled } from "./combat-events.js";
 import { generateRewards, rollRelicReward } from "./rewards.js";
 import { grantGoldDrop } from "./economy.js";
@@ -540,6 +540,7 @@ function resolveEnemyIntent(state, enemy) {
   if (statusStacks(enemy, "stun") > 0) {
     skipEnemyByStun(combat, enemy);
     gainControlResist(enemy);
+    noteControlSkipAndMaybeBreak(state, enemy);
     wasControlled = true;
     return;
   }
@@ -548,6 +549,7 @@ function resolveEnemyIntent(state, enemy) {
     if (intent.type === "attack") {
       if (tryChaosAttack(state, enemy, enemyRawAttackDamage(run, enemy, intent))) {
         gainControlResist(enemy);
+        resetControlSkipStreak(enemy);
         wasControlled = true;
         return;
       }
@@ -555,6 +557,7 @@ function resolveEnemyIntent(state, enemy) {
 
     skipEnemyByChaos(combat, enemy);
     gainControlResist(enemy);
+    noteControlSkipAndMaybeBreak(state, enemy);
     wasControlled = true;
     return;
   }
@@ -563,11 +566,13 @@ function resolveEnemyIntent(state, enemy) {
     if (intent.type === "attack" || intent.type === "status") {
       skipEnemyByBind(combat, enemy);
       gainControlResist(enemy);
+      noteControlSkipAndMaybeBreak(state, enemy);
       wasControlled = true;
       return;
     }
 
     if (intent.type === "block") {
+      resetControlSkipStreak(enemy);
       const blockValue = (intent.value ?? 0) + enemyIntentBonus(run);
       enemy.block += blockValue;
       reduceStatus(enemy, "bind", 1);
@@ -581,6 +586,8 @@ function resolveEnemyIntent(state, enemy) {
     reduceStatus(enemy, "controlResist", 1);
     combat.log.push(`${enemy.name} 定力松动。`);
   }
+
+  resetControlSkipStreak(enemy);
 
   if (intent.type === "attack") {
     combat.log.push(`${enemy.name} 攻击。`);
@@ -600,6 +607,35 @@ function resolveEnemyIntent(state, enemy) {
     addStatus(playerAsFighter(run), intent.status, intent.stacks ?? 0);
     combat.log.push(`${enemy.name} 施加 ${statusLabel(intent.status)} ${intent.stacks}。`);
   }
+}
+
+function noteControlSkipAndMaybeBreak(state, enemy) {
+  const run = state.run;
+  if (!run?.trueMartial || !enemy || enemy.hp <= 0) return;
+  enemy.controlSkipStreak = (enemy.controlSkipStreak ?? 0) + 1;
+  if (enemy.controlSkipStreak >= controlSkipBreakLimit(run, enemy)) {
+    forceControlBreak(state, enemy, "consecutive-skip");
+  }
+}
+
+function resetControlSkipStreak(enemy) {
+  if (!enemy) return;
+  enemy.controlSkipStreak = 0;
+}
+
+function controlSkipBreakLimit(run, enemy) {
+  const type = enemyTypeForControlBreak(run, enemy);
+  if (type === "boss") return 3;
+  if (type === "elite") return 5;
+  return 6;
+}
+
+function enemyTypeForControlBreak(run, enemy) {
+  const id = enemy?.enemyId || enemy?.id;
+  if (["deathSentry", "mindEater", "doomPriest", "trueDemon", "voidSovereign"].includes(id)) return "boss";
+  if ((run?.floor ?? 0) % 5 === 0) return "boss";
+  if ((enemy?.maxHp ?? 0) >= 80) return "elite";
+  return "normal";
 }
 
 function tryChaosAttack(state, enemy, rawDamage) {

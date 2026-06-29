@@ -4857,3 +4857,180 @@ button.ghost {
     url('../assets/ui-r5/panels/panel_status_tooltip.png');
   background-size: cover, 100% 100%;
 }
+
+/* R8B UI fix final pass: this sits after UI-R5 imports so the mobile rules win. */
+@media (max-width: 768px) {
+  .combat-layout .enemy-row {
+    grid-template-columns: repeat(auto-fit, minmax(144px, 1fr));
+    gap: 6px;
+    align-items: stretch;
+  }
+
+  .combat-layout .enemy {
+    min-height: 138px;
+    padding: 8px 8px 8px 66px;
+    gap: 4px;
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  .combat-layout .enemy .r5-enemy-battle {
+    left: 8px;
+    top: 12px;
+    width: 50px;
+    height: 50px;
+    border-radius: 8px;
+    z-index: 1;
+  }
+
+  .combat-layout .enemy .enemy-title,
+  .combat-layout .enemy .hp-meter,
+  .combat-layout .enemy .block-meter,
+  .combat-layout .enemy .impact-row,
+  .combat-layout .enemy .status-line {
+    position: relative;
+    z-index: 2;
+    min-width: 0;
+  }
+
+  .combat-layout .enemy .enemy-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 4px;
+    min-height: 24px;
+  }
+
+  .combat-layout .enemy .enemy-title h3 {
+    min-width: 24px;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: clip;
+    white-space: nowrap;
+    writing-mode: horizontal-tb;
+    text-orientation: mixed;
+    font-size: 15px;
+    line-height: 1.15;
+  }
+
+  .combat-layout .enemy .enemy-title .intent {
+    flex: 0 0 28px;
+    width: 28px;
+    min-width: 28px;
+    max-width: 28px;
+    min-height: 24px;
+    padding: 2px;
+    overflow: hidden;
+    justify-content: center;
+  }
+
+  .combat-layout .enemy .enemy-title .intent span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .combat-layout .enemy .enemy-title .uiimg-intent-icon {
+    width: 17px;
+    height: 17px;
+  }
+
+  .combat-layout .enemy .hp-meter {
+    width: 100%;
+    min-width: 0;
+    height: 22px;
+    background: rgba(52, 18, 14, 0.92);
+    border-color: rgba(238, 194, 112, 0.58);
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 236, 180, 0.12),
+      0 2px 8px rgba(0, 0, 0, 0.36);
+  }
+
+  .combat-layout .enemy .hp-meter em {
+    font-size: 12px;
+    color: #fff1c6;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.72);
+  }
+
+  .combat-layout .enemy .block-meter {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .combat-layout .enemy .status-line {
+    max-width: 100%;
+    margin-left: 0;
+    font-size: 10px;
+    line-height: 1.2;
+    color: #d9ceb2;
+  }
+}
+
+@media (max-width: 360px) {
+  .combat-layout .enemy-row {
+    grid-template-columns: 1fr;
+  }
+
+  .combat-layout .enemy {
+    min-height: 128px;
+    padding-left: 84px;
+  }
+
+  .combat-layout .enemy .r5-enemy-battle {
+    width: 64px;
+    height: 64px;
+  }
+
+  .combat-layout .enemy .enemy-title .intent {
+    flex-basis: 34px;
+    width: 34px;
+    min-width: 34px;
+    max-width: 34px;
+  }
+}
+
+.progression-panel .talent,
+.progression-panel .talent.maxed,
+.progression-panel .myth-talent {
+  background:
+    linear-gradient(180deg, rgba(38, 29, 20, 0.96), rgba(16, 25, 21, 0.95)),
+    url('../assets/ui-image-r2/xxt-wall-texture.svg');
+  background-size: cover, 100% 100%;
+  background-position: center, center;
+  border-color: rgba(210, 169, 86, 0.5);
+  color: #f4e7bd;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 231, 157, 0.09),
+    0 10px 22px rgba(0, 0, 0, 0.24);
+}
+
+.progression-panel .talent.maxed {
+  background:
+    linear-gradient(180deg, rgba(26, 42, 34, 0.96), rgba(14, 29, 25, 0.95)),
+    url('../assets/ui-image-r2/xxt-wall-texture.svg');
+  border-color: rgba(144, 198, 158, 0.5);
+}
+
+.progression-panel .myth-talent {
+  background:
+    linear-gradient(180deg, rgba(35, 26, 19, 0.97), rgba(15, 29, 26, 0.96)),
+    url('../assets/ui-image-r2/xxt-wall-texture.svg');
+  border-color: rgba(203, 169, 86, 0.54);
+}
+
+.progression-panel .talent p,
+.progression-panel .talent .talent-cost {
+  color: #d9d0b5;
+}
+
+.progression-panel .talent-title strong {
+  color: #fff0bf;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.62);
+}
+
+.progression-panel .talent-title span {
+  color: #b9d9c4;
+}

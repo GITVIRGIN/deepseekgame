@@ -32,6 +32,11 @@ jobs:
           rm -rf .pages
           mkdir -p .pages/assets
           cp index.html .pages/
+          cp VERSION.md .pages/
+          cp release-v3.13n-tm-t2a5f.html .pages/
+          cp RELEASE_NOTES.md .pages/
+          mkdir -p .pages/docs
+          cp docs/player-guide.md .pages/docs/player-guide.md
           cp -R src .pages/src
           cp -R public .pages/public
           cp -R public/assets/. .pages/assets/

@@ -1,79 +1,31 @@
 # 玄箓行
 
-神话杂糅文字肉鸽卡牌游戏。支持桌面端和手机端浏览器游玩。
+《玄箓行》是一款神话题材的卡牌构筑冒险游戏。你会在一次次入山、战斗、修行和抉择中扩展牌组，寻找能活到终局的流派路线。
 
-**当前正式版本**：V3.13N-TM-T2A5F-UI1（真武合流·天尊三合流 + 状态栏热修）
+游戏可以直接在浏览器中游玩，支持桌面端和手机端。存档保存在本地浏览器中，也可以按页面提示使用云存档。
 
-**线上地址**：https://gitvirgin.github.io/deepseekgame/
+## 开始游玩
 
-## 难度选择
+打开游戏页面后，选择适合自己的难度进入冒险：
 
-- **入门难度**：适合新玩家，每场战斗有行旅护持。
-- **常规难度**：标准挑战，无限局。
-- **真武模式**（隐藏）：最高难度，核心是双合流和三合流构筑。需收集全部普通遗物并达到神话熟练度解锁。
+- **入门难度**：适合第一次接触游戏的玩家，容错更高。
+- **常规难度**：完整体验战斗、奖励、商店、修行和构筑成长。
+- **真武模式**：高压挑战模式，适合已经理解流派和资源规划的玩家反复挑战。
 
-## 真武合流攻略
+## 新手入口
 
-- [发布说明](RELEASE_NOTES.md)
-- [真武合流完整攻略](docs/TRUE_MARTIAL_FUSION_GUIDE.md)
-- [网页版攻略](release-v3.13n-tm-t2a5f.html)
+- [最终正式版发布说明](RELEASE_NOTES.md)
+- [新手指南与进阶攻略](docs/player-guide.md)
 
-## 游玩
+## 游戏特色
 
-打开 GitHub Pages 发布地址即可游玩。普通存档保存在浏览器本地；云存档需要玩家使用自己的 GitHub Token 连接，并选择玩家ID。
+- 通过出牌、格挡、状态和资源管理完成回合制战斗。
+- 在奖励、商店和修行之间规划成长方向。
+- 围绕流血、毒、雷、控制、防御、回复等路线构筑牌组。
+- 在高难模式中尝试双流派合流，进一步追求三流派成型。
 
-## 云存档
+## 给新玩家的建议
 
-云存档会写入玩家自己 GitHub 账号下的私有 Gist。不同玩家ID对应不同存档。
+前期不要贪太多方向。先让牌组拥有可靠的生存核心，再补伤害和爆发。强卡不一定适合当前路线，商店、删牌和刷新都应该服务于已经成型的计划。
 
-安全建议：
-
-- 不要在云存档里填写 GitHub 密码。
-- 使用 GitHub Token，并只授予 Gist 相关权限。
-- 如果 Token 泄露，立即在 GitHub 设置中撤销。
-
-## 本地开发
-
-```bash
-node scripts/serve.mjs 5173
-```
-
-## 质量闸门
-
-当前推荐验证命令：
-
-```bash
-npm run smoke
-npm run check
-npm run build:release
-node scripts/sim-ai.mjs
-npm run ai:review-pack
-```
-
-## 打包
-
-```bash
-node scripts/simulate-runs.mjs --runs=100
-node scripts/build-release.mjs
-```
-
-发布前必须先跑 100 局自动模拟，并根据胜率、平均层数、流派出牌和状态峰值做一次节奏评估；流派专项变更还要追加对应 profile，例如：
-
-```bash
-node scripts/simulate-runs.mjs --runs=100 --profile=bleed
-```
-
-中毒、龟壳等专项也可以指定对应 profile：
-
-```bash
-node scripts/simulate-runs.mjs --runs=100 --profile=poison
-node scripts/simulate-runs.mjs --runs=100 --profile=shell
-node scripts/simulate-runs.mjs --runs=100 --profile=spell
-node scripts/simulate-runs.mjs --runs=100 --profile=control
-```
-
-连续失败补偿类改动需要额外指定失败次数，例如：
-
-```bash
-node scripts/simulate-runs.mjs --runs=100 --profile=shell --lossStreak=3
-```
+真武模式不是轻松通关模式。失败很正常，每一次失败都可以帮助你判断：是卡组太厚、续航不足、防御断档，还是关键流派没有及时成型。

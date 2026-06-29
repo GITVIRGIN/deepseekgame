@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import { cards, relics as allRelics } from "../src/core/data.js";
+import { cards, relics as allRelics, shopItems } from "../src/core/data.js";
 import { pathToFileURL } from "url";
 import { createRunGoal, markSpecialGoalBaseline } from "../src/core/goals.js";
 import { prepareRouteChoice } from "../src/core/nodes.js";
@@ -183,6 +183,30 @@ function statusValue(fighter, id) {
   return statusStacks(fighter, id);
 }
 
+function pileSignature(pile) {
+  return (pile || []).map((item) => `${item.uid}:${item.cardId}`);
+}
+
+function pendingPurgeSignature(pendingPurge) {
+  if (!pendingPurge) return null;
+  if (typeof pendingPurge === "string") {
+    return {
+      source: "legacyString",
+      filter: pendingPurge,
+      remaining: pendingPurge === "twoWithCurse" ? 2 : 1,
+      removedNames: [],
+    };
+  }
+  return {
+    source: pendingPurge.source ?? null,
+    filter: pendingPurge.filter ?? null,
+    remaining: pendingPurge.remaining ?? null,
+    removedNames: [...(pendingPurge.removedNames || [])],
+    addCurseOnComplete: Boolean(pendingPurge.addCurseOnComplete),
+    finishNodeOnComplete: Boolean(pendingPurge.finishNodeOnComplete),
+  };
+}
+
 function stateProgressSignature(state) {
   const run = state?.run ?? {};
   const combat = run.combat ?? {};
@@ -207,13 +231,21 @@ function stateProgressSignature(state) {
     combatRound: combat.round ?? null,
     combatActionCounter: combat.actionCounter ?? null,
     pendingChoiceType: pendingChoiceType(run),
+    pendingPurge: pendingPurgeSignature(run.pendingPurge),
     playerHp: run.hp ?? null,
     playerBlock: combat.block ?? 0,
     playerEnergy: run.energy ?? null,
+    deckSize: (run.deck || []).length,
+    deckCardIds: (run.deck || []).map((item) => item.cardId),
+    deckUids: (run.deck || []).map((item) => item.uid),
     handCardIds: (combat.hand || []).map((item) => item.cardId),
+    handUids: (combat.hand || []).map((item) => item.uid),
     drawPileSize: (combat.drawPile || []).length,
+    drawPileCards: pileSignature(combat.drawPile),
     discardPileSize: (combat.discardPile || []).length,
+    discardPileCards: pileSignature(combat.discardPile),
     exhaustPileSize: (combat.exhaustPile || []).length,
+    exhaustPileCards: pileSignature(combat.exhaustPile),
     enemyIds: enemies.map((enemy) => enemy.id),
     enemies,
     combatLogLength: (combat.log || []).length,
@@ -350,14 +382,40 @@ function shopAct(s) {
   const run = s.run;
   const stock = (run.shopStock ?? []).filter(i => !i.sold);
   const priority = { maxEnergy: 100, maxHp: 60, rareCard: 50, relic: 45, heal: 35, handLimit: 30 };
-  const affordable = stock.filter(i => run.gold >= i.price);
+  const affordable = stock.filter(i => run.gold >= i.price && shopItems[i.id]);
   if (affordable.length === 0) return reduceGame(s, { type: "leaveShop" });
   affordable.sort((a, b) => {
-    const sa = Math.max(...(a.effects || []).map(e => priority[e.type] || 0));
-    const sb = Math.max(...(b.effects || []).map(e => priority[e.type] || 0));
-    return sb - sa;
+    const aItem = shopItems[a.id];
+    const bItem = shopItems[b.id];
+    const sa = Math.max(0, ...(aItem.effects || []).map(e => priority[e.type] || 0));
+    const sb = Math.max(0, ...(bItem.effects || []).map(e => priority[e.type] || 0));
+    if (sb !== sa) return sb - sa;
+    return a.price - b.price;
   });
-  return reduceGame(s, { type: "buyShopItem", itemId: affordable[0].id });
+  for (const item of affordable) {
+    const next = reduceGame(s, { type: "buyShopItem", itemId: item.id });
+    if (shopActionChanged(s, next)) return next;
+  }
+  return reduceGame(s, { type: "leaveShop" });
+}
+
+function shopActionChanged(before, after) {
+  const b = before?.run;
+  const a = after?.run;
+  if (!b || !a) return before !== after;
+  if (before.phase !== after.phase) return true;
+  if ((b.gold ?? 0) !== (a.gold ?? 0)) return true;
+  if ((b.hp ?? 0) !== (a.hp ?? 0)) return true;
+  if ((b.maxHp ?? 0) !== (a.maxHp ?? 0)) return true;
+  if ((b.maxEnergy ?? 0) !== (a.maxEnergy ?? 0)) return true;
+  if ((b.handLimit ?? 0) !== (a.handLimit ?? 0)) return true;
+  if ((b.deckLimit ?? 0) !== (a.deckLimit ?? 0)) return true;
+  if ((b.deck || []).length !== (a.deck || []).length) return true;
+  if ((b.relics || []).length !== (a.relics || []).length) return true;
+  if (Boolean(b.pendingPurge) !== Boolean(a.pendingPurge)) return true;
+  const bSold = (b.shopStock || []).map((item) => `${item.id}:${item.sold ? 1 : 0}`).join("|");
+  const aSold = (a.shopStock || []).map((item) => `${item.id}:${item.sold ? 1 : 0}`).join("|");
+  return bSold !== aSold;
 }
 
 function pickReward(s, profile = "balanced") {
@@ -566,7 +624,12 @@ function chooseBlockingAction(state, profile = "balanced") {
   if (!run) return null;
 
   if (run.pendingPurge) {
-    return { type: "confirmPurge", cardUid: pickPurgeCardAI(run), simReason: "pendingPurge" };
+    const cardUid = pickPurgeCardAI(run);
+    return {
+      type: "confirmPurge",
+      cardUid,
+      simReason: cardUid ? "pendingPurge" : "pendingPurge:noLegalPurgeCard",
+    };
   }
 
   const choice = run.pendingChoice;

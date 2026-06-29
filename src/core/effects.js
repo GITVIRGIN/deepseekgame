@@ -2,7 +2,7 @@ import { cards, relics } from "./data.js";
 import { drawCards, finishCombatIfWon } from "./combat.js";
 import { onEnemyKilled } from "./combat-events.js";
 import { awardMythMasteryForRunEnd, cardMythBoost, consumeMythFirstStrike, mythAwardText, mythFirstStrikeDamageBonus, mythStatusDamageBonus } from "./myth.js";
-import { addStatus, reduceConsumableDebuff, reduceStatus, statusLabel, statusStacks } from "./status.js";
+import { addStatus, clearStatus, reduceConsumableDebuff, reduceStatus, statusLabel, statusStacks } from "./status.js";
 import { difficultyTuning } from "./types.js";
 
 const SPIRIT_BONUS_PER_COST = 4;
@@ -17,11 +17,23 @@ const BRITTLE_MULTIPLIER = 1.5;
 const CONTROL_STATUS_IDS = new Set(["chaos", "bind", "stun"]);
 const CONTROL_RESIST_STATUS = "controlResist";
 const CONTROL_RESIST_MAX = 2;
+const CONTROL_BREAK_BLOCKED_STATUSES = ["chaos", "bind", "stun"];
+const TRUE_MARTIAL_GU_FORBIDDEN_REPEAT_GUARD_IDS = new Set([
+  "guForbiddenArray",
+  "guForbiddenDetonation",
+  "guForbiddenSovereign",
+]);
 
 function applyControlStatus(state, target, statusId, stacks) {
   if (!CONTROL_STATUS_IDS.has(statusId)) return stacks;
   if (!target || target.uid === "player") return stacks;
   if (!target.statuses) target.statuses = [];
+
+  if (isControlBreakLocked(state, target)) {
+    noteControlBreakBlocked(target, statusId, stacks, state.run?.combat?.turn ?? 0);
+    combatLog(state, `${target.name} control break blocks ${statusLabel(statusId)} ${stacks}.`);
+    return 0;
+  }
 
   const resist = statusStacks(target, CONTROL_RESIST_STATUS);
   if (resist <= 0) return stacks;
@@ -148,6 +160,20 @@ export function applyEffect(state, effect, targetUid) {
     return finishCombatIfWon(state);
   }
 
+  if (effect.type === "poisonBurst") {
+    if (!consumeTrueMartialPoisonBurstResolve(state, effect, targets)) {
+      combatLog(state, "trueMartial poisonBurst already resolved for this source this turn.");
+      return finishCombatIfWon(state);
+    }
+    applyPoisonBurst(state, targets, effect);
+    for (const target of targets) {
+      if (target.hp <= 0) continue;
+      if (effect.cardStyle !== "spell") triggerThunderTribulations(state, target, effect);
+      triggerControlBreak(state, target);
+    }
+    return finishCombatIfWon(state);
+  }
+
   for (const target of targets) {
     if (effect.type === "damage") {
       if (effect.tmExecute) {
@@ -248,13 +274,6 @@ export function applyEffect(state, effect, targetUid) {
       if (added > 0) {
         combatLog(state, `${target.uid === "player" ? "你" : target.name} 的负面状态增长 ${added} 层。`);
       }
-      if (effect.cardStyle !== "spell") triggerThunderTribulations(state, target, effect);
-      triggerControlBreak(state, target);
-    }
-
-    if (effect.type === "poisonBurst") {
-      applyPoisonBurst(state, targets, effect);
-      finishCombatIfWon(state);
       if (effect.cardStyle !== "spell") triggerThunderTribulations(state, target, effect);
       triggerControlBreak(state, target);
     }
@@ -446,6 +465,12 @@ export function applyCardEffects(state, cardInstance, targetUid) {
   const effects = effectiveCard.effects || card.effects;
   const cardCost = effectiveCard.cost !== undefined ? effectiveCard.cost : card.cost;
 
+  if (!consumeTrueMartialGuForbiddenTrigger(state, card, cardInstance, effects, targetUid)) {
+    combatLog(state, "trueMartial guForbidden already triggered for this source this turn.");
+    finishCombatIfWon(state);
+    return;
+  }
+
   // V3.3: berserkBrand — lose 3 HP when playing a physical card
   if (card.style === "physical" && state.run?.relics?.includes("berserkBrand")) {
     state.run.hp = Math.max(1, state.run.hp - 3);
@@ -458,12 +483,14 @@ export function applyCardEffects(state, cardInstance, targetUid) {
   }
   beginCardControlBatch(state);
   try {
-    for (const effect of effects) {
+    for (const [effectIndex, effect] of effects.entries()) {
       applyEffect(
         state,
         {
           ...effect,
           sourceUid: cardInstance.uid,
+          sourceCardId: card.id,
+          sourceEffectIndex: effectIndex,
           cardCost,
           cardStyle: card.style,
           cardMythBonus: mythBoost.numericBonus,
@@ -634,6 +661,45 @@ function resolveTargets(run, targetType, targetUid) {
   return selected ? [selected] : combat.enemies.filter((enemy) => enemy.hp > 0).slice(0, 1);
 }
 
+function trueMartialGuForbiddenTargetGroupKey(run, effects, targetUid) {
+  const effect = effects.find((item) => item.type === "poisonBurst")
+    || effects.find((item) => item.target === "allEnemies" || item.target === "enemy")
+    || { target: "enemy" };
+  return resolveTargets(run, effect.target, targetUid)
+    .filter((target) => target && target.uid !== "player")
+    .map((target) => target.uid)
+    .sort()
+    .join("|") || "no-valid-target";
+}
+
+function consumeTrueMartialGuForbiddenTrigger(state, card, cardInstance, effects, targetUid) {
+  const run = state.run;
+  const combat = run?.combat;
+  if (!run?.trueMartial || !combat || !TRUE_MARTIAL_GU_FORBIDDEN_REPEAT_GUARD_IDS.has(card?.id)) return true;
+  const targetGroupKey = trueMartialGuForbiddenTargetGroupKey(run, effects, targetUid);
+  const key = [
+    run.floor ?? 0,
+    combat.turn ?? 0,
+    cardInstance.uid,
+    card.id,
+    "guForbidden",
+    targetGroupKey,
+  ].join(":");
+  const used = run.trueMartialGuForbiddenTriggers ?? {};
+  run.trueMartialGuForbiddenTriggers = used;
+  const sourceTurnKey = [
+    run.floor ?? 0,
+    combat.turn ?? 0,
+    cardInstance.uid,
+    card.id,
+    "guForbidden",
+  ].join(":");
+  if (used[key] || used[sourceTurnKey]) return false;
+  used[key] = true;
+  used[sourceTurnKey] = true;
+  return true;
+}
+
 function amplifyDebuffs(target, statuses, value, run) {
   const debuffs = statuses ?? ["burn", "bleed", "poison", "curse", "chaos", "bind", "stun", "stasis", "thunderMark", "brittle"];
   let added = 0;
@@ -799,6 +865,32 @@ function applyPoisonBurst(state, targets, effect) {
   }
 }
 
+function consumeTrueMartialPoisonBurstResolve(state, effect, targets = []) {
+  const run = state.run;
+  const combat = run?.combat;
+  if (!run?.trueMartial || !combat || !effect?.sourceUid) return true;
+  const targetGroupKey = targets
+    .filter((target) => target && target.uid !== "player")
+    .map((target) => target.uid)
+    .sort()
+    .join("|") || "no-valid-target";
+  const sourceCardId = effect.sourceCardId ?? effect.cardId ?? "unknown-card";
+  const effectIndex = effect.sourceEffectIndex ?? 0;
+  const key = [
+    combat.turn ?? 0,
+    effect.sourceUid,
+    sourceCardId,
+    "poisonBurst",
+    effectIndex,
+    targetGroupKey,
+  ].join(":");
+  const used = combat.flags.trueMartialPoisonBurstResolves ?? {};
+  combat.flags.trueMartialPoisonBurstResolves = used;
+  if (used[key]) return false;
+  used[key] = true;
+  return true;
+}
+
 function boostedStacks(effect) {
   return (effect.stacks ?? 0) + (effect.cardMythStatusBonus ?? 0);
 }
@@ -836,6 +928,55 @@ function shouldTriggerControlBreak(target) {
   );
 }
 
+function isControlBreakLocked(state, target) {
+  return Boolean(state.run?.trueMartial && target?.controlBreak?.active);
+}
+
+function noteControlBreakBlocked(target, statusId, stacks, turn) {
+  const lock = target.controlBreak ?? {};
+  target.controlBreak = {
+    ...lock,
+    active: true,
+    blockedStatuses: lock.blockedStatuses ?? [...CONTROL_BREAK_BLOCKED_STATUSES],
+    blockedApplications: (lock.blockedApplications ?? 0) + 1,
+    blockedStacks: (lock.blockedStacks ?? 0) + Math.max(0, stacks ?? 0),
+    lastBlockedStatus: statusId,
+    lastBlockedTurn: turn,
+  };
+}
+
+function activateControlBreakLock(state, target, reason = "control-pressure") {
+  if (!state.run?.trueMartial) return;
+  const combat = state.run?.combat;
+  const lock = target.controlBreak ?? {};
+  target.controlBreak = {
+    ...lock,
+    active: true,
+    triggeredCount: (lock.triggeredCount ?? 0) + 1,
+    triggeredTurn: combat?.turn ?? 0,
+    reason,
+    blockedStatuses: [...CONTROL_BREAK_BLOCKED_STATUSES],
+  };
+}
+
+function clearControlBreakActionLocks(target) {
+  let cleared = 0;
+  for (const statusId of CONTROL_BREAK_BLOCKED_STATUSES) {
+    cleared += statusStacks(target, statusId);
+    clearStatus(target, statusId);
+  }
+  return cleared;
+}
+
+export function forceControlBreak(state, target, reason = "control-skip-loop") {
+  if (!state.run?.trueMartial || !target || target.uid === "player" || target.hp <= 0) return false;
+  if (target.controlBreak?.active) return false;
+  const clearedControl = clearControlBreakActionLocks(target);
+  activateControlBreakLock(state, target, reason);
+  combatLog(state, `${target.name} control break activates (${reason}), clearing ${clearedControl} action-control stacks.`);
+  return true;
+}
+
 function controlBreakConsumeAmount(target) {
   const stacks = controlStacks(target);
   return controlTypeCount(stacks) >= CONTROL_BREAK_MIN_TYPES
@@ -850,6 +991,13 @@ function triggerControlBreak(state, target) {
   while (shouldTriggerControlBreak(target)) {
     const amount = controlBreakConsumeAmount(target);
     consumeControlPressure(target, amount);
+    if (state.run?.trueMartial) {
+      const clearedControl = clearControlBreakActionLocks(target);
+      activateControlBreakLock(state, target);
+      if (clearedControl > 0) {
+        combatLog(state, `${target.name} control break clears ${clearedControl} action-control stacks.`);
+      }
+    }
     const clearedBlock = target.block ?? 0;
     target.block = 0;
     addStatus(target, "brittle", BRITTLE_STACKS);
